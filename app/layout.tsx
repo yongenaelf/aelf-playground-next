@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
-import { ModeToggle } from "@/components/mode-toggle";
 import { MenubarComponent } from "@/components/menu";
+import { Shell } from "@/components/shell";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -13,9 +13,13 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({
-  children,
+  bottom,
+  left,
+  top,
 }: Readonly<{
-  children: React.ReactNode;
+  bottom: React.ReactNode;
+  left: React.ReactNode;
+  top: React.ReactNode;
 }>) {
   return (
     <html lang="en">
@@ -27,7 +31,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <MenubarComponent />
-          {children}
+          <Shell left={left} top={top} bottom={bottom} />
         </ThemeProvider>
       </body>
     </html>
