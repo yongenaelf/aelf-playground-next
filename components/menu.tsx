@@ -6,10 +6,17 @@ import {
 } from "@/components/ui/menubar";
 import { ModeToggle } from "./mode-toggle";
 import Modal from "./modal";
+import { TemplatesMenu } from "./templates-menu";
 
 export function MenubarComponent() {
   return (
     <Menubar>
+      <MenubarMenu>
+        <MenubarTrigger>New</MenubarTrigger>
+        <MenubarContent>
+          <TemplatesMenu />
+        </MenubarContent>
+      </MenubarMenu>
       <MenubarMenu>
         <MenubarTrigger>Theme</MenubarTrigger>
         <MenubarContent>
