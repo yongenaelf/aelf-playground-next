@@ -6,12 +6,9 @@ import { MenubarRadioGroup, MenubarRadioItem } from "@/components/ui/menubar";
 async function getData() {
   noStore();
 
-  let url = `https://playground-next.test.aelf.dev/playground/templates`;
-  if (process.env.NODE_ENV === "production") {
-    url = `/playground/templates`;
-  }
-
-  const res = await fetch(url);
+  const res = await fetch(
+    `${process.env.BUILD_SERVER_BASE_URL}/playground/templates`
+  );
   const data = await res.json();
 
   return data as string[];
