@@ -7,7 +7,7 @@ async function getData() {
   noStore();
 
   const res = await fetch(
-    `${process.env.BUILD_SERVER_BASE_URL}/playground/templates`
+    `${process.env["BUILD_SERVER_BASE_URL"]}/playground/templates`
   );
   const data = await res.json();
 
