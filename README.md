@@ -10,16 +10,8 @@ This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next
 
 ## Getting Started
 
-First, build the development container:
-
 ```bash
-docker compose up --build
-```
-
-Press `Ctrl+C` to stop the services.
-
-```bash
-docker compose up --watch
+docker compose up --build --watch
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.

@@ -1,38 +1,75 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useMemo } from "react";
 import CodeMirror from "@uiw/react-codemirror";
 import { csharp } from "@replit/codemirror-lang-csharp";
 import { githubLight, githubDark } from "@uiw/codemirror-theme-github";
 import { useTheme } from "next-themes";
+import { StreamLanguage } from "@codemirror/language";
+import { protobuf } from "@codemirror/legacy-modes/mode/protobuf";
+import { Languages } from "./editor-enum";
+import { xml } from "@codemirror/legacy-modes/mode/xml";
+import { usePathname } from "next/navigation";
+import { db } from "@/data/db";
+import { useDebounce } from "use-debounce";
 
-export default function Editor() {
+export default function Editor({
+  defaultValue,
+  lang,
+}: {
+  defaultValue?: string;
+  lang?: Languages;
+}) {
+  const pathname = usePathname();
   const { theme, systemTheme } = useTheme();
 
   const currentTheme = theme !== "system" ? theme : systemTheme;
   const editorTheme = currentTheme === "light" ? githubLight : githubDark;
 
-  const [value, setValue] = React.useState(`using System;
-namespace Test
-{
-  class Program
-  {
-    public static void Main(string[] args)
-    {
-      Console.WriteLine("Hello, world!");
+  const [value, setValue] = React.useState(defaultValue || "");
+  const [debouncedValue] = useDebounce(value, 1000);
+
+  const extensions = useMemo(() => {
+    switch (lang) {
+      case Languages.CSHARP:
+        return Array.from([csharp()]);
+      case Languages.PROTOBUF:
+        return Array.from([StreamLanguage.define(protobuf)]);
+      case Languages.XML:
+        return Array.from([StreamLanguage.define(xml)]);
+      default:
+        return Array.from([]);
     }
-  }
-}`);
+  }, [lang]);
+
   const onChange = React.useCallback((val: string, viewUpdate: any) => {
-    console.log("val:", val);
     setValue(val);
   }, []);
+
+  useEffect(() => {
+    (async () => {
+      const existing = await db.files.get(pathname);
+
+      if (existing) {
+        setValue(existing.contents);
+      } else {
+        await db.files.add({ path: pathname, contents: value });
+      }
+    })();
+  }, [pathname]);
+
+  useEffect(() => {
+    (async () => {
+      await db.files.update(pathname, { contents: debouncedValue });
+    })();
+  }, [debouncedValue]);
+
   return (
     <CodeMirror
       value={value}
       height="1000px"
       theme={editorTheme}
-      extensions={[csharp()]}
+      extensions={extensions}
       onChange={onChange}
     />
   );
