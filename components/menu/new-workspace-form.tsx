@@ -59,13 +59,12 @@ export function WorkspaceForm({
       );
       const templateData: { path: string; contents: string }[] =
         await res.json();
+
       await db.files.bulkAdd(
-        templateData
-          .filter((i) => i.path !== "")
-          .map(({ path, contents }) => ({
-            path: `/workspace/${data.name}/${path}`,
-            contents,
-          }))
+        templateData.map(({ path, contents }) => ({
+          path: `/workspace/${data.name}/${path}`,
+          contents,
+        }))
       );
       await router.push(`/workspace/${data.name}`);
     } catch (err) {
@@ -75,10 +74,7 @@ export function WorkspaceForm({
 
   return (
     <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(onSubmit)}
-        className="w-[800px] space-y-6"
-      >
+      <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-6">
         <FormField
           control={form.control}
           name="name"
@@ -86,7 +82,11 @@ export function WorkspaceForm({
             <FormItem>
               <FormLabel>Name</FormLabel>
               <FormControl>
-                <Input placeholder="workspace-name" {...field} />
+                <Input
+                  className="w-full"
+                  placeholder="workspace-name"
+                  {...field}
+                />
               </FormControl>
               <FormDescription>This is your workspace name.</FormDescription>
               <FormMessage />
@@ -104,7 +104,7 @@ export function WorkspaceForm({
                   onValueChange={field.onChange}
                   defaultValue={field.value}
                 >
-                  <SelectTrigger className="w-[180px]">
+                  <SelectTrigger className="w-full">
                     <SelectValue placeholder="Select a template" />
                   </SelectTrigger>
                   <SelectContent>

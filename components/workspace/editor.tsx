@@ -53,16 +53,18 @@ export default function Editor({ defaultValue }: { defaultValue?: string }) {
       if (existing) {
         setValue(existing.contents);
       } else {
-        await db.files.add({ path: pathname, contents: value });
+        if (!pathname.includes("null"))
+          await db.files.add({ path: pathname, contents: value });
       }
     })();
   }, [pathname]);
 
   useEffect(() => {
     (async () => {
-      await db.files.update(pathname, { contents: debouncedValue });
+      if (!pathname.includes("null"))
+        await db.files.update(pathname, { contents: debouncedValue });
     })();
-  }, [debouncedValue]);
+  }, [debouncedValue, pathname]);
 
   return (
     <CodeMirror

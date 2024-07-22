@@ -40,6 +40,7 @@
     "react-hook-form": "^7.52.1",
     "react-resizable-panels": "^2.0.20",
     "react-terminal": "^1.4.4",
+    "swr": "^2.2.5",
     "tailwind-merge": "^2.4.0",
     "tailwindcss-animate": "^1.0.7",
     "use-debounce": "^10.0.1",

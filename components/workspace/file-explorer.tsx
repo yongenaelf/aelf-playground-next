@@ -97,6 +97,7 @@ function convert(data: string[]) {
 const FileExplorer = () => {
   const { id } = useParams();
   const [paths, setPaths] = useState<string[]>([]);
+
   useEffect(() => {
     (async () => {
       const files = await db.files.filter((file) =>
