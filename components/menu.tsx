@@ -6,16 +6,19 @@ import {
 } from "@/components/ui/menubar";
 import { ModeToggle } from "./mode-toggle";
 import Modal from "./modal";
-import { TemplatesMenu } from "./templates-menu";
+import { WorkspaceForm } from "./workspace-form";
+import { getTemplateNames } from "@/data/template";
 
-export function MenubarComponent() {
+export async function MenubarComponent() {
+  const templateOptions = await getTemplateNames();
   return (
     <Menubar>
       <MenubarMenu>
-        <MenubarTrigger>New</MenubarTrigger>
-        <MenubarContent>
-          <TemplatesMenu />
-        </MenubarContent>
+        <MenubarTrigger>
+          <Modal trigger={<span>New</span>} title="New Workspace">
+            <WorkspaceForm templateOptions={templateOptions} />
+          </Modal>
+        </MenubarTrigger>
       </MenubarMenu>
       <MenubarMenu>
         <MenubarTrigger>Theme</MenubarTrigger>
@@ -25,11 +28,9 @@ export function MenubarComponent() {
       </MenubarMenu>
       <MenubarMenu>
         <MenubarTrigger>
-          <Modal
-            trigger={<span>Chat</span>}
-            title="Chat"
-            body={<>Put your component here.</>}
-          />
+          <Modal trigger={<span>Chat</span>} title="Chat">
+            <>Put your component here.</>
+          </Modal>
         </MenubarTrigger>
       </MenubarMenu>
     </Menubar>

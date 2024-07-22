@@ -13,3 +13,10 @@ export async function getTemplateData(id: string) {
 
   return unzipSync(zipData);
 }
+
+export async function getTemplateNames() {
+  const res = await fetch(`${getBuildServerBaseUrl()}/playground/templates`);
+  const data = await res.json();
+
+  return data as string[];
+}
