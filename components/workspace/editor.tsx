@@ -25,7 +25,7 @@ export default function Editor({ defaultValue }: { defaultValue?: string }) {
   const editorTheme = currentTheme === "light" ? githubLight : githubDark;
 
   const [value, setValue] = React.useState(defaultValue || "");
-  const [debouncedValue] = useDebounce(value, 1000);
+  const [debouncedValue] = useDebounce(value, 100);
 
   const lang = getLang(pathname);
 
