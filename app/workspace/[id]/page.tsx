@@ -1,29 +1,23 @@
 import TopBottom from "@/components/top-bottom";
 import {
-  ResizableHandle,
-  ResizablePanel,
   ResizablePanelGroup,
+  ResizablePanel,
+  ResizableHandle,
 } from "@/components/ui/resizable";
 import Cli from "@/components/workspace/cli";
 import Editor from "@/components/workspace/editor";
 import FileExplorer from "@/components/workspace/file-explorer";
 
-export default function Home() {
+export default function Page() {
   return (
     <div className="h-[calc(100vh-40px)]">
       <ResizablePanelGroup direction="horizontal" className="border">
         <ResizablePanel defaultSize={25}>
-          <TopBottom
-            top={<p>Click on the New menu button to begin.</p>}
-            bottom={<p>bottom</p>}
-          />
+          <TopBottom top={<FileExplorer />} bottom={<p>Chat component</p>} />
         </ResizablePanel>
         <ResizableHandle />
         <ResizablePanel defaultSize={75}>
-          <TopBottom
-            top={<Editor defaultValue="Welcome to AElf Playground!" />}
-            bottom={<Cli />}
-          />
+          <TopBottom top={<Editor />} bottom={<Cli />} />
         </ResizablePanel>
       </ResizablePanelGroup>
     </div>

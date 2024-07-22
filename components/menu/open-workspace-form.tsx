@@ -14,7 +14,6 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -24,29 +23,39 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useEffect, useState } from "react";
+import { db } from "@/data/db";
+import { useRouter } from "next/navigation";
 
 const FormSchema = z.object({
-  name: z.string().min(2, {
-    message: "Name must be at least 2 characters.",
-  }),
-  template: z.string(),
+  name: z.string(),
 });
 
-export function WorkspaceForm({
-  templateOptions = [],
-}: {
-  templateOptions: string[];
-}) {
+export function OpenWorkspaceForm() {
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
       name: "",
-      template: "",
     },
   });
+  const [workspaces, setWorkspaces] = useState<string[]>([]);
+
+  const router = useRouter();
 
   function onSubmit(data: z.infer<typeof FormSchema>) {
-    console.log(data);
+    router.push(`/workspace/${data.name}`);
+  }
+
+  useEffect(() => {
+    (async () => {
+      const existing = await db.workspaces.toArray();
+
+      setWorkspaces(existing.map((i) => i.name));
+    })();
+  }, []);
+
+  if (workspaces.length === 0) {
+    return <p>It seems you have not created a workspace yet.</p>;
   }
 
   return (
@@ -57,21 +66,7 @@ export function WorkspaceForm({
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Name</FormLabel>
-              <FormControl>
-                <Input placeholder="workspace-name" {...field} />
-              </FormControl>
-              <FormDescription>This is your workspace name.</FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="template"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Template</FormLabel>
+              <FormLabel>Workspace</FormLabel>
               <FormControl>
                 <Select
                   onValueChange={field.onChange}
@@ -82,8 +77,8 @@ export function WorkspaceForm({
                   </SelectTrigger>
                   <SelectContent>
                     <SelectGroup>
-                      <SelectLabel>Template</SelectLabel>
-                      {templateOptions.map((i) => (
+                      <SelectLabel>Name</SelectLabel>
+                      {workspaces.map((i) => (
                         <SelectItem key={i} value={i}>
                           {i}
                         </SelectItem>
@@ -92,7 +87,7 @@ export function WorkspaceForm({
                   </SelectContent>
                 </Select>
               </FormControl>
-              <FormDescription>Choose a template</FormDescription>
+              <FormDescription>Choose a workspace</FormDescription>
               <FormMessage />
             </FormItem>
           )}
