@@ -73,7 +73,7 @@ export function OpenWorkspaceForm() {
                   defaultValue={field.value}
                 >
                   <SelectTrigger className="w-[180px]">
-                    <SelectValue placeholder="Select a template" />
+                    <SelectValue placeholder="Select a workspace" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectGroup>
