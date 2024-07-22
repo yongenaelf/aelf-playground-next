@@ -7,7 +7,10 @@ import {
   Folder,
   CollapseButton,
 } from "@/components/extension/tree-view-api";
+import { db } from "@/data/db";
 import Link from "next/link";
+import { useParams } from "next/navigation";
+import { useEffect, useState } from "react";
 
 type TOCProps = {
   toc: TreeViewElement[];
@@ -55,7 +58,13 @@ export const TreeItem = ({ elements, pathname }: TreeItemProps) => {
               value={element.id}
               isSelectable={element.isSelectable}
             >
-              <Link href={`${pathname}/${encodeURIComponent(element.id)}`}>
+              <Link
+                href={{
+                  query: {
+                    file: `${encodeURIComponent(element.id)}`,
+                  },
+                }}
+              >
                 {element?.name}
               </Link>
             </File>
@@ -85,14 +94,24 @@ function convert(data: string[]) {
   return root.children;
 }
 
-const FileExplorer = ({
-  paths,
-  pathname,
-}: {
-  paths: string[];
-  pathname: string;
-}) => {
-  return <TOC toc={convert(paths)} pathname={pathname} />;
+const FileExplorer = () => {
+  const { id } = useParams();
+  const [paths, setPaths] = useState<string[]>([]);
+  useEffect(() => {
+    (async () => {
+      const files = await db.files.filter((file) =>
+        file.path.startsWith(`/workspace/${id}`)
+      );
+      const filesArray = await files.toArray();
+      setPaths(
+        filesArray.map((i) =>
+          decodeURIComponent(i.path.replace(`/workspace/${id}/`, ""))
+        )
+      );
+    })();
+  }, [id]);
+
+  return <TOC toc={convert(paths)} pathname={`/workspace/${id}`} />;
 };
 
 export default FileExplorer;

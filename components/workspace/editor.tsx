@@ -7,20 +7,18 @@ import { githubLight, githubDark } from "@uiw/codemirror-theme-github";
 import { useTheme } from "next-themes";
 import { StreamLanguage } from "@codemirror/language";
 import { protobuf } from "@codemirror/legacy-modes/mode/protobuf";
-import { Languages } from "./editor-enum";
+import { getLang, Languages } from "./editor-enum";
 import { xml } from "@codemirror/legacy-modes/mode/xml";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { db } from "@/data/db";
 import { useDebounce } from "use-debounce";
 
-export default function Editor({
-  defaultValue,
-  lang,
-}: {
-  defaultValue?: string;
-  lang?: Languages;
-}) {
-  const pathname = usePathname();
+export default function Editor({ defaultValue }: { defaultValue?: string }) {
+  const path = usePathname();
+  const params = useSearchParams();
+  const file = params.get("file");
+  const pathname = `${path}/${file}`;
+
   const { theme, systemTheme } = useTheme();
 
   const currentTheme = theme !== "system" ? theme : systemTheme;
@@ -28,6 +26,8 @@ export default function Editor({
 
   const [value, setValue] = React.useState(defaultValue || "");
   const [debouncedValue] = useDebounce(value, 1000);
+
+  const lang = getLang(pathname);
 
   const extensions = useMemo(() => {
     switch (lang) {
