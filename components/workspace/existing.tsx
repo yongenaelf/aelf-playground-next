@@ -83,7 +83,7 @@ export default function Existing() {
                           await mutate("workspaces");
                         }}
                       >
-                        Delete workspace "{i.name}"
+                        Delete workspace &quot;{i.name}&quot;
                       </Button>
                     </DialogFooter>
                   </DialogContent>
