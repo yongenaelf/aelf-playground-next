@@ -73,7 +73,7 @@ export default function Home() {
           </p>
         </div>
         <h3 className="text-xl font-bold">Choose from a template...</h3>
-        <Link href="/workspace-open">
+        <Link href="/workspaces">
           <div className="grid w-full max-w-3xl grid-cols-1 gap-6 md:grid-cols-2">
             {links.map((link) => (
               <HomeCard key={link.title} {...link} />

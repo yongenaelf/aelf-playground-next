@@ -17,7 +17,7 @@ export default function TopMenu() {
 
   const links = [
     { href: "/", children: "Home" },
-    { href: "/workspace-open", children: "Workspaces" },
+    { href: "/workspaces", children: "Workspaces" },
     { href: "https://github.com/AElfProject", children: "GitHub" },
   ];
 

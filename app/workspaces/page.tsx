@@ -1,4 +1,4 @@
-import { WorkspaceForm } from "@/components/menu/new-workspace-form";
+import { WorkspaceForm } from "@/components/new-workspace-form";
 import Existing from "@/components/workspace/existing";
 import { getTemplateNames } from "@/data/template";
 
