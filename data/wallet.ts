@@ -5,6 +5,7 @@ import { db } from "./db";
 // @ts-ignore
 import AElf from "aelf-sdk";
 import BigNumber from "bignumber.js";
+import { ProposalInfo } from "./proposal-info-types";
 const { deserializeLog } = AElf.pbUtils;
 
 const aelf = new AElf(
@@ -162,4 +163,11 @@ export function useLogs() {
       return err;
     }
   };
+}
+
+export async function getProposalInfo(proposalId?: string) {
+  const res = await fetch(`/api/get-proposal-info?id=${proposalId}`);
+  const data: ProposalInfo = await res.json();
+
+  return data;
 }

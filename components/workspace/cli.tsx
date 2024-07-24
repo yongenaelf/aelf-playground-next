@@ -2,7 +2,12 @@
 
 import { build } from "@/data/build";
 import { db } from "@/data/db";
-import { useDeploy, useLogs, useTransactionResult } from "@/data/wallet";
+import {
+  getProposalInfo,
+  useDeploy,
+  useLogs,
+  useTransactionResult,
+} from "@/data/wallet";
 import { useTheme } from "next-themes";
 import { useParams } from "next/navigation";
 import { ReactTerminal } from "react-terminal";
@@ -64,20 +69,41 @@ export default function Cli() {
         const result = await getResult(id);
         const logs = await getLogs(id);
         const { data } = z.object({ proposalId: z.string() }).safeParse(logs);
+        const proposalInfo = await getProposalInfo(data?.proposalId);
+        const releasedTxId = proposalInfo?.data.proposal.releasedTxId;
+        const releasedTxLogs = releasedTxId
+          ? await getLogs(releasedTxId)
+          : undefined;
+        const { data: contractAddressData } = z
+          .object({ address: z.string() })
+          .safeParse(releasedTxLogs);
+
         return (
           <>
             <table className="mt-4">
               <tr>
-                <td className="pr-4">TransactionId: </td>
+                <td className="pr-4">TransactionId:</td>
                 <td>{id}</td>
               </tr>
               <tr>
-                <td>Status: </td>
+                <td>Status:</td>
                 <td>{result.Status}</td>
               </tr>
               <tr>
-                <td>ProposalId: </td>
+                <td>ProposalId:</td>
                 <td>{data?.proposalId}</td>
+              </tr>
+              <tr>
+                <td>Proposal Status:</td>
+                <td>{proposalInfo?.data.proposal.status}</td>
+              </tr>
+              <tr>
+                <td>Contract Address:</td>
+                <td>
+                  {proposalInfo?.data.proposal.status === "released"
+                    ? contractAddressData?.address
+                    : "-"}
+                </td>
               </tr>
             </table>
           </>
