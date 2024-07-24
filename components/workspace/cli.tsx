@@ -2,12 +2,15 @@
 
 import { build } from "@/data/build";
 import { db } from "@/data/db";
+import { useDeploy, useTransactionResult } from "@/data/wallet";
 import { useTheme } from "next-themes";
 import { useParams } from "next/navigation";
 import { ReactTerminal } from "react-terminal";
 
 export default function Cli() {
   const { id } = useParams();
+  const deploy = useDeploy();
+  const getResult = useTransactionResult();
   const commands = {
     whoami: "jackharper",
     cd: (directory: string) => `changed path to ${directory}`,
@@ -17,6 +20,7 @@ export default function Cli() {
         <ol>
           <li className="ml-8">clear - clears the terminal</li>
           <li className="ml-8">build - builds the current workspace</li>
+          <li className="ml-8">deploy - deploys the built smart contract</li>
         </ol>
       </div>
     ),
@@ -32,12 +36,24 @@ export default function Cli() {
           contents: file.contents,
         }))
         .filter((i) => i.path.startsWith("src"));
-      console.log(params);
 
       const str = await build(params);
       await db.workspaces.update(id, { dll: str });
 
       return "Build successful.";
+    },
+    deploy: async () => {
+      if (typeof id !== "string") throw new Error("id is not string");
+      const { dll } = (await db.workspaces.get(id)) || {};
+      if (!dll) throw new Error("dll not built.");
+      const { TransactionId } = await deploy(dll);
+      try {
+        const result: { TransactionId: string; Status: string } =
+          await getResult(TransactionId);
+        return `TransactionId: ${TransactionId}, Status: ${result.Status}`;
+      } catch (err) {
+        return JSON.stringify(err, undefined, 2);
+      }
     },
   };
 

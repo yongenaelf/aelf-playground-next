@@ -27,6 +27,7 @@
     "@tanstack/react-virtual": "^3.8.3",
     "@uiw/codemirror-theme-github": "^4.23.0",
     "@uiw/react-codemirror": "^4.23.0",
+    "aelf-sdk": "^3.4.14-beta.1",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "dexie": "^4.0.8",
