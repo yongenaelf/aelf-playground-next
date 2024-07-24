@@ -2,15 +2,17 @@
 
 import { build } from "@/data/build";
 import { db } from "@/data/db";
-import { useDeploy, useTransactionResult } from "@/data/wallet";
+import { useDeploy, useLogs, useTransactionResult } from "@/data/wallet";
 import { useTheme } from "next-themes";
 import { useParams } from "next/navigation";
 import { ReactTerminal } from "react-terminal";
+import { z } from "zod";
 
 export default function Cli() {
   const { id } = useParams();
   const deploy = useDeploy();
   const getResult = useTransactionResult();
+  const getLogs = useLogs();
   const commands = {
     help: () => (
       <div>
@@ -60,7 +62,26 @@ export default function Cli() {
       if (!id) return `Please enter the Transaction ID.`;
       try {
         const result = await getResult(id);
-        return `TransactionId: ${id}, Status: ${result.Status}`;
+        const logs = await getLogs(id);
+        const { data } = z.object({ proposalId: z.string() }).safeParse(logs);
+        return (
+          <>
+            <table className="mt-4">
+              <tr>
+                <td className="pr-4">TransactionId: </td>
+                <td>{id}</td>
+              </tr>
+              <tr>
+                <td>Status: </td>
+                <td>{result.Status}</td>
+              </tr>
+              <tr>
+                <td>ProposalId: </td>
+                <td>{data?.proposalId}</td>
+              </tr>
+            </table>
+          </>
+        );
       } catch (err) {
         return JSON.stringify(err, undefined, 2);
       }

@@ -5,6 +5,7 @@ import { db } from "./db";
 // @ts-ignore
 import AElf from "aelf-sdk";
 import BigNumber from "bignumber.js";
+const { deserializeLog } = AElf.pbUtils;
 
 const aelf = new AElf(
   new AElf.providers.HttpProvider("https://tdvw-test-node.aelf.io")
@@ -126,5 +127,39 @@ export function useDeploy() {
 export function useTransactionResult() {
   return async (id: string) => {
     return await aelf.chain.getTxResult(id);
+  };
+}
+
+let cached: Record<string, any> = {};
+
+async function getProto(address: string) {
+  const key = aelf.currentProvider.host + "_" + address;
+  if (!cached[key])
+    cached[key] = await aelf.chain.getContractFileDescriptorSet(address);
+  return AElf.pbjs.Root.fromDescriptor(cached[key]);
+}
+
+export function useLogs() {
+  return async (txId: string) => {
+    try {
+      const txResult = await aelf.chain.getTxResult(txId);
+
+      const deserializeLogs = async () => {
+        const services = await Promise.all(
+          txResult.Logs.map(
+            async ({ Address }: { Address: string }) => await getProto(Address)
+          )
+        );
+
+        const deserializedLogs: Array<{ proposalId: string }> =
+          await deserializeLog(txResult.Logs, services);
+
+        return deserializedLogs.reduce((acc, cur) => ({ ...acc, ...cur }), {});
+      };
+
+      return await deserializeLogs();
+    } catch (err: unknown) {
+      return err;
+    }
   };
 }
