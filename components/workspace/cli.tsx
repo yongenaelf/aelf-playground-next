@@ -43,9 +43,9 @@ export default function Cli() {
       return "Build successful.";
     },
     deploy: async () => {
-      if (typeof id !== "string") throw new Error("id is not string");
+      if (typeof id !== "string") return "Workspace id not found.";
       const { dll } = (await db.workspaces.get(id)) || {};
-      if (!dll) throw new Error("dll not built.");
+      if (!dll) return "Contract not built. Please build first.";
       const { TransactionId } = await deploy(dll);
       try {
         const result: { TransactionId: string; Status: string } =
