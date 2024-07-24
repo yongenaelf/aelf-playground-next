@@ -12,8 +12,6 @@ export default function Cli() {
   const deploy = useDeploy();
   const getResult = useTransactionResult();
   const commands = {
-    whoami: "jackharper",
-    cd: (directory: string) => `changed path to ${directory}`,
     help: () => (
       <div>
         <p>These are the available commands:</p>
