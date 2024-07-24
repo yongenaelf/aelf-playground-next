@@ -9,6 +9,7 @@ interface File {
 interface Workspace {
   name: string;
   template: string;
+  dll: string;
 }
 
 const db = new Dexie("FileDatabase") as Dexie & {
@@ -17,9 +18,9 @@ const db = new Dexie("FileDatabase") as Dexie & {
 };
 
 // Schema declaration:
-db.version(1).stores({
+db.version(2).stores({
   files: "path, contents",
-  workspaces: "name, template",
+  workspaces: "name, template, dll",
 });
 
 export type { File as FileContent, Workspace };
