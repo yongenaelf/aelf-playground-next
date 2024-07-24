@@ -21,6 +21,9 @@ export default function Cli() {
           <li className="ml-8">clear - clears the terminal</li>
           <li className="ml-8">build - builds the current workspace</li>
           <li className="ml-8">deploy - deploys the built smart contract</li>
+          <li className="ml-8">
+            check txID - checks the result of transaction
+          </li>
         </ol>
       </div>
     ),
@@ -51,6 +54,15 @@ export default function Cli() {
         const result: { TransactionId: string; Status: string } =
           await getResult(TransactionId);
         return `TransactionId: ${TransactionId}, Status: ${result.Status}`;
+      } catch (err) {
+        return JSON.stringify(err, undefined, 2);
+      }
+    },
+    check: async (id: string) => {
+      if (!id) return `Please enter the Transaction ID.`;
+      try {
+        const result = await getResult(id);
+        return `TransactionId: ${id}, Status: ${result.Status}`;
       } catch (err) {
         return JSON.stringify(err, undefined, 2);
       }
