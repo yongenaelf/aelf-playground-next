@@ -115,17 +115,19 @@ export default function Cli() {
   const { theme, systemTheme } = useTheme();
 
   return (
-    <ReactTerminal
-      commands={commands}
-      prompt="#"
-      theme={theme !== "system" ? theme : systemTheme}
-      showControlBar={false}
-      welcomeMessage={
-        <div>
-          <p>Welcome to AElf Playground.</p>
-          <p>Type help to see all commands.</p>
-        </div>
-      }
-    />
+    <div className="h-full pb-8">
+      <ReactTerminal
+        commands={commands}
+        prompt="#"
+        theme={theme !== "system" ? theme : systemTheme}
+        showControlBar={false}
+        welcomeMessage={
+          <div>
+            <p>Welcome to AElf Playground.</p>
+            <p>Type help to see all commands.</p>
+          </div>
+        }
+      />
+    </div>
   );
 }

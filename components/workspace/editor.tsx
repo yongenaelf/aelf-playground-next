@@ -67,12 +67,13 @@ export default function Editor({ defaultValue }: { defaultValue?: string }) {
   }, [debouncedValue, pathname]);
 
   return (
-    <CodeMirror
-      value={value}
-      height="1000px"
-      theme={editorTheme}
-      extensions={extensions}
-      onChange={onChange}
-    />
+    <div className="h-full overflow-auto">
+      <CodeMirror
+        value={value}
+        theme={editorTheme}
+        extensions={extensions}
+        onChange={onChange}
+      />
+    </div>
   );
 }
