@@ -19,12 +19,14 @@ export function useWallet() {
     if (existingWallets.length === 0) {
       const newWallet = AElf.wallet.createNewWallet();
       await db.wallet.add({ privateKey: newWallet.privateKey });
-      await(
-        await fetch(
-          `https://faucet.aelf.dev/api/claim?walletAddress=${newWallet.address}`,
-          { method: "POST" }
-        )
-      ).json();
+      try {
+        await(
+          await fetch(
+            `https://faucet.aelf.dev/api/claim?walletAddress=${newWallet.address}`,
+            { method: "POST" }
+          )
+        ).json();
+      } catch (err) {}
       return newWallet.privateKey as string;
     } else {
       return existingWallets[0].privateKey;
