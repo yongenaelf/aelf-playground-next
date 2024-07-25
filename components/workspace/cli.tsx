@@ -2,12 +2,7 @@
 
 import { build } from "@/data/build";
 import { db } from "@/data/db";
-import {
-  getProposalInfo,
-  useDeploy,
-  useLogs,
-  useTransactionResult,
-} from "@/data/wallet";
+import { useWallet } from "@/data/wallet";
 import { useTheme } from "next-themes";
 import { useParams } from "next/navigation";
 import { ReactTerminal } from "react-terminal";
@@ -15,9 +10,7 @@ import { z } from "zod";
 
 export default function Cli() {
   const { id } = useParams();
-  const deploy = useDeploy();
-  const getResult = useTransactionResult();
-  const getLogs = useLogs();
+  const wallet = useWallet();
   const commands = {
     help: () => (
       <div>
@@ -54,10 +47,13 @@ export default function Cli() {
       if (typeof id !== "string") return "Workspace id not found.";
       const { dll } = (await db.workspaces.get(id)) || {};
       if (!dll) return "Contract not built. Please build first.";
-      const { TransactionId } = await deploy(dll);
+      if (!wallet) return "Wallet not ready.";
       try {
-        const result: { TransactionId: string; Status: string } =
-          await getResult(TransactionId);
+        await wallet.faucet();
+      } catch (err) {}
+      const { TransactionId } = await wallet.deploy(dll);
+      try {
+        const result = await wallet.getTxResult(TransactionId);
         return `TransactionId: ${TransactionId}, Status: ${result.Status}`;
       } catch (err) {
         return JSON.stringify(err, undefined, 2);
@@ -65,14 +61,16 @@ export default function Cli() {
     },
     check: async (id: string) => {
       if (!id) return `Please enter the Transaction ID.`;
+      if (!wallet) return "Wallet not ready.";
       try {
-        const result = await getResult(id);
-        const logs = await getLogs(id);
+        const result = await wallet.getTxResult(id);
+        const logs = await wallet.getLogs(id);
         const { data } = z.object({ proposalId: z.string() }).safeParse(logs);
-        const proposalInfo = await getProposalInfo(data?.proposalId);
+        if (!data?.proposalId) return "Missing proposalId.";
+        const proposalInfo = await wallet.getProposalInfo(data?.proposalId);
         const releasedTxId = proposalInfo?.data.proposal.releasedTxId;
         const releasedTxLogs = releasedTxId
-          ? await getLogs(releasedTxId)
+          ? await wallet.getLogs(releasedTxId)
           : undefined;
         const { data: contractAddressData } = z
           .object({ address: z.string() })

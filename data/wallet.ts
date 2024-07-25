@@ -32,142 +32,110 @@ export function useWallet() {
 
   if (!privateKey) return;
 
-  const wallet = AElf.wallet.getWalletByPrivateKey(privateKey);
-
-  return wallet;
+  return new Wallet(privateKey);
 }
 
-function useChainStatus() {
-  const { data } = useSWR("chainstatus", async () => {
+class Wallet {
+  privateKey;
+  wallet;
+  cached: Record<string, any> = {};
+
+  constructor(privateKey: string) {
+    this.privateKey = privateKey;
+    this.wallet = AElf.wallet.getWalletByPrivateKey(privateKey);
+  }
+
+  async faucet() {
+    const res = await fetch(
+      `https://faucet.aelf.dev/api/claim?walletAddress=${this.wallet.address}`,
+      { method: "POST" }
+    );
+
+    const data = await res.json();
+    console.log(data);
+  }
+
+  private async getChainStatus() {
     return await aelf.chain.getChainStatus();
-  });
+  }
 
-  return data as { GenesisContractAddress: string };
-}
+  private getContract(address: string) {
+    return aelf.chain.contractAt(address, this.wallet);
+  }
 
-function useContract(address: string) {
-  const wallet = useWallet();
-  const { data } = useSWR(
-    wallet && address ? `contract-${address}` : null,
-    async () => {
-      return await aelf.chain.contractAt(address, wallet);
-    }
-  );
+  private async getGenesisContract() {
+    const chainStatus = await this.getChainStatus();
+    return await this.getContract(chainStatus.GenesisContractAddress);
+  }
 
-  return data;
-}
+  private async getContractAddressByName(name: string) {
+    const genesisContract = await this.getGenesisContract();
+    return await genesisContract.GetContractAddressByName.call(
+      AElf.utils.sha256(name)
+    );
+  }
 
-function useContractAddressByName(name: string) {
-  const chainStatus = useChainStatus();
-  const genesisContract = useContract(chainStatus.GenesisContractAddress);
+  private async getTokenContractAddress() {
+    return await this.getContractAddressByName(`AElf.ContractNames.Token`);
+  }
 
-  const { data } = useSWR(
-    genesisContract ? `${name}-address` : null,
-    async () => {
-      return await genesisContract.GetContractAddressByName.call(
-        AElf.utils.sha256(name)
-      );
-    }
-  );
+  private async getTokenContract() {
+    const tokenContractAddress = await this.getTokenContractAddress();
 
-  return data;
-}
+    return this.getContract(tokenContractAddress);
+  }
 
-function useTokenContractAddress() {
-  return useContractAddressByName(`AElf.ContractNames.Token`);
-}
+  async getBalance() {
+    const tokenContract = await this.getTokenContract();
+    const res = await tokenContract.GetBalance.call({
+      symbol: "ELF",
+      owner: this.wallet.address,
+    });
 
-export function useTokenContract() {
-  const tokenContractAddress = useTokenContractAddress();
-  return useContract(tokenContractAddress);
-}
+    return new BigNumber(res.balance).dividedBy(10 ** 8).toFixed(5);
+  }
 
-function useBalance() {
-  const tokenContract = useTokenContract();
-  const wallet = useWallet();
-  const { data } = useSWR(
-    tokenContract && wallet ? `balance` : null,
-    async () => {
-      return await tokenContract.GetBalance.call({
-        symbol: "ELF",
-        owner: wallet.address,
-      });
-    }
-  );
+  async deploy(code: string): Promise<{ TransactionId: string }> {
+    const genesisContract = await this.getGenesisContract();
 
-  return data as {
-    symbol: string;
-    owner: string;
-    balance: string;
-  };
-}
-
-export function useBalanceInELF() {
-  const balance = useBalance();
-  return new BigNumber(balance.balance).dividedBy(10 ** 8).toFixed(5);
-}
-
-function useGenesisContract() {
-  const chainstatus = useChainStatus();
-  return useContract(chainstatus?.GenesisContractAddress);
-}
-
-export function useDeploy() {
-  const genesisContract = useGenesisContract();
-
-  const deploy = async (code: string) => {
-    return (await genesisContract.DeployUserSmartContract({
+    return await genesisContract.DeployUserSmartContract({
       category: 0,
       code,
-    })) as { TransactionId: string };
-  };
+    });
+  }
 
-  return deploy;
-}
-
-export function useTransactionResult() {
-  return async (id: string) => {
+  async getTxResult(
+    id: string
+  ): Promise<{ TransactionId: string; Status: string }> {
     return await aelf.chain.getTxResult(id);
-  };
-}
+  }
 
-let cached: Record<string, any> = {};
+  private async getProto(address: string) {
+    const key = aelf.currentProvider.host + "_" + address;
+    if (!this.cached[key])
+      this.cached[key] = await aelf.chain.getContractFileDescriptorSet(address);
+    return AElf.pbjs.Root.fromDescriptor(this.cached[key]);
+  }
 
-async function getProto(address: string) {
-  const key = aelf.currentProvider.host + "_" + address;
-  if (!cached[key])
-    cached[key] = await aelf.chain.getContractFileDescriptorSet(address);
-  return AElf.pbjs.Root.fromDescriptor(cached[key]);
-}
+  async getLogs(txId: string) {
+    const txResult = await aelf.chain.getTxResult(txId);
 
-export function useLogs() {
-  return async (txId: string) => {
-    try {
-      const txResult = await aelf.chain.getTxResult(txId);
+    const services = await Promise.all(
+      txResult.Logs.map(
+        async ({ Address }: { Address: string }) => await this.getProto(Address)
+      )
+    );
 
-      const deserializeLogs = async () => {
-        const services = await Promise.all(
-          txResult.Logs.map(
-            async ({ Address }: { Address: string }) => await getProto(Address)
-          )
-        );
+    const deserializedLogs: Array<{ proposalId: string }> =
+      await deserializeLog(txResult.Logs, services);
 
-        const deserializedLogs: Array<{ proposalId: string }> =
-          await deserializeLog(txResult.Logs, services);
+    return deserializedLogs.reduce((acc, cur) => ({ ...acc, ...cur }), {});
+  }
 
-        return deserializedLogs.reduce((acc, cur) => ({ ...acc, ...cur }), {});
-      };
+  async getProposalInfo(proposalId: string) {
+    const res = await fetch(`/api/get-proposal-info?id=${proposalId}`);
+    const data: ProposalInfo = await res.json();
 
-      return await deserializeLogs();
-    } catch (err: unknown) {
-      return err;
-    }
-  };
-}
-
-export async function getProposalInfo(proposalId?: string) {
-  const res = await fetch(`/api/get-proposal-info?id=${proposalId}`);
-  const data: ProposalInfo = await res.json();
-
-  return data;
+    return data;
+  }
 }
