@@ -8,14 +8,10 @@ ENV NODE_ENV production
 
 COPY ./public ./public
 
-# Set the correct permission for prerender cache
-RUN mkdir .next
-RUN chown node:node .next
-
 # Automatically leverage output traces to reduce image size
 # https://nextjs.org/docs/advanced-features/output-file-tracing
-COPY --chown=node:node ./.next/standalone ./
-COPY --chown=node:node ./.next/static ./.next/static
+COPY ./.next/standalone ./
+COPY ./.next/static ./.next/static
 
 ENV HOSTNAME=0.0.0.0
 
