@@ -31,6 +31,7 @@
     "aelf-sdk": "^3.4.14-beta.1",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
+    "date-fns": "^3.6.0",
     "dexie": "^4.0.8",
     "dexie-react-hooks": "^1.1.7",
     "fflate": "^0.8.2",

@@ -6,6 +6,7 @@ import { db } from "./db";
 import AElf from "aelf-sdk";
 import BigNumber from "bignumber.js";
 import { ProposalInfo } from "./proposal-info-types";
+import { Transactions } from "./transactions-types";
 const { deserializeLog } = AElf.pbUtils;
 
 const aelf = new AElf(
@@ -132,7 +133,10 @@ class Wallet {
     const deserializedLogs: Array<{ proposalId: string }> =
       await deserializeLog(txResult.Logs, services);
 
-    return deserializedLogs.reduce((acc, cur) => ({ ...acc, ...cur }), {});
+    return deserializedLogs.reduce(
+      (acc, cur) => ({ ...acc, ...cur }),
+      {} as Record<string, string>
+    );
   }
 
   async getProposalInfo(proposalId: string) {
@@ -140,5 +144,14 @@ class Wallet {
     const data: ProposalInfo = await res.json();
 
     return data;
+  }
+
+  async getTransactions() {
+    const res = await fetch(
+      `/api/get-transactions?address=${this.wallet.address}`
+    );
+    const { transactions }: { transactions: Transactions } = await res.json();
+
+    return transactions;
   }
 }
