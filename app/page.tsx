@@ -61,7 +61,7 @@ export default function Home() {
       <div className="container grid items-center justify-center gap-8 px-4 md:px-6">
         <div className="space-y-4 text-center">
           <div className="inline-block rounded-lg bg-primary px-3 py-1 text-sm text-primary-foreground">
-            AElf Playground
+            aelf Playground
           </div>
           <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">
             Get started coding smart contracts.

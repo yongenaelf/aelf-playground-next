@@ -25,7 +25,7 @@ export default function TopMenu() {
     <header className="sticky top-0 z-50 w-full bg-background shadow-sm transition-colors dark:bg-background-dark">
       <div className="container mx-auto flex h-16 items-center justify-between px-4 md:px-6">
         <Link href="/" className="text-lg font-semibold">
-          AElf Playground
+          aelf Playground
         </Link>
         <nav className="hidden space-x-4 md:flex">
           {links.map((link) => (

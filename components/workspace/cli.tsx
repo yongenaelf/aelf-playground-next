@@ -123,7 +123,7 @@ export default function Cli() {
         showControlBar={false}
         welcomeMessage={
           <div>
-            <p>Welcome to AElf Playground.</p>
+            <p>Welcome to aelf Playground.</p>
             <p>Type help to see all commands.</p>
           </div>
         }
