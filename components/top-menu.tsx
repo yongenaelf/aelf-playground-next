@@ -37,14 +37,30 @@ export default function TopMenu() {
           ))}
         </nav>
         <div className="flex items-center space-x-4">
-          <ToggleGroup type="single" value={theme} onValueChange={setTheme}>
-            <ToggleGroupItem value="system" aria-label="Toggle system">
+          <ToggleGroup
+            type="single"
+            value={theme}
+            onValueChange={(e) => (e ? setTheme(e) : null)}
+          >
+            <ToggleGroupItem
+              value="system"
+              aria-label="Toggle system"
+              title="Toggle system"
+            >
               <SunMoonIcon className="h-5 w-5 transition-colors" />
             </ToggleGroupItem>
-            <ToggleGroupItem value="light" aria-label="Toggle light">
+            <ToggleGroupItem
+              value="light"
+              aria-label="Toggle light"
+              title="Toggle light"
+            >
               <SunIcon className="h-5 w-5 transition-colors" />
             </ToggleGroupItem>
-            <ToggleGroupItem value="dark" aria-label="Toggle dark">
+            <ToggleGroupItem
+              value="dark"
+              aria-label="Toggle dark"
+              title="Toggle dark"
+            >
               <MoonIcon className="h-5 w-5 transition-colors" />
             </ToggleGroupItem>
           </ToggleGroup>
