@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
-import { PropsWithChildren } from "react";
+import { PropsWithChildren, Suspense } from "react";
 import TopMenu from "@/components/top-menu";
 import clsx from "clsx";
 import { GoogleAnalytics } from "@next/third-parties/google";
@@ -32,7 +32,9 @@ export default function RootLayout({ children }: PropsWithChildren) {
           disableTransitionOnChange
         >
           <TopMenu />
-          <main className="h-[calc(100vh-66px)] overflow-auto">{children}</main>
+          <main className="h-[calc(100vh-66px)] overflow-auto">
+            <Suspense>{children}</Suspense>
+          </main>
         </ThemeProvider>
       </body>
       {gaId ? <GoogleAnalytics gaId={gaId} /> : null}

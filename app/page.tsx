@@ -6,6 +6,7 @@ import {
 } from "@radix-ui/react-icons";
 import Link from "next/link";
 import { ReactNode } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 function HomeCard({
   title,
@@ -32,7 +33,6 @@ function HomeCard({
 }
 
 export default function Home() {
-
   const links = [
     {
       title: "Hello World",
@@ -84,17 +84,17 @@ export default function Home() {
         <h3 className="text-xl font-bold">... or generate from a prompt:</h3>
         <div className="grid w-full max-w-3xl grid-cols-1 gap-6 md:grid-cols-2">
           <div className="rounded-lg border bg-background p-6 shadow-sm">
-            <img
-              src="/placeholder.svg"
-              width={400}
-              height={225}
-              alt="Deepchat here"
-              className="aspect-video object-cover rounded-md"
-            />
+            <div className="flex flex-col space-y-3">
+              <Skeleton className="h-[125px] w-[250px] rounded-xl" />
+              <div className="space-y-2">
+                <Skeleton className="h-4 w-[250px]" />
+                <Skeleton className="h-4 w-[200px]" />
+              </div>
+            </div>
           </div>
           <div className="space-y-4">
             <h4 className="text-2xl font-bold">DeepChat AI</h4>
-            <p className="text-muted-foreground">Some description.</p>
+            <p className="text-muted-foreground">Coming soon.</p>
           </div>
         </div>
       </div>

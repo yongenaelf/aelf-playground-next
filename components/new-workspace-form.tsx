@@ -26,6 +26,7 @@ import {
 } from "@/components/ui/select";
 import { useRouter } from "next/navigation";
 import { db } from "@/data/db";
+import { Loader2 } from "lucide-react";
 
 const FormSchema = z.object({
   name: z.string().min(2, {
@@ -128,7 +129,16 @@ export function WorkspaceForm({
             </FormItem>
           )}
         />
-        <Button type="submit">Submit</Button>
+        <Button type="submit" disabled={form.formState.isSubmitting}>
+          {form.formState.isSubmitting ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Please wait
+            </>
+          ) : (
+            "Submit"
+          )}
+        </Button>
       </form>
     </Form>
   );
