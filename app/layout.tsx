@@ -5,6 +5,8 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { PropsWithChildren } from "react";
 import TopMenu from "@/components/top-menu";
 import clsx from "clsx";
+import { GoogleAnalytics } from "@next/third-parties/google";
+import { getGoogleAnalyticsTag } from "@/lib/env";
 
 const font = Poppins({
   weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
@@ -17,6 +19,8 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: PropsWithChildren) {
+  const gaId = getGoogleAnalyticsTag();
+
   return (
     <html lang="en">
       <body className={clsx(font.className, "overflow-hidden")}>
@@ -30,6 +34,7 @@ export default function RootLayout({ children }: PropsWithChildren) {
           <main className="h-[calc(100vh-66px)] overflow-auto">{children}</main>
         </ThemeProvider>
       </body>
+      {gaId ? <GoogleAnalytics gaId={gaId} /> : null}
     </html>
   );
 }
