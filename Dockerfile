@@ -19,8 +19,8 @@ RUN chown nextjs:nodejs .next
 
 # Automatically leverage output traces to reduce image size
 # https://nextjs.org/docs/advanced-features/output-file-tracing
-COPY --chown=nextjs:nodejs ./.next/standalone ./
-COPY --chown=nextjs:nodejs ./.next/static ./.next/static
+COPY --chown=nextjs:nodejs --chmod=755 ./.next/standalone ./
+COPY --chown=nextjs:nodejs --chmod=755 ./.next/static ./.next/static
 
 USER nextjs
 
