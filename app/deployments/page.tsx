@@ -26,7 +26,7 @@ export default function Page() {
       <Table className="mb-8">
         <TableHeader>
           <TableRow>
-            <TableHead>Date and time</TableHead>
+            <TableHead className="w-1/3">Date and time</TableHead>
             <TableHead>Contract Address</TableHead>
           </TableRow>
         </TableHeader>

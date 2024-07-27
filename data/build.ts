@@ -32,6 +32,7 @@ export async function build(files: FileContent[]) {
     `${getBuildServerBaseUrl()}/playground/build`,
     requestInit
   );
+
   if (!response.ok) {
     const { message } = await response.json();
     throw new Error(message);

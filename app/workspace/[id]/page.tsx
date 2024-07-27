@@ -1,6 +1,8 @@
 "use client";
 
+import { BuildDeployPanel } from "@/components/build-deploy-panel";
 import TopBottom from "@/components/top-bottom";
+import { Button } from "@/components/ui/button";
 import {
   ResizablePanelGroup,
   ResizablePanel,
@@ -14,20 +16,16 @@ import { TerminalContextProvider } from "react-terminal";
 export default function Page() {
   return (
     <ResizablePanelGroup direction="horizontal" className="border">
-      <ResizablePanel defaultSize={25}>
-        <TopBottom top={<FileExplorer />} bottom={<p>Chat component</p>} />
-      </ResizablePanel>
-      <ResizableHandle />
-      <ResizablePanel defaultSize={75}>
-        <TopBottom
-          top={<Editor />}
-          bottom={
-            <TerminalContextProvider>
-              <Cli />
-            </TerminalContextProvider>
-          }
-        />
-      </ResizablePanel>
+      <TerminalContextProvider>
+        <ResizablePanel defaultSize={25}>
+          <BuildDeployPanel />
+          <FileExplorer />
+        </ResizablePanel>
+        <ResizableHandle />
+        <ResizablePanel defaultSize={75}>
+          <TopBottom top={<Editor />} bottom={<Cli />} />
+        </ResizablePanel>
+      </TerminalContextProvider>
     </ResizablePanelGroup>
   );
 }
