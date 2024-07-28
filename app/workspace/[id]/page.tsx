@@ -2,7 +2,6 @@
 
 import { BuildDeployPanel } from "@/components/build-deploy-panel";
 import TopBottom from "@/components/top-bottom";
-import { Button } from "@/components/ui/button";
 import {
   ResizablePanelGroup,
   ResizablePanel,

@@ -1,11 +1,11 @@
-"use server";
-
+import { FileContent } from "@/data/db";
 import { getBuildServerBaseUrl } from "@/lib/env";
 import { strToU8, Zippable, zipSync } from "fflate";
-import { FileContent } from "./db";
+import { type NextRequest } from "next/server";
 import { v4 as uuidv4 } from "uuid";
 
-export async function build(files: FileContent[]) {
+export async function POST(request: NextRequest) {
+  const { files } = (await request.json()) as { files: FileContent[] };
   const data: Zippable = files.reduce((acc, { path, contents }) => {
     acc[path] = strToU8(contents);
 
@@ -35,8 +35,8 @@ export async function build(files: FileContent[]) {
 
   if (!response.ok) {
     const { message } = await response.json();
-    throw new Error(message);
+    return Response.json({ error: message }, { status: response.status });
   }
 
-  return await response.text();
+  return Response.json({ dll: await response.text() });
 }

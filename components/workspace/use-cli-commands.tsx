@@ -1,4 +1,3 @@
-import { build } from "@/data/build";
 import { db } from "@/data/db";
 import { useWallet } from "@/data/wallet";
 import { Loader2 } from "lucide-react";
@@ -57,9 +56,13 @@ export function useCliCommands() {
       );
 
       try {
-        const str = await build(files);
-        if (typeof str === "string") {
-          await db.workspaces.update(id, { dll: str });
+        const res = await fetch(`/api/build`, {
+          method: "POST",
+          body: JSON.stringify({ files }),
+        });
+        const { dll, error } = await res.json();
+        if (typeof dll === "string") {
+          await db.workspaces.update(id, { dll });
           terminalContext.setBufferedContent(
             <>
               <p>Build successful.</p>
@@ -70,7 +73,7 @@ export function useCliCommands() {
           terminalContext.setBufferedContent(
             <>
               {terminalContext.bufferedContent}
-              <p>Build failed.</p>
+              <p>{error}</p>
             </>
           );
           return;
