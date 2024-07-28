@@ -24,7 +24,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { db } from "@/data/db";
 import { Loader2 } from "lucide-react";
 
@@ -41,11 +41,12 @@ export function WorkspaceForm({
   templateOptions: string[];
   onSubmit?: () => void;
 }) {
+  const searchParams = useSearchParams();
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
       name: "",
-      template: "",
+      template: searchParams.get("template") || "",
     },
   });
 

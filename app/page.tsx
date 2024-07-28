@@ -12,23 +12,27 @@ function HomeCard({
   title,
   subtitle,
   icon,
+  template,
 }: {
   title: string;
   subtitle: string;
   icon: ReactNode;
+  template: string;
 }) {
   return (
-    <div className="rounded-lg border bg-background p-6 shadow-sm">
-      <div className="flex items-center justify-between">
-        <div className="space-y-1">
-          <h4 className="text-lg font-semibold">{title}</h4>
-          <p className="text-muted-foreground">{subtitle}</p>
-        </div>
-        <div className="bg-primary rounded-full p-2 text-primary-foreground">
-          {icon}
+    <Link href={`/workspaces?template=${template}`}>
+      <div className="rounded-lg border bg-background p-6 shadow-sm">
+        <div className="flex items-center justify-between">
+          <div className="space-y-1">
+            <h4 className="text-lg font-semibold">{title}</h4>
+            <p className="text-muted-foreground">{subtitle}</p>
+          </div>
+          <div className="bg-primary rounded-full p-2 text-primary-foreground">
+            {icon}
+          </div>
         </div>
       </div>
-    </div>
+    </Link>
   );
 }
 
@@ -38,21 +42,25 @@ export default function Home() {
       title: "Hello World",
       subtitle: "The basics.",
       icon: <GlobeIcon className="h-6 w-6" />,
+      template: "aelf",
     },
     {
       title: "Lottery",
       subtitle: "Medium difficulty.",
       icon: <TargetIcon className="h-6 w-6" />,
+      template: "aelf-lottery",
     },
     {
       title: "NFT",
       subtitle: "Non-fungible tokens.",
       icon: <TokensIcon className="h-6 w-6" />,
+      template: "aelf-nft-sale",
     },
     {
       title: "Simple DAO",
       subtitle: "Decentralised Autonomous Org.",
       icon: <PersonIcon className="h-6 w-6" />,
+      template: "aelf-simple-dao",
     },
   ];
 
@@ -73,13 +81,11 @@ export default function Home() {
           </p>
         </div>
         <h3 className="text-xl font-bold">Choose from a template...</h3>
-        <Link href="/workspaces">
-          <div className="grid w-full max-w-3xl grid-cols-1 gap-6 md:grid-cols-2">
-            {links.map((link) => (
-              <HomeCard key={link.title} {...link} />
-            ))}
-          </div>
-        </Link>
+        <div className="grid w-full max-w-3xl grid-cols-1 gap-6 md:grid-cols-2">
+          {links.map((link) => (
+            <HomeCard key={link.title} {...link} />
+          ))}
+        </div>
 
         <h3 className="text-xl font-bold">... or generate from a prompt:</h3>
         <div className="grid w-full max-w-3xl grid-cols-1 gap-6 md:grid-cols-2">
