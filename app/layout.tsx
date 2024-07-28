@@ -30,6 +30,7 @@ export default function RootLayout({ children }: PropsWithChildren) {
           defaultTheme="system"
           enableSystem
           disableTransitionOnChange
+          storageKey="next-theme"
         >
           <TopMenu />
           <main className="h-[calc(100vh-66px)] overflow-auto">
