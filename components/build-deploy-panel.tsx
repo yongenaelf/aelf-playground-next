@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Button } from "./ui/button";
 import { useCliCommands } from "./workspace/use-cli-commands";
-import useSWR from "swr";
+import useSWR, { mutate } from "swr";
 import { useParams } from "next/navigation";
 import { db } from "@/data/db";
 
@@ -27,9 +27,9 @@ export function BuildDeployPanel() {
         disabled={isBuilding}
         onClick={async () => {
           try {
-            setIsDeploying(false);
             setIsBuilding(true);
             await commands.build();
+            mutate(`deployable-${id}`);
           } catch (err) {
           } finally {
             setIsBuilding(false);
@@ -39,7 +39,7 @@ export function BuildDeployPanel() {
         Build
       </Button>
       <Button
-        disabled={isBuilding || !isDeployable || isDeploying}
+        disabled={!isDeployable || isDeploying}
         onClick={async () => {
           try {
             setIsDeploying(true);
