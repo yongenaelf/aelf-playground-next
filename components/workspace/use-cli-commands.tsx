@@ -1,11 +1,10 @@
+import { useLogs, useProposalInfo, useTransactionResult } from "@/data/client";
 import { db } from "@/data/db";
 import { useWallet } from "@/data/wallet";
 import { Loader2 } from "lucide-react";
-import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useContext } from "react";
 import { TerminalContext } from "react-terminal";
-import { z } from "zod";
 
 export function useCliCommands() {
   const terminalContext = useContext(TerminalContext);
@@ -111,80 +110,73 @@ export function useCliCommands() {
         return;
       }
       const { TransactionId } = await wallet.deploy(dll);
-      try {
-        const result = await wallet.getTxResult(TransactionId);
-        terminalContext.setBufferedContent(
-          <>
-            <p>TransactionId: {TransactionId}</p>
-            <p>Status: {result.Status}</p>
-            <p>
-              <Link href="/deployments">See all deployments</Link>
-            </p>
-          </>
-        );
-        return;
-      } catch (err) {
-        terminalContext.setBufferedContent(
-          <>
-            {JSON.stringify(err, undefined, 2)}
-            <br />
-          </>
-        );
-        return;
-      }
+      terminalContext.setBufferedContent(
+        <>
+          <p>TransactionId: {TransactionId}</p>
+          <Deployment id={TransactionId} />
+        </>
+      );
     },
     check: async (id: string) => {
       if (!id) return `Please enter the Transaction ID.`;
       if (!wallet) return "Wallet not ready.";
-      try {
-        const result = await wallet.getTxResult(id);
-        const logs = await wallet.getLogs(id);
-        const { data } = z.object({ proposalId: z.string() }).safeParse(logs);
-        if (!data?.proposalId) return "Missing proposalId.";
-        const proposalInfo = await wallet.getProposalInfo(data?.proposalId);
-        const releasedTxId = proposalInfo?.data.proposal.releasedTxId;
-        const releasedTxLogs = releasedTxId
-          ? await wallet.getLogs(releasedTxId)
-          : undefined;
-        const { data: contractAddressData } = z
-          .object({ address: z.string() })
-          .safeParse(releasedTxLogs);
-
-        return (
-          <>
-            <table className="mt-4">
-              <tr>
-                <td className="pr-4">TransactionId:</td>
-                <td>{id}</td>
-              </tr>
-              <tr>
-                <td>Status:</td>
-                <td>{result.Status}</td>
-              </tr>
-              <tr>
-                <td>ProposalId:</td>
-                <td>{data?.proposalId}</td>
-              </tr>
-              <tr>
-                <td>Proposal Status:</td>
-                <td>{proposalInfo?.data.proposal.status}</td>
-              </tr>
-              <tr>
-                <td>Contract Address:</td>
-                <td>
-                  {proposalInfo?.data.proposal.status === "released"
-                    ? contractAddressData?.address
-                    : "-"}
-                </td>
-              </tr>
-            </table>
-          </>
-        );
-      } catch (err) {
-        return JSON.stringify(err, undefined, 2);
-      }
+      terminalContext.setBufferedContent(
+        <>
+          <p>TransactionId: {id}</p>
+          <Deployment id={id} />
+        </>
+      );
     },
   };
 
   return commands;
+}
+
+function Deploying() {
+  return (
+    <p>
+      <Loader2 className="h-4 w-4 animate-spin inline" /> Deploying...
+    </p>
+  );
+}
+
+function Deployment({ id }: { id: string }) {
+  const { data } = useTransactionResult(id);
+
+  if (!data)
+    return (
+      <>
+        <Deploying />
+      </>
+    );
+  if (data.Status === "PENDING") return <Deploying />;
+
+  return <CheckProposalInfo id={id} />;
+}
+
+function CheckProposalInfo({ id }: { id: string }) {
+  const { data } = useLogs(id);
+  const { proposalId } = data || {};
+
+  const { data: proposalInfo } = useProposalInfo(proposalId);
+  const { status, releasedTxId } = proposalInfo?.proposal || {};
+
+  return (
+    <>
+      <p>Proposal status: {status || "pending"}</p>
+      {status === "released" ? (
+        <DeployedContractDetails id={releasedTxId} />
+      ) : (
+        <Deploying />
+      )}
+    </>
+  );
+}
+
+function DeployedContractDetails({ id }: { id?: string }) {
+  const { data } = useLogs(id);
+
+  if (!data) return <Deploying />;
+
+  return <p>Contract Address: {data.address}</p>;
 }

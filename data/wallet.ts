@@ -2,14 +2,13 @@
 
 import useSWR from "swr";
 import { db } from "./db";
-// @ts-ignore
 import AElf from "aelf-sdk";
 import BigNumber from "bignumber.js";
 import { ProposalInfo } from "./proposal-info-types";
 import { Transactions } from "./transactions-types";
 const { deserializeLog } = AElf.pbUtils;
 
-const aelf = new AElf(
+export const aelf = new AElf(
   new AElf.providers.HttpProvider("https://tdvw-test-node.aelf.io")
 );
 
