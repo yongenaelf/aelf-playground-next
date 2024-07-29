@@ -33,7 +33,7 @@ export function RepoUrlForm() {
   async function onSubmit(data: z.infer<typeof FormSchema>) {
     form.clearErrors();
     try {
-      await router.push(`/${data.url}`);
+      await router.push(`/${data.url.replace("https://", "")}`);
     } catch (err) {
       form.setError("url", { message: String(err) });
     }
