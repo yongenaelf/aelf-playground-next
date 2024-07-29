@@ -7,6 +7,7 @@ import {
 import Link from "next/link";
 import { ReactNode } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { RepoUrlForm } from "@/components/repo-url-form";
 
 function HomeCard({
   title,
@@ -81,14 +82,15 @@ export default function Home() {
           </p>
         </div>
         <h3 className="text-xl font-bold">Choose from a template...</h3>
-        <div className="grid w-full max-w-3xl grid-cols-1 gap-6 md:grid-cols-2">
+        <div className="grid w-full grid-cols-1 gap-6 md:grid-cols-2">
           {links.map((link) => (
             <HomeCard key={link.title} {...link} />
           ))}
         </div>
-
+        <h3 className="text-xl font-bold">... enter a GitHub repo url:</h3>
+        <RepoUrlForm />
         <h3 className="text-xl font-bold">... or generate from a prompt:</h3>
-        <div className="grid w-full max-w-3xl grid-cols-1 gap-6 md:grid-cols-2">
+        <div className="grid w-full grid-cols-1 gap-6 md:grid-cols-2">
           <div className="rounded-lg border bg-background p-6 shadow-sm">
             <div className="flex flex-col space-y-3">
               <Skeleton className="h-[125px] w-[250px] rounded-xl" />

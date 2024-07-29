@@ -10,7 +10,7 @@ import {
 import { db } from "@/data/db";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import useSWR from "swr";
 
 type TOCProps = {
   toc: TreeViewElement[];
@@ -96,23 +96,22 @@ function convert(data: string[]) {
 
 const FileExplorer = () => {
   const { id } = useParams();
-  const [paths, setPaths] = useState<string[]>([]);
 
-  useEffect(() => {
-    (async () => {
-      const files = await db.files.filter((file) =>
-        file.path.startsWith(`/workspace/${id}`)
-      );
-      const filesArray = await files.toArray();
-      setPaths(
-        filesArray.map((i) =>
-          decodeURIComponent(i.path.replace(`/workspace/${id}/`, ""))
-        )
-      );
-    })();
-  }, [id]);
+  const { data: toc } = useSWR(`file-explorer-${id}`, async () => {
+    const files = await db.files.filter((file) =>
+      file.path.startsWith(`/workspace/${id}`)
+    );
+    const filesArray = await files.toArray();
+    return convert(
+      filesArray.map((i) =>
+        decodeURIComponent(i.path.replace(`/workspace/${id}/`, ""))
+      )
+    );
+  });
 
-  return <TOC toc={convert(paths)} pathname={`/workspace/${id}`} />;
+  if (!toc) return <p>Loading...</p>;
+
+  return <TOC toc={toc} pathname={`/workspace/${id}`} />;
 };
 
 export default FileExplorer;
