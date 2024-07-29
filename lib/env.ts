@@ -13,3 +13,7 @@ export function getBuildServerBaseUrl() {
 export function getGoogleAnalyticsTag() {
   return getEnv("GA_TAG");
 }
+
+export function getGitHubToken() {
+  return getEnv("GITHUB_API_KEY");
+}
