@@ -1,7 +1,6 @@
 "use client";
 
 import { useWallet } from "@/data/wallet";
-import useSWR from "swr";
 import {
   Table,
   TableBody,
@@ -12,13 +11,11 @@ import {
 } from "@/components/ui/table";
 import { format } from "date-fns";
 import Link from "next/link";
+import { useLogs, useProposalInfo, useTransactions } from "@/data/client";
 
 export default function Page() {
   const wallet = useWallet();
-  const { data } = useSWR(
-    wallet ? `${wallet.wallet.address}-transactions` : undefined,
-    () => wallet?.getTransactions()
-  );
+  const { data } = useTransactions(wallet?.wallet.address);
 
   return (
     <div className="container px-4 py-12 md:px-6 lg:py-16">
@@ -27,7 +24,8 @@ export default function Page() {
         <TableHeader>
           <TableRow>
             <TableHead className="w-1/3">Date and time</TableHead>
-            <TableHead>Contract Address</TableHead>
+            <TableHead className="w-1/3">Contract Address</TableHead>
+            <TableHead className="w-1/3">Proposal</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -40,6 +38,9 @@ export default function Page() {
                   <TableCell>
                     <ContractAddress id={i.tx_id} />
                   </TableCell>
+                  <TableCell>
+                    <Proposal id={i.tx_id} />
+                  </TableCell>
                 </TableRow>
               ))
           ) : (
@@ -51,35 +52,34 @@ export default function Page() {
       </Table>
       <h1 className="text-2xl mb-2">Wallet information</h1>
       <p>
-        Wallet address: <ViewOnExplorer address={wallet?.wallet.address} />
+        Wallet address:{" "}
+        <ViewAddressOnExplorer address={wallet?.wallet.address} />
       </p>
     </div>
   );
 }
 
-function ContractAddress({ id }: { id: string }) {
-  const wallet = useWallet();
+function Proposal({ id }: { id: string }) {
+  const { data, isLoading, error } = useLogs(id);
 
-  const { data, error, isLoading } = useSWR(
-    wallet ? `${id}-contract-address` : undefined,
-    async () => {
-      if (!wallet) return;
-      const logs = await wallet.getLogs(id);
-      if (typeof logs.proposalId !== "string") return;
-      const proposalInfo = await wallet.getProposalInfo(logs.proposalId);
-      const txId = proposalInfo.data.proposal.releasedTxId;
-      const txResult = await wallet.getLogs(txId);
-      return txResult.address;
-    }
-  );
+  if (isLoading) return <span>Loading...</span>;
+  if (error || !data || !data.proposalId) return <span>-</span>;
+
+  return <ViewProposalOnExplorer id={data.proposalId} />;
+}
+
+function ContractAddress({ id }: { id: string }) {
+  const { data: logs } = useLogs(id);
+  const { data: info } = useProposalInfo(logs?.proposalId);
+  const { data, isLoading, error } = useLogs(info?.proposal.releasedTxId);
 
   if (isLoading) return <span>Loading...</span>;
   if (error || !data) return <span>-</span>;
 
-  return <ViewOnExplorer address={data} />;
+  return <ViewAddressOnExplorer address={data.address} />;
 }
 
-function ViewOnExplorer({ address }: { address: string }) {
+function ViewAddressOnExplorer({ address }: { address: string }) {
   return (
     <Link
       className="hover:underline"
@@ -89,6 +89,20 @@ function ViewOnExplorer({ address }: { address: string }) {
       rel="noopener noreferrer"
     >
       AELF_{address}_tDVW
+    </Link>
+  );
+}
+
+function ViewProposalOnExplorer({ id }: { id: string }) {
+  return (
+    <Link
+      className="hover:underline"
+      href={`https://explorer-test-side02.aelf.io/proposal/proposalsDetail/${id}`}
+      title="View on Explorer"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      {id}
     </Link>
   );
 }

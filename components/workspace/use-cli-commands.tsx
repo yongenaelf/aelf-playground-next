@@ -1,9 +1,10 @@
+"use client";
 import { useLogs, useProposalInfo, useTransactionResult } from "@/data/client";
 import { db } from "@/data/db";
 import { useWallet } from "@/data/wallet";
 import { Loader2 } from "lucide-react";
 import { useParams } from "next/navigation";
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import { TerminalContext } from "react-terminal";
 
 export function useCliCommands() {
@@ -141,25 +142,49 @@ function Deploying() {
 }
 
 function Deployment({ id }: { id: string }) {
-  const { data } = useTransactionResult(id);
+  const [shouldPoll, setShouldPoll] = useState(true);
+  const { data, error } = useTransactionResult(
+    id,
+    shouldPoll ? 1000 : undefined
+  );
+  const { Status } = data || {};
 
-  if (!data)
-    return (
-      <>
-        <Deploying />
-      </>
-    );
-  if (data.Status === "PENDING") return <Deploying />;
+  useEffect(() => {
+    if (Status === "MINED" || !!error) setShouldPoll(false);
+  }, [Status, error]);
 
-  return <CheckProposalInfo id={id} />;
+  if (error) return <p>Error: {error.Error}</p>;
+  if (!data || Status === "PENDING") return <Deploying />;
+
+  return <CheckProposalId id={id} />;
+}
+
+function CheckProposalId({ id }: { id: string }) {
+  const [shouldPoll, setShouldPoll] = useState(true);
+  const { data } = useLogs(id, shouldPoll ? 1000 : undefined);
+  const { proposalId } = data || {};
+
+  useEffect(() => {
+    if (proposalId) setShouldPoll(false);
+  }, [proposalId]);
+
+  if (!proposalId) return <Deploying />;
+
+  return <CheckProposalInfo id={proposalId} />;
 }
 
 function CheckProposalInfo({ id }: { id: string }) {
-  const { data } = useLogs(id);
-  const { proposalId } = data || {};
+  const [shouldPoll, setShouldPoll] = useState(true);
 
-  const { data: proposalInfo } = useProposalInfo(proposalId);
+  const { data: proposalInfo } = useProposalInfo(
+    id,
+    shouldPoll ? 1000 : undefined
+  );
   const { status, releasedTxId } = proposalInfo?.proposal || {};
+
+  useEffect(() => {
+    if (status === "expired" || status === "released") setShouldPoll(false);
+  }, [status]);
 
   return (
     <>

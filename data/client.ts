@@ -1,9 +1,15 @@
+"use client";
+
 import useSWR from "swr";
 import { db } from "./db";
-import { aelf } from "./wallet";
 import { ProposalInfo } from "./proposal-info-types";
 import AElf from "aelf-sdk";
+import { Transactions } from "./transactions-types";
 const { deserializeLog } = AElf.pbUtils;
+
+const aelf = new AElf(
+  new AElf.providers.HttpProvider("https://tdvw-test-node.aelf.io")
+);
 
 export function useWorkspaces() {
   return useSWR("workspaces", async () => {
@@ -11,15 +17,63 @@ export function useWorkspaces() {
   });
 }
 
-export function useTransactionResult(id?: string) {
-  return useSWR(
+export function useTransactionResult(id?: string, refreshInterval?: number) {
+  return useSWR<
+    {
+      TransactionId: string;
+      Status: string;
+      Logs: Array<{
+        Address: string;
+        Name: string;
+        Indexed: Array<string>;
+        NonIndexed: string;
+      }>;
+      Bloom: string;
+      BlockNumber: number;
+      BlockHash: string;
+      Transaction: {
+        From: string;
+        To: string;
+        RefBlockNumber: number;
+        RefBlockPrefix: string;
+        MethodName: string;
+        Params: string;
+        Signature: string;
+      };
+      ReturnValue: string;
+      Error: any;
+      TransactionSize: number;
+    },
+    {
+      TransactionId: string;
+      Status: string;
+      Logs: [];
+      Bloom: null;
+      BlockNumber: 0;
+      BlockHash: null;
+      Transaction: null;
+      ReturnValue: "";
+      Error: string;
+      TransactionSize: 0;
+    }
+  >(
     id ? `tx-${id}` : undefined,
-    async () => await aelf.chain.getTxResult(id),
-    { refreshInterval: 1000 }
+    async () => {
+      const res = await aelf.chain.getTxResult(id);
+
+      switch (res?.Status) {
+        case "NOTEXISTED":
+        case "NODEVALIDATIONFAILED":
+          throw res;
+      }
+
+      return res;
+    },
+    { refreshInterval }
   );
 }
 
-export function useProposalInfo(id?: string) {
+export function useProposalInfo(id?: string, refreshInterval?: number) {
   return useSWR(
     id ? `get-proposal-info-${id}` : undefined,
     async () => {
@@ -28,18 +82,17 @@ export function useProposalInfo(id?: string) {
 
       return data;
     },
-    { refreshInterval: 1000 }
+    { refreshInterval }
   );
 }
 
-export function useLogs(id?: string) {
+export function useLogs(id?: string, refreshInterval?: number) {
+  const { data: txResult } = useTransactionResult(id);
   return useSWR(
-    id ? `get-logs-${id}` : undefined,
+    id && !!txResult ? `get-logs-${id}` : undefined,
     async () => {
-      const txResult = await aelf.chain.getTxResult(id);
-
       const services = await Promise.all(
-        txResult.Logs.map(async ({ Address }: { Address: string }) =>
+        txResult!.Logs.map(async ({ Address }: { Address: string }) =>
           AElf.pbjs.Root.fromDescriptor(
             await aelf.chain.getContractFileDescriptorSet(Address)
           )
@@ -47,13 +100,22 @@ export function useLogs(id?: string) {
       );
 
       const deserializedLogs: Array<{ proposalId: string }> =
-        await deserializeLog(txResult.Logs, services);
+        await deserializeLog(txResult!.Logs, services);
 
       return deserializedLogs.reduce(
         (acc, cur) => ({ ...acc, ...cur }),
         {} as Record<string, string>
       );
     },
-    { refreshInterval: 1000 }
+    { refreshInterval }
   );
+}
+
+export function useTransactions(address: string) {
+  return useSWR(address ? `transactions-${address}` : undefined, async () => {
+    const res = await fetch(`/api/get-transactions?address=${address}`);
+    const { transactions }: { transactions: Transactions } = await res.json();
+
+    return transactions;
+  });
 }
