@@ -35,6 +35,25 @@ const FormSchema = z.object({
   template: z.string(),
 });
 
+function getLabel(value: string) {
+  switch (value) {
+    case "aelf":
+      return "Hello World";
+
+    case "aelf-lottery":
+      return "Lottery";
+
+    case "aelf-nft-sale":
+      return "NFT";
+
+    case "aelf-simple-dao":
+      return "Simple DAO";
+
+    default:
+      return value;
+  }
+}
+
 export function WorkspaceForm({
   templateOptions = [],
 }: {
@@ -118,7 +137,7 @@ export function WorkspaceForm({
                       <SelectLabel>Template</SelectLabel>
                       {templateOptions.map((i) => (
                         <SelectItem key={i} value={i}>
-                          {i}
+                          {getLabel(i)}
                         </SelectItem>
                       ))}
                     </SelectGroup>
