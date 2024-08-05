@@ -7,6 +7,7 @@ import TopMenu from "@/components/top-menu";
 import clsx from "clsx";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import { getGoogleAnalyticsTag } from "@/lib/env";
+import { InversifyProvider } from "@/di/providers";
 
 const font = Poppins({
   weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
@@ -34,7 +35,9 @@ export default function RootLayout({ children }: PropsWithChildren) {
         >
           <TopMenu />
           <main className="h-[calc(100vh-66px)] overflow-auto">
-            <Suspense>{children}</Suspense>
+            <InversifyProvider>
+              <Suspense>{children}</Suspense>
+            </InversifyProvider>
           </main>
         </ThemeProvider>
       </body>
