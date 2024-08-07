@@ -63,7 +63,7 @@ export function useCliCommands() {
           body: JSON.stringify({ files }),
         });
         const { dll, error } = await res.json();
-        if (typeof dll === "string") {
+        if (typeof dll === "string" && !error) {
           await db.workspaces.update(id, { dll });
           terminalContext.setBufferedContent(
             <>
@@ -74,7 +74,6 @@ export function useCliCommands() {
         } else {
           terminalContext.setBufferedContent(
             <>
-              {terminalContext.bufferedContent}
               <p>{error}</p>
             </>
           );
