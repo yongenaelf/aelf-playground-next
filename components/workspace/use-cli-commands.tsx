@@ -3,14 +3,16 @@ import { useLogs, useProposalInfo, useTransactionResult } from "@/data/client";
 import { db } from "@/data/db";
 import { useWallet } from "@/data/wallet";
 import { Loader2 } from "lucide-react";
-import { useParams } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { useContext, useEffect, useState } from "react";
 import { TerminalContext } from "react-terminal";
+import { useWorkspaceId } from "./use-workspace-id";
 
 export function useCliCommands() {
   const terminalContext = useContext(TerminalContext);
+  const pathname = usePathname();
+  const id = useWorkspaceId();
 
-  const { id } = useParams<{ id: string }>();
   const wallet = useWallet();
   const commands = {
     help: () => {
@@ -31,7 +33,7 @@ export function useCliCommands() {
     build: async () => {
       if (typeof id !== "string") throw new Error("id is not string");
       await db.workspaces.update(id, { dll: undefined });
-      const start = `/workspace/${id}/`;
+      const start = `${pathname}/`;
       terminalContext.setBufferedContent(
         <>
           <p>Loading files...</p>

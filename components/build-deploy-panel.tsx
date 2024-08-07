@@ -4,15 +4,15 @@ import { useState } from "react";
 import { Button } from "./ui/button";
 import { useCliCommands } from "./workspace/use-cli-commands";
 import useSWR, { mutate } from "swr";
-import { useParams } from "next/navigation";
 import { db } from "@/data/db";
+import { useWorkspaceId } from "./workspace/use-workspace-id";
 
 export function BuildDeployPanel() {
   const commands = useCliCommands();
   const [isBuilding, setIsBuilding] = useState(false);
   const [isDeploying, setIsDeploying] = useState(false);
+  const id = useWorkspaceId();
 
-  const { id } = useParams<{ id: string }>();
   const { data: isDeployable } = useSWR(
     id ? `deployable-${id}` : undefined,
     async () => {

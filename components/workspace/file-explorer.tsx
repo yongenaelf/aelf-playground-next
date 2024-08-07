@@ -9,7 +9,7 @@ import {
 } from "@/components/extension/tree-view-api";
 import { db } from "@/data/db";
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { usePathname } from "next/navigation";
 import useSWR from "swr";
 
 type TOCProps = {
@@ -64,6 +64,7 @@ export const TreeItem = ({ elements, pathname }: TreeItemProps) => {
                     file: `${encodeURIComponent(element.id)}`,
                   },
                 }}
+                scroll={false}
               >
                 {element?.name}
               </Link>
@@ -95,23 +96,23 @@ function convert(data: string[]) {
 }
 
 const FileExplorer = () => {
-  const { id } = useParams();
+  const pathname = usePathname();
 
-  const { data: toc } = useSWR(`file-explorer-${id}`, async () => {
+  const { data: toc } = useSWR(`file-explorer-${pathname}`, async () => {
     const files = await db.files.filter((file) =>
-      file.path.startsWith(`/workspace/${id}`)
+      file.path.startsWith(pathname)
     );
     const filesArray = await files.toArray();
     return convert(
       filesArray.map((i) =>
-        decodeURIComponent(i.path.replace(`/workspace/${id}/`, ""))
+        decodeURIComponent(i.path.replace(`${pathname}/`, ""))
       )
     );
   });
 
   if (!toc) return <p>Loading...</p>;
 
-  return <TOC toc={toc} pathname={`/workspace/${id}`} />;
+  return <TOC toc={toc} pathname={pathname} />;
 };
 
 export default FileExplorer;

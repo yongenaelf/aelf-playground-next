@@ -1,13 +1,12 @@
 import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
 import "./globals.css";
-import { ThemeProvider } from "@/components/theme-provider";
 import { PropsWithChildren, Suspense } from "react";
 import TopMenu from "@/components/top-menu";
 import clsx from "clsx";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import { getGoogleAnalyticsTag } from "@/lib/env";
-import { InversifyProvider } from "@/di/providers";
+import Providers from "@/components/providers";
 
 const font = Poppins({
   weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
@@ -26,20 +25,12 @@ export default function RootLayout({ children }: PropsWithChildren) {
   return (
     <html lang="en">
       <body className={clsx(font.className, "overflow-hidden")}>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-          storageKey="next-theme"
-        >
+        <Providers>
           <TopMenu />
           <main className="h-[calc(100vh-66px)] overflow-auto">
-            <InversifyProvider>
-              <Suspense>{children}</Suspense>
-            </InversifyProvider>
+            <Suspense>{children}</Suspense>
           </main>
-        </ThemeProvider>
+        </Providers>
       </body>
       {gaId ? <GoogleAnalytics gaId={gaId} /> : null}
     </html>
