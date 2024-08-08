@@ -17,7 +17,7 @@ export function TutorialList() {
   const data = [
     {
       id: "hello-world",
-      img: "/hello-world.jpg",
+      img: "/hello-world.jpeg",
       title: "Hello World Contract",
       description: "Simplest contract to get you started",
       level: "Beginner",
@@ -27,7 +27,7 @@ export function TutorialList() {
     },
     {
       id: "vote-contract",
-      img: "/hello-world.jpg",
+      img: "/vote.jpeg",
       title: "Vote Contract",
       description:
         "Voting mechanisms, security considerations, and advanced data structures",
@@ -38,7 +38,7 @@ export function TutorialList() {
     },
     {
       id: "lottery-game",
-      img: "/hello-world.jpg",
+      img: "/lottery.jpeg",
       title: "Lottery Game Contract",
       description:
         "State variables, user interactions, and random number generation",

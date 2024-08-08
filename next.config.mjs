@@ -10,4 +10,19 @@ const nextConfig = {
   },
 };
 
+if (process.env.NODE_ENV === "development") {
+  nextConfig.rewrites = async () => {
+    return [
+      {
+        source: "/api/playground/audit/:path*",
+        destination: `https://playground-next.test.aelf.dev/api/playground/audit/:path*`,
+      },
+      {
+        source: "/api/playground/report/:path*",
+        destination: `https://playground-next.test.aelf.dev/api/playground/report/:path*`,
+      },
+    ];
+  };
+}
+
 export default nextConfig;
