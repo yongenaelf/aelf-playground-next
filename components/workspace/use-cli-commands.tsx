@@ -62,7 +62,7 @@ export function useCliCommands() {
 
         terminalContext.setBufferedContent(
           <>
-            <p>{res}</p>
+            <p>Code Hash: {res}</p>
           </>
         );
       } catch (err) {

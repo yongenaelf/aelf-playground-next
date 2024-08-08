@@ -6,8 +6,6 @@ import { FileContent } from "./db";
 import { fileContentToZip } from "@/lib/file-content-to-zip";
 import { v4 as uuidv4 } from "uuid";
 
-const uploadContractResponseSchema = z.string();
-
 export async function uploadContractCode(files: FileContent[]) {
   const zippedData = fileContentToZip(files);
 
@@ -27,7 +25,13 @@ export async function uploadContractCode(files: FileContent[]) {
 
   const res = await fetch(`/api/audit/uploadContractCode`, requestInit);
 
-  return await res.text();
+  const message = await res.text();
+
+  if (!res.ok) {
+    throw new Error(message);
+  }
+
+  return message;
 }
 
 const auditSchema = z.object({ reportUrl: z.string() });
