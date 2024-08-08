@@ -20,27 +20,26 @@ function FileSelection({
 
   const data = useMemo(() => {
     if (!!repoData) {
-      const { data } = repoData;
+      const tree = repoData;
 
       const root = {
         id: 0,
-        children: data.tree
+        children: tree
           .filter((i) => !i.path?.includes("/"))
           .map((i) => i.path!),
         parent: null,
         name: "",
       };
 
-      const rest = data.tree.map((i) => ({
+      const rest = tree.map((i) => ({
         id: i.path!,
         name: i.path?.split("/").pop() || "",
-        children: data.tree
+        children: tree
           .filter((j) => i.path === j.path?.split("/").slice(0, -1).join("/"))
           .map((k) => k.path!),
         parent:
-          data.tree.find(
-            (j) => j.path === i.path?.split("/").slice(0, -2).join("/")
-          )?.path || root.id,
+          tree.find((j) => j.path === i.path?.split("/").slice(0, -2).join("/"))
+            ?.path || root.id,
       }));
 
       return [root, ...rest];

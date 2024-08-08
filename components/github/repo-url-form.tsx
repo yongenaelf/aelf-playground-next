@@ -32,7 +32,7 @@ export function RepoUrlForm({
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      url: "https://github.com/AElfProject/aelf-developer-tools/tree/master/templates/HelloWorldContract",
+      url: "https://github.com/AElfProject/aelf-developer-tools",
     },
   });
 
@@ -46,7 +46,7 @@ export function RepoUrlForm({
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="w-full flex">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="w-full flex mb-8">
         <FormField
           control={form.control}
           name="url"

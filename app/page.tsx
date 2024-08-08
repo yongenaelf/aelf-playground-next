@@ -87,8 +87,12 @@ export default function Home() {
             <HomeCard key={link.title} {...link} />
           ))}
         </div>
-        <h3 className="text-xl font-bold">... enter a GitHub repo url:</h3>
-        <RepoUrlForm />
+        <h3 className="text-xl font-bold">
+          ... enter a{" "}
+          <Link href="/import" className="hover:underline">
+            GitHub repo url (click here)
+          </Link>{" "}
+        </h3>
         <h3 className="text-xl font-bold">... or generate from a prompt:</h3>
         <div className="grid w-full grid-cols-1 gap-6 md:grid-cols-2">
           <div className="rounded-lg border bg-background p-6 shadow-sm">
