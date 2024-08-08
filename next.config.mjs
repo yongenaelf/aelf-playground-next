@@ -14,8 +14,12 @@ if (process.env.NODE_ENV === "development") {
   nextConfig.rewrites = async () => {
     return [
       {
-        source: "/api/audit/:path*",
-        destination: `https://playground-next.test.aelf.dev/api/audit/:path*`,
+        source: "/api/playground/audit/:path*",
+        destination: `https://playground-next.test.aelf.dev/api/playground/audit/:path*`,
+      },
+      {
+        source: "/api/playground/report/:path*",
+        destination: `https://playground-next.test.aelf.dev/api/playground/report/:path*`,
       },
     ];
   };

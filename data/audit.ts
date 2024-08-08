@@ -6,13 +6,15 @@ import { FileContent } from "./db";
 import { fileContentToZip } from "@/lib/file-content-to-zip";
 import { v4 as uuidv4 } from "uuid";
 
+const uploadContractCodeSchema = z.object({ codeHash: z.string() });
+
 export async function uploadContractCode(files: FileContent[]) {
   const zippedData = fileContentToZip(files);
 
   const formData = new FormData();
   const filePath = uuidv4() + ".zip";
   formData.append(
-    "file",
+    "contractFiles",
     new File([zippedData], filePath, { type: "application/zip" }),
     filePath
   );
@@ -23,15 +25,22 @@ export async function uploadContractCode(files: FileContent[]) {
     redirect: "follow",
   };
 
-  const res = await fetch(`/api/audit/uploadContractCode`, requestInit);
+  const res = await fetch(
+    `/api/playground/audit/uploadContractCode`,
+    requestInit
+  );
 
-  const message = await res.text();
+  const message = await res.clone().text();
 
   if (!res.ok) {
     throw new Error(message);
   }
 
-  return message;
+  const data = await res.json();
+
+  const { codeHash } = uploadContractCodeSchema.parse(data);
+
+  return codeHash;
 }
 
 const auditSchema = z.object({ reportUrl: z.string() });
@@ -41,7 +50,7 @@ export function useAudit(auditId?: string, transactionId?: string) {
     auditId && transactionId ? `audit-${auditId}-${transactionId}` : undefined,
     async () => {
       const res = await fetch(
-        `/api/audit/auditContractCode?auditId=${auditId}&transactionId=${transactionId}`
+        `/api/playground/audit/auditContractCode?auditId=${auditId}&transactionId=${transactionId}`
       );
 
       const data = await res.json();
@@ -65,7 +74,7 @@ const auditReportSchema = z.record(
 
 export function useAuditReport(auditId?: string) {
   return useSWR(auditId ? `audit-report-${auditId}` : undefined, async () => {
-    const res = await fetch(`/api/audit/report/${auditId}`);
+    const res = await fetch(`/api/playground/report/${auditId}`);
 
     const data = await res.json();
 
