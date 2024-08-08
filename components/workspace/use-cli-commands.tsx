@@ -4,10 +4,12 @@ import { db } from "@/data/db";
 import { useWallet } from "@/data/wallet";
 import { Loader2 } from "lucide-react";
 import { usePathname } from "next/navigation";
-import { useContext, useEffect, useState } from "react";
+import { PropsWithChildren, useContext, useEffect, useState } from "react";
 import { TerminalContext } from "react-terminal";
 import { useWorkspaceId } from "./use-workspace-id";
-import { uploadContractCode } from "@/data/audit";
+import { uploadContractCode, useAudit, useAuditReport } from "@/data/audit";
+import Link from "next/link";
+import clsx from "clsx";
 
 export function useCliCommands() {
   const terminalContext = useContext(TerminalContext);
@@ -22,7 +24,9 @@ export function useCliCommands() {
           <p>These are the available commands:</p>
           <ol>
             <li className="ml-8">clear - clears the terminal</li>
-            <li className="ml-8">audit - audits the current workspace</li>
+            <li className="ml-8">
+              audit - audits the current workspace using AI
+            </li>
             <li className="ml-8">build - builds the current workspace</li>
             <li className="ml-8">deploy - deploys the built smart contract</li>
             <li className="ml-8">
@@ -58,11 +62,21 @@ export function useCliCommands() {
       );
 
       try {
-        const res = await uploadContractCode(files);
+        const codeHash = await uploadContractCode(files);
 
         terminalContext.setBufferedContent(
           <>
-            <p>Code Hash: {res}</p>
+            <p>Code Hash: {codeHash}</p>
+          </>
+        );
+
+        if (!wallet) return;
+
+        const { TransactionId } = await wallet.auditTransfer(codeHash);
+
+        terminalContext.setBufferedContent(
+          <>
+            <AuditReport codeHash={codeHash} transactionId={TransactionId} />
           </>
         );
       } catch (err) {
@@ -175,12 +189,16 @@ export function useCliCommands() {
   return commands;
 }
 
-function Deploying() {
+function Loading({ children }: PropsWithChildren) {
   return (
     <p>
-      <Loader2 className="h-4 w-4 animate-spin inline" /> Deploying...
+      <Loader2 className="h-4 w-4 animate-spin inline" /> {children}
     </p>
   );
+}
+
+function Deploying() {
+  return <Loading>Deploying...</Loading>;
 }
 
 function Deployment({ id }: { id: string }) {
@@ -246,4 +264,55 @@ function DeployedContractDetails({ id }: { id?: string }) {
   if (!data) return <Deploying />;
 
   return <p>Contract Address: {data.address}</p>;
+}
+
+function AuditReport({
+  codeHash,
+  transactionId,
+}: {
+  codeHash: string;
+  transactionId: string;
+}) {
+  const { isLoading, error } = useAudit(codeHash, transactionId);
+
+  if (isLoading || !!error) return <Loading>Loading report...</Loading>;
+
+  return <AuditReportResult codeHash={codeHash} />;
+}
+
+function AuditReportResult({ codeHash }: { codeHash: string }) {
+  const { data, isLoading } = useAuditReport(codeHash);
+
+  if (isLoading || !data) return <Loading>Loading report...</Loading>;
+
+  return (
+    <>
+      <table>
+        <thead>
+          <tr>
+            <th className="p-2">Item</th>
+            <th className="p-2">Suggestion</th>
+          </tr>
+        </thead>
+        {Object.entries(data).map(([k, v]) => (
+          <tr key={k} className="border border-black">
+            <td className="p-2">{k}</td>
+            <td className="p-2">
+              {v.map((i, index) => (
+                <div
+                  key={index}
+                  className={clsx("border border-black p-2", {
+                    "border-t-0": index !== 0,
+                  })}
+                >
+                  <p>Original: {i.Detail.Original}</p>
+                  <p>Suggested: {i.Detail.Updated}</p>
+                </div>
+              ))}
+            </td>
+          </tr>
+        ))}
+      </table>
+    </>
+  );
 }

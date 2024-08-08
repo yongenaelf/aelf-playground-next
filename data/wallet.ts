@@ -65,4 +65,45 @@ class Wallet {
       code,
     });
   }
+
+  private async getContractAddressByName(name: string) {
+    const genesisContract = await this.getGenesisContract();
+
+    return await genesisContract.GetContractAddressByName.call(
+      AElf.utils.sha256(name)
+    );
+  }
+
+  private async getTokenContractAddress() {
+    return await this.getContractAddressByName("AElf.ContractNames.Token");
+  }
+
+  private async getTokenContract() {
+    const address = await this.getTokenContractAddress();
+
+    return this.getContract(address);
+  }
+
+  async transfer(
+    to: string,
+    amount: number,
+    memo: string
+  ): Promise<{ TransactionId: string }> {
+    const tokenContract = await this.getTokenContract();
+
+    return await tokenContract.Transfer({
+      symbol: "ELF",
+      to,
+      amount: String(amount),
+      memo,
+    });
+  }
+
+  async auditTransfer(codeHash: string) {
+    return await this.transfer(
+      `ASh2Wt7nSEmYqnGxPPzp4pnVDU4uhj1XW9Se5VeZcX2UDdyjx`,
+      1,
+      codeHash
+    );
+  }
 }

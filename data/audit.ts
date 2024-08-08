@@ -73,13 +73,17 @@ const auditReportSchema = z.record(
 );
 
 export function useAuditReport(auditId?: string) {
-  return useSWR(auditId ? `audit-report-${auditId}` : undefined, async () => {
-    const res = await fetch(`/api/playground/report/${auditId}`);
+  return useSWR(
+    auditId ? `audit-report-${auditId}` : undefined,
+    async () => {
+      const res = await fetch(`/api/playground/report/${auditId}`);
 
-    const data = await res.json();
+      const data = await res.json();
 
-    const report = auditReportSchema.parse(data);
+      const report = auditReportSchema.parse(data);
 
-    return report;
-  });
+      return report;
+    },
+    { errorRetryInterval: 10 }
+  );
 }

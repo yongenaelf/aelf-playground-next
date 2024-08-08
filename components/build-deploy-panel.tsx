@@ -37,7 +37,7 @@ export function BuildDeployPanel() {
           }
         }}
       >
-        Audit
+        AI Audit
       </Button>
       <Button
         disabled={isBuilding}
