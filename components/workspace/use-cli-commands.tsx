@@ -7,6 +7,7 @@ import { usePathname } from "next/navigation";
 import { useContext, useEffect, useState } from "react";
 import { TerminalContext } from "react-terminal";
 import { useWorkspaceId } from "./use-workspace-id";
+import { uploadContractCode } from "@/data/audit";
 
 export function useCliCommands() {
   const terminalContext = useContext(TerminalContext);
@@ -21,6 +22,7 @@ export function useCliCommands() {
           <p>These are the available commands:</p>
           <ol>
             <li className="ml-8">clear - clears the terminal</li>
+            <li className="ml-8">audit - audits the current workspace</li>
             <li className="ml-8">build - builds the current workspace</li>
             <li className="ml-8">deploy - deploys the built smart contract</li>
             <li className="ml-8">
@@ -29,6 +31,45 @@ export function useCliCommands() {
           </ol>
         </div>
       );
+    },
+    audit: async () => {
+      const start = `${pathname}/`;
+      terminalContext.setBufferedContent(
+        <>
+          <p>Loading files...</p>
+        </>
+      );
+      const files = (
+        await db.files.filter((file) => file.path.startsWith(start)).toArray()
+      )
+        .map((file) => ({
+          path: decodeURIComponent(file.path.replace(start, "")),
+          contents: file.contents,
+        }))
+        .filter((i) => i.path.startsWith("src"));
+
+      terminalContext.setBufferedContent(
+        <>
+          <p>Loaded files: {files.map((i) => i.path).join(", ")}</p>
+          <p>
+            <Loader2 className="h-4 w-4 animate-spin inline" /> Auditing...
+          </p>
+        </>
+      );
+
+      try {
+        const res = await uploadContractCode(files);
+
+        terminalContext.setBufferedContent(
+          <>
+            <p>{res}</p>
+          </>
+        );
+      } catch (err) {
+        if (err instanceof Error)
+          terminalContext.setBufferedContent(<p>Error: {err.message}</p>);
+        return;
+      }
     },
     build: async () => {
       if (typeof id !== "string") throw new Error("id is not string");

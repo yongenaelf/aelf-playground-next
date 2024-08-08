@@ -9,6 +9,7 @@ import { useWorkspaceId } from "./workspace/use-workspace-id";
 
 export function BuildDeployPanel() {
   const commands = useCliCommands();
+  const [isAuditing, setIsAuditing] = useState(false);
   const [isBuilding, setIsBuilding] = useState(false);
   const [isDeploying, setIsDeploying] = useState(false);
   const id = useWorkspaceId();
@@ -23,6 +24,21 @@ export function BuildDeployPanel() {
 
   return (
     <div className="p-4 border-b-2 flex gap-2">
+      <Button
+        disabled={isAuditing}
+        onClick={async () => {
+          setIsAuditing(true);
+          try {
+            await commands.audit();
+          } catch (err) {
+            console.log(err);
+          } finally {
+            setIsAuditing(false);
+          }
+        }}
+      >
+        Audit
+      </Button>
       <Button
         disabled={isBuilding}
         onClick={async () => {

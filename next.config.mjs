@@ -10,4 +10,15 @@ const nextConfig = {
   },
 };
 
+if (process.env.NODE_ENV === "development") {
+  nextConfig.rewrites = async () => {
+    return [
+      {
+        source: "/api/audit/:path*",
+        destination: `https://playground-next.test.aelf.dev/api/audit/:path*`,
+      },
+    ];
+  };
+}
+
 export default nextConfig;

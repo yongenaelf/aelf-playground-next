@@ -1,18 +1,12 @@
 import { FileContent } from "@/data/db";
 import { getBuildServerBaseUrl } from "@/lib/env";
-import { strToU8, Zippable, zipSync } from "fflate";
+import { fileContentToZip } from "@/lib/file-content-to-zip";
 import { type NextRequest } from "next/server";
 import { v4 as uuidv4 } from "uuid";
 
 export async function POST(request: NextRequest) {
   const { files } = (await request.json()) as { files: FileContent[] };
-  const data: Zippable = files.reduce((acc, { path, contents }) => {
-    acc[path] = strToU8(contents);
-
-    return acc;
-  }, {} as Zippable);
-
-  const zippedData = zipSync(data);
+  const zippedData = fileContentToZip(files);
 
   const formData = new FormData();
   const filePath = uuidv4() + ".zip";
