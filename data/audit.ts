@@ -1,6 +1,6 @@
 "use client";
 
-import useSWR from "swr";
+import useSWRImmutable from "swr/immutable";
 import { z } from "zod";
 import { FileContent } from "./db";
 import { fileContentToZip } from "@/lib/file-content-to-zip";
@@ -46,7 +46,7 @@ export async function uploadContractCode(files: FileContent[]) {
 const auditSchema = z.object({ reportUrl: z.string() });
 
 export function useAudit(auditId?: string, transactionId?: string) {
-  return useSWR(
+  return useSWRImmutable(
     auditId && transactionId ? `audit-${auditId}-${transactionId}` : undefined,
     async () => {
       const res = await fetch(
@@ -73,7 +73,7 @@ const auditReportSchema = z.record(
 );
 
 export function useAuditReport(auditId?: string) {
-  return useSWR(
+  return useSWRImmutable(
     auditId ? `audit-report-${auditId}` : undefined,
     async () => {
       const res = await fetch(`/api/playground/report/${auditId}`);
