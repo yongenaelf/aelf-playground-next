@@ -305,8 +305,12 @@ function AuditReportResult({ codeHash }: { codeHash: string }) {
                     "border-t-0": index !== 0,
                   })}
                 >
-                  <p>Original: {i.Detail.Original}</p>
-                  <p>Suggested: {i.Detail.Updated}</p>
+                  {i.Detail ? (
+                    <>
+                      <p>Original: {i.Detail.Original}</p>
+                      <p>Suggested: {i.Detail.Updated}</p>
+                    </>
+                  ) : null}
                 </div>
               ))}
             </td>

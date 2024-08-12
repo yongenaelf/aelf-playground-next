@@ -67,7 +67,9 @@ const auditReportSchema = z.record(
     z.object({
       Description: z.string(),
       Content: z.string(),
-      Detail: z.object({ Original: z.string(), Updated: z.string() }),
+      Detail: z
+        .object({ Original: z.string(), Updated: z.string() })
+        .or(z.null()),
     })
   )
 );
