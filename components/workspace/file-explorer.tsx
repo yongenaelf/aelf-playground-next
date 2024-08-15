@@ -11,6 +11,7 @@ import { db } from "@/data/db";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import useSWR from "swr";
+import { FileIcon } from "./file-icon";
 
 type TOCProps = {
   toc: TreeViewElement[];
@@ -57,6 +58,7 @@ export const TreeItem = ({ elements, pathname }: TreeItemProps) => {
               key={element.id}
               value={element.id}
               isSelectable={element.isSelectable}
+              fileIcon={<FileIcon filename={element.name} /> || undefined}
             >
               <Link
                 href={{
