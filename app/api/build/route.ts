@@ -1,5 +1,5 @@
 import { FileContent } from "@/data/db";
-import { getBuildServerBaseUrl } from "@/lib/env";
+import { getBuildServerBaseUrl, getSolangBuildServerBaseUrl } from "@/lib/env";
 import { fileContentToZip } from "@/lib/file-content-to-zip";
 import { type NextRequest } from "next/server";
 import { v4 as uuidv4 } from "uuid";
@@ -52,11 +52,9 @@ export async function POST(request: NextRequest) {
     };
 
     const response = await fetch(
-      `${getBuildServerBaseUrl()}/api/solang/build`,
+      `${getSolangBuildServerBaseUrl()}/api/solang/build`,
       requestInit
     );
-
-    console.log(response);
 
     if (!response.ok) {
       const { message } = await response.json();
