@@ -57,11 +57,11 @@ class Wallet {
     return await this.getContract(chainStatus.GenesisContractAddress);
   }
 
-  async deploy(code: string): Promise<{ TransactionId: string }> {
+  async deploy(code: string, category = 0): Promise<{ TransactionId: string }> {
     const genesisContract = await this.getGenesisContract();
 
     return await genesisContract.DeployUserSmartContract({
-      category: 0,
+      category: String(category),
       code,
     });
   }

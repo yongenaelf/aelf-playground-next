@@ -2,6 +2,7 @@ import { MDXRemote } from "next-mdx-remote/rsc";
 import rehypePrettyCode from "rehype-pretty-code";
 import { rehypeGithubAlerts } from "rehype-github-alerts";
 import GenerateTemplate from "@/components/tutorial/generate-template";
+import GenerateTemplateSolidity from "@/components/tutorial/generate-template-solidity";
 import "./page.scss";
 
 export default async function Page({
@@ -20,7 +21,7 @@ export default async function Page({
     <div className="m-4 mdx-content">
       <MDXRemote
         source={markdown}
-        components={{ GenerateTemplate }}
+        components={{ GenerateTemplate, GenerateTemplateSolidity }}
         options={{
           mdxOptions: {
             rehypePlugins: [[rehypePrettyCode], [rehypeGithubAlerts]],

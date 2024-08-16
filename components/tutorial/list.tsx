@@ -26,6 +26,16 @@ export function TutorialList() {
       langId: "csharp",
     },
     {
+      id: "hello-world-solidity",
+      img: "/hello-world.jpeg",
+      title: "Hello World Contract",
+      description: "Simplest contract to get you started",
+      level: "Beginner",
+      levelId: "beginner",
+      lang: "Solidity",
+      langId: "solidity",
+    },
+    {
       id: "vote-contract",
       img: "/vote.jpeg",
       title: "Vote Contract",

@@ -149,7 +149,7 @@ export function useCliCommands() {
         );
         return;
       }
-      const { dll } = (await db.workspaces.get(id)) || {};
+      const { dll, template } = (await db.workspaces.get(id)) || {};
       if (!dll) {
         terminalContext.setBufferedContent(
           <>
@@ -166,7 +166,10 @@ export function useCliCommands() {
         );
         return;
       }
-      const { TransactionId } = await wallet.deploy(dll);
+      const { TransactionId } = await wallet.deploy(
+        dll,
+        template === "solidity" ? 1 : 0
+      );
       terminalContext.setBufferedContent(
         <>
           <p>TransactionId: {TransactionId}</p>

@@ -12,6 +12,7 @@ import { xml } from "@codemirror/legacy-modes/mode/xml";
 import { usePathname, useSearchParams } from "next/navigation";
 import { db } from "@/data/db";
 import useSWR from "swr";
+import { solidity } from "@replit/codemirror-lang-solidity";
 
 export default function Editor() {
   const path = usePathname();
@@ -39,6 +40,8 @@ export default function Editor() {
         return Array.from([StreamLanguage.define(protobuf)]);
       case Languages.XML:
         return Array.from([StreamLanguage.define(xml)]);
+      case Languages.SOLIDITY:
+        return Array.from([solidity]);
       default:
         return Array.from([]);
     }
