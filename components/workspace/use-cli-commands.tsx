@@ -118,6 +118,7 @@ export function useCliCommands() {
           body: JSON.stringify({ files }),
         });
         const { dll, error } = await res.json();
+        console.log(dll, "-- build result");
         if (typeof dll === "string" && !error) {
           await db.workspaces.update(id, { dll });
           terminalContext.setBufferedContent(

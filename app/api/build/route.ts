@@ -3,7 +3,7 @@ import { getBuildServerBaseUrl, getSolangBuildServerBaseUrl } from "@/lib/env";
 import { fileContentToZip } from "@/lib/file-content-to-zip";
 import { type NextRequest } from "next/server";
 import { v4 as uuidv4 } from "uuid";
-import { strToU8 } from "fflate";
+import { strFromU8, strToU8 } from "fflate";
 
 export async function POST(request: NextRequest) {
   const { files } = (await request.json()) as { files: FileContent[] };
@@ -61,7 +61,11 @@ export async function POST(request: NextRequest) {
       return Response.json({ error: message }, { status: response.status });
     }
 
-    return Response.json({ dll: (await response.json()).compileResult });
+    const { compileResult } = (await response.json()) || {};
+
+    const str = strFromU8(Buffer.from(compileResult, "base64"));
+
+    return Response.json({ dll: str });
   } else {
     return Response.json({ error: "Invalid input files" }, { status: 400 });
   }
