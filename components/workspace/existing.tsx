@@ -76,7 +76,7 @@ export default function Existing() {
                         onClick={async () => {
                           await db.files
                             .filter((file) =>
-                              file.path.startsWith(`/workspace/${i.name}`)
+                              file.path.startsWith(`/workspace/${i.name}/`)
                             )
                             .delete();
                           await db.workspaces.delete(i.name);

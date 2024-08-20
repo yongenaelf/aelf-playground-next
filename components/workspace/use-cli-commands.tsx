@@ -8,7 +8,6 @@ import { PropsWithChildren, useContext, useEffect, useState } from "react";
 import { TerminalContext } from "react-terminal";
 import { useWorkspaceId } from "./use-workspace-id";
 import { uploadContractCode, useAudit, useAuditReport } from "@/data/audit";
-import Link from "next/link";
 import clsx from "clsx";
 
 export function useCliCommands() {

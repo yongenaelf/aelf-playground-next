@@ -102,7 +102,7 @@ const FileExplorer = () => {
 
   const { data: toc } = useSWR(`file-explorer-${pathname}`, async () => {
     const files = await db.files.filter((file) =>
-      file.path.startsWith(pathname)
+      file.path.startsWith(pathname + "/")
     );
     const filesArray = await files.toArray();
     return convert(

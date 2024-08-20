@@ -35,7 +35,7 @@ export default function GenerateTemplate({
       await db.files.bulkDelete(
         (await db.files.toArray())
           .map((i) => i.path)
-          .filter((i) => i.startsWith(pathname))
+          .filter((i) => i.startsWith(pathname + "/"))
       );
       await db.files.bulkAdd(
         templateData.map(({ path, contents }) => ({
