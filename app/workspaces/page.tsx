@@ -1,5 +1,6 @@
 import { WorkspaceForm } from "@/components/new-workspace-form";
 import Existing from "@/components/workspace/existing";
+import { FileUpload } from "@/components/workspace/file-upload";
 import { getTemplateNames } from "@/data/template";
 
 export default async function Page() {
@@ -9,6 +10,9 @@ export default async function Page() {
       <div>
         <h1 className="text-2xl mb-2">Create a new workspace</h1>
         <WorkspaceForm templateOptions={templateOptions} />
+        <hr className="my-8" />
+        <h1 className="text-2xl mb-2">Upload files</h1>
+        <FileUpload />
       </div>
       <div className="md:col-span-2">
         <h1 className="text-2xl mb-2">Open an existing workspace</h1>
