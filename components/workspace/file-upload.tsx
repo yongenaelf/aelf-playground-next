@@ -47,7 +47,7 @@ export function FileUpload() {
 
           await db.files.bulkAdd(
             templateData.map(({ path, contents }) => ({
-              path: `/workspace/${name}/${path}`,
+              path: `/workspace/${name}/${encodeURIComponent(path)}`,
               contents,
             }))
           );
@@ -57,14 +57,14 @@ export function FileUpload() {
         }
       }
     },
-    []
+    [router]
   );
   const { getRootProps, getInputProps } = useDropzone({ onDrop });
 
   return (
     <div {...getRootProps()} className="p-8 border">
       <input {...getInputProps()} />
-      <p>Drag 'n' drop some files here, or click to select files</p>
+      <p>Drag &apos;n&apos; drop some files here, or click to select files</p>
     </div>
   );
 }
