@@ -9,6 +9,8 @@ import { TerminalContext } from "react-terminal";
 import { useWorkspaceId } from "./use-workspace-id";
 import { uploadContractCode, useAudit, useAuditReport } from "@/data/audit";
 import clsx from "clsx";
+import { fileContentToZip } from "@/lib/file-content-to-zip";
+import { saveAs } from "file-saver";
 
 export function useCliCommands() {
   const terminalContext = useContext(TerminalContext);
@@ -28,6 +30,7 @@ export function useCliCommands() {
             </li>
             <li className="ml-8">build - builds the current workspace</li>
             <li className="ml-8">deploy - deploys the built smart contract</li>
+            <li className="ml-8">export - exports the current workspace</li>
             <li className="ml-8">
               check txID - checks the result of transaction
             </li>
@@ -186,6 +189,29 @@ export function useCliCommands() {
           <Deployment id={id} />
         </>
       );
+    },
+    export: async () => {
+      if (typeof id !== "string") throw new Error("id is not string");
+      const start = `${pathname}/`;
+      terminalContext.setBufferedContent(
+        <>
+          <p>Loading files...</p>
+        </>
+      );
+      const files = (
+        await db.files.filter((file) => file.path.startsWith(start)).toArray()
+      ).map((file) => ({
+        path: decodeURIComponent(file.path.replace(start, "")),
+        contents: file.contents,
+      }));
+
+      const zip = fileContentToZip(files);
+      const file = new File(
+        [zip],
+        `${pathname?.split("/")?.pop() || "export"}.zip`,
+        { type: "data:application/octet-stream;base64," }
+      );
+      saveAs(file);
     },
   };
 

@@ -68,6 +68,15 @@ export function BuildDeployPanel() {
       >
         Deploy
       </Button>
+      <Button
+        onClick={async () => {
+          try {
+            await commands.export();
+          } catch (err) {}
+        }}
+      >
+        Export
+      </Button>
     </div>
   );
 }
