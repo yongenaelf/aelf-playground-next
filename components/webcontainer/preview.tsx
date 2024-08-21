@@ -20,7 +20,7 @@ export function Preview() {
   return (
     <div>
       <h1 className="text-xl">Preview will be shown here</h1>
-      <iframe ref={iframeElRef} />
+      <iframe ref={iframeElRef} className="w-full" />
     </div>
   );
 }
