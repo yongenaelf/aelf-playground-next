@@ -4,8 +4,12 @@ import { useTheme } from "next-themes";
 import { ReactTerminal } from "react-terminal";
 import { useCliCommands } from "./use-cli-commands";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
-import { NodeTerminal } from "../webcontainer";
 import { LoadFiles } from "../webcontainer/load-files";
+import dynamic from "next/dynamic";
+
+const NodeTerminal = dynamic(() => import("../webcontainer/node-terminal"), {
+  ssr: false,
+});
 
 export default function Cli() {
   const commands = useCliCommands();

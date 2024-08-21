@@ -65,3 +65,5 @@ export function NodeTerminal() {
 
   return <div ref={terminalElRef}></div>;
 }
+
+export default NodeTerminal;
