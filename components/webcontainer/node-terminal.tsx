@@ -82,7 +82,7 @@ export function NodeTerminal() {
     }
   }, [resolvedTheme, terminalRef.current]);
 
-  return <div ref={terminalElRef}></div>;
+  return <div ref={terminalElRef} className="p-2"></div>;
 }
 
 export default NodeTerminal;
