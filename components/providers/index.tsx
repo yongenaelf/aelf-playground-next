@@ -4,6 +4,7 @@ import { PropsWithChildren } from "react";
 import { ThemeProvider } from "./theme-provider";
 import { InversifyProvider } from "@/di/providers";
 import { TerminalContextProvider } from "react-terminal";
+import WebContainerProvider from "../webcontainer";
 
 export default function Providers({ children }: PropsWithChildren) {
   return (
@@ -15,7 +16,9 @@ export default function Providers({ children }: PropsWithChildren) {
       storageKey="next-theme"
     >
       <InversifyProvider>
-        <TerminalContextProvider>{children}</TerminalContextProvider>
+        <WebContainerProvider>
+          <TerminalContextProvider>{children}</TerminalContextProvider>
+        </WebContainerProvider>
       </InversifyProvider>
     </ThemeProvider>
   );

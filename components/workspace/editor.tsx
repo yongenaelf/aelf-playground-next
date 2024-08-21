@@ -13,12 +13,19 @@ import { usePathname, useSearchParams } from "next/navigation";
 import { db } from "@/data/db";
 import useSWR from "swr";
 import { solidity } from "@replit/codemirror-lang-solidity";
+import { useWebContainer } from "@/components/webcontainer";
+import { javascript } from "@codemirror/lang-javascript";
+import { css } from "@codemirror/lang-css";
+import { markdown } from "@codemirror/lang-markdown";
+import { json } from "@codemirror/lang-json";
+import { html } from "@codemirror/lang-html";
 
 export default function Editor() {
   const path = usePathname();
   const params = useSearchParams();
   const file = params.get("file");
   const pathname = `${path}/${file}`;
+  const webContainer = useWebContainer();
 
   const { theme, systemTheme } = useTheme();
 
@@ -42,6 +49,20 @@ export default function Editor() {
         return Array.from([StreamLanguage.define(xml)]);
       case Languages.SOLIDITY:
         return Array.from([solidity]);
+      case Languages.JAVASCRIPT:
+        return Array.from([javascript({ jsx: pathname.endsWith(".jsx") })]);
+      case Languages.TYPESCRIPT:
+        return Array.from([
+          javascript({ jsx: pathname.endsWith(".jsx"), typescript: true }),
+        ]);
+      case Languages.CSS:
+        return Array.from([css()]);
+      case Languages.MARKDOWN:
+        return Array.from([markdown()]);
+      case Languages.JSON:
+        return Array.from([json()]);
+      case Languages.HTML:
+        return Array.from([html()]);
       default:
         return Array.from([]);
     }
@@ -50,6 +71,8 @@ export default function Editor() {
   const onChange = React.useCallback(
     async (val: string, viewUpdate: any) => {
       await db.files.update(pathname, { contents: val });
+      if (!!webContainer && !!file)
+        await webContainer.fs.writeFile(decodeURIComponent(file), val);
     },
     [pathname]
   );
