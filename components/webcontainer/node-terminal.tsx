@@ -1,11 +1,12 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { Terminal } from "@xterm/xterm";
+import { ITheme, Terminal } from "@xterm/xterm";
 import "@xterm/xterm/css/xterm.css";
 import { FitAddon } from "@xterm/addon-fit";
 import { WebContainer } from "@webcontainer/api";
 import { useWebContainer } from "./use-web-container";
+import { useTheme } from "next-themes";
 
 async function startShell(
   terminal: Terminal,
@@ -43,6 +44,7 @@ export function NodeTerminal() {
   const terminalElRef = useRef<HTMLDivElement>(null);
   const terminalRef = useRef<Terminal>();
   const webContainer = useWebContainer();
+  const { resolvedTheme } = useTheme();
 
   useEffect(() => {
     if (!!terminalElRef.current && !terminalRef.current && !!webContainer) {
@@ -62,6 +64,23 @@ export function NodeTerminal() {
       startShell(terminal, webContainer);
     }
   }, [terminalElRef.current, terminalRef.current, webContainer]);
+
+  useEffect(() => {
+    const terminal = terminalRef.current;
+    const isLightMode = resolvedTheme === "light";
+    const lightTheme: ITheme = {
+      foreground: "black",
+      background: "white",
+      cursor: "black",
+      cursorAccent: "black",
+      selectionBackground: "grey",
+      selectionForeground: "white",
+      selectionInactiveBackground: "grey",
+    };
+    if (terminal) {
+      terminal.options.theme = isLightMode ? lightTheme : undefined;
+    }
+  }, [resolvedTheme, terminalRef.current]);
 
   return <div ref={terminalElRef}></div>;
 }
