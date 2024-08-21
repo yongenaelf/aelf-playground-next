@@ -18,9 +18,9 @@ export function Preview() {
   if (!webContainer) return <p>Loading...</p>;
 
   return (
-    <div>
+    <div className="w-full h-full">
       <h1 className="text-xl">Preview will be shown here</h1>
-      <iframe ref={iframeElRef} className="w-full" />
+      <iframe ref={iframeElRef} className="w-full h-full" />
     </div>
   );
 }
