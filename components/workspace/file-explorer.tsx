@@ -9,7 +9,7 @@ import {
 } from "@/components/extension/tree-view-api";
 import { db } from "@/data/db";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import useSWR from "swr";
 import { FileIcon } from "./file-icon";
 
@@ -35,6 +35,7 @@ type TreeItemProps = {
 };
 
 export const TreeItem = ({ elements, pathname }: TreeItemProps) => {
+  const searchParams = useSearchParams();
   return (
     <ul className="w-full space-y-1">
       {elements.map((element) => (
@@ -64,6 +65,7 @@ export const TreeItem = ({ elements, pathname }: TreeItemProps) => {
                 href={{
                   query: {
                     file: `${encodeURIComponent(element.id)}`,
+                    auditId: searchParams.get("auditId") || undefined,
                   },
                 }}
                 scroll={false}

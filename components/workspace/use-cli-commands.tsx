@@ -11,11 +11,13 @@ import { uploadContractCode, useAudit, useAuditReport } from "@/data/audit";
 import clsx from "clsx";
 import { fileContentToZip } from "@/lib/file-content-to-zip";
 import { saveAs } from "file-saver";
+import { useSetSearchParams } from "@/lib/set-search-params";
 
 export function useCliCommands() {
   const terminalContext = useContext(TerminalContext);
   const pathname = usePathname();
   const id = useWorkspaceId();
+  const setSearchParams = useSetSearchParams();
 
   const wallet = useWallet();
   const commands = {
@@ -73,6 +75,8 @@ export function useCliCommands() {
         );
 
         if (!wallet) return;
+
+        setSearchParams("auditId", codeHash);
 
         const { TransactionId } = await wallet.auditTransfer(codeHash);
 

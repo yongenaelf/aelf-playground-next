@@ -19,6 +19,7 @@ import { css } from "@codemirror/lang-css";
 import { markdown } from "@codemirror/lang-markdown";
 import { json } from "@codemirror/lang-json";
 import { html } from "@codemirror/lang-html";
+import { useLinter } from "./use-linter";
 
 export default function Editor() {
   const path = usePathname();
@@ -26,6 +27,7 @@ export default function Editor() {
   const file = params.get("file");
   const pathname = `${path}/${file}`;
   const webContainer = useWebContainer();
+  const linter = useLinter();
 
   const { theme, systemTheme } = useTheme();
 
@@ -42,7 +44,7 @@ export default function Editor() {
   const extensions = useMemo(() => {
     switch (lang) {
       case Languages.CSHARP:
-        return Array.from([csharp()]);
+        return Array.from([csharp(), linter].filter((i) => !!i));
       case Languages.PROTOBUF:
         return Array.from([StreamLanguage.define(protobuf)]);
       case Languages.XML:
@@ -66,7 +68,7 @@ export default function Editor() {
       default:
         return Array.from([]);
     }
-  }, [lang]);
+  }, [lang, linter]);
 
   const onChange = React.useCallback(
     async (val: string, viewUpdate: any) => {

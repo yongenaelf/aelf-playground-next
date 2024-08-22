@@ -1,7 +1,11 @@
 import { WorkspaceForm } from "@/components/new-workspace-form";
-import Existing from "@/components/workspace/existing";
 import { FileUpload } from "@/components/workspace/file-upload";
 import { getTemplateNames } from "@/data/template";
+import dynamic from "next/dynamic";
+
+const Existing = dynamic(() => import("@/components/workspace/existing"), {
+  ssr: false,
+});
 
 export default async function Page() {
   const templateOptions = await getTemplateNames();

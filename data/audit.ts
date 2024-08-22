@@ -5,6 +5,7 @@ import { z } from "zod";
 import { FileContent } from "./db";
 import { fileContentToZip } from "@/lib/file-content-to-zip";
 import { v4 as uuidv4 } from "uuid";
+import { useSearchParams } from "next/navigation";
 
 const uploadContractCodeSchema = z.object({ codeHash: z.string() });
 
@@ -88,4 +89,10 @@ export function useAuditReport(auditId?: string) {
     },
     { errorRetryInterval: 10 }
   );
+}
+
+export function useAuditReportSearchParam() {
+  const params = useSearchParams();
+  const auditId = params.get("auditId");
+  return useAuditReport(auditId || undefined);
 }
