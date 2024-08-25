@@ -121,3 +121,24 @@ export function useTransactions(address: string) {
     return transactions;
   });
 }
+
+export function useTutorialList() {
+  return useSWR<
+    {
+      id: string;
+      img: string;
+      title: string;
+      description: string;
+      level: string;
+      levelId: string;
+      lang: string;
+      langId: string;
+    }[]
+  >(`tutorial-list`, async () => {
+    const res = await fetch(`/api/get-tutorial-list`);
+
+    const data = await res.json();
+
+    return data;
+  });
+}

@@ -21,3 +21,7 @@ export function getGoogleAnalyticsTag() {
 export function getGitHubToken() {
   return getEnv("GITHUB_API_KEY");
 }
+
+export function getSolidityEnabled() {
+  return getEnv("SOLIDITY_ENABLED") === "true";
+}

@@ -11,55 +11,15 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import Link from "next/link";
+import { useTutorialList } from "@/data/client";
 
 export function TutorialList() {
   const searchParams = useSearchParams();
-  const data = [
-    {
-      id: "hello-world",
-      img: "/hello-world.jpeg",
-      title: "Hello World Contract",
-      description: "Simplest contract to get you started",
-      level: "Beginner",
-      levelId: "beginner",
-      lang: "C#",
-      langId: "csharp",
-    },
-    {
-      id: "hello-world-solidity",
-      img: "/hello-world.jpeg",
-      title: "Hello World Contract",
-      description: "Simplest contract to get you started",
-      level: "Beginner",
-      levelId: "beginner",
-      lang: "Solidity",
-      langId: "solidity",
-    },
-    {
-      id: "vote-contract",
-      img: "/vote.jpeg",
-      title: "Vote Contract",
-      description:
-        "Voting mechanisms, security considerations, and advanced data structures",
-      level: "Intermediate",
-      levelId: "intermediate",
-      lang: "C#",
-      langId: "csharp",
-    },
-    {
-      id: "lottery-game",
-      img: "/lottery.jpeg",
-      title: "Lottery Game Contract",
-      description:
-        "State variables, user interactions, and random number generation",
-      level: "Advanced",
-      levelId: "advanced",
-      lang: "C#",
-      langId: "csharp",
-    },
-  ];
+  const { data } = useTutorialList();
 
   const list = useMemo(() => {
+    if (!data) return [];
+
     let all = data;
 
     const level = searchParams.getAll("level");
