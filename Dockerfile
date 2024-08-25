@@ -15,6 +15,8 @@ COPY ./.next/static ./.next/static
 
 ENV HOSTNAME=0.0.0.0
 
+USER root
+RUN chown -R node:node /app/.next
 USER node
 
 # server.js is created by next build from the standalone output
