@@ -13,7 +13,7 @@ import { usePathname, useSearchParams } from "next/navigation";
 import { db } from "@/data/db";
 import useSWR from "swr";
 import { solidity } from "@replit/codemirror-lang-solidity";
-import { useWebContainer } from "@/components/webcontainer";
+import { useWebContainer } from "@/components/webcontainer/use-web-container";
 import { javascript } from "@codemirror/lang-javascript";
 import { css } from "@codemirror/lang-css";
 import { markdown } from "@codemirror/lang-markdown";

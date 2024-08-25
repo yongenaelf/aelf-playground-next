@@ -1,6 +1,6 @@
 "use client";
 
-import { useWebContainer } from "@/components/webcontainer";
+import { useWebContainer } from "@/components/webcontainer/use-web-container";
 import { useEffect, useRef } from "react";
 
 export function Preview() {

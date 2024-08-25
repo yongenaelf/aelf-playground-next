@@ -4,7 +4,7 @@ import { PropsWithChildren } from "react";
 import { ThemeProvider } from "./theme-provider";
 import { InversifyProvider } from "@/di/providers";
 import { TerminalContextProvider } from "react-terminal";
-import WebContainerProvider from "../webcontainer";
+import WebContainerProvider from "@/components/webcontainer/provider";
 
 export default function Providers({ children }: PropsWithChildren) {
   return (
