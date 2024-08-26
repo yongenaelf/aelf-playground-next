@@ -8,12 +8,11 @@ import {
   SheetClose,
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { MenuIcon, MoonIcon, SunIcon, SunMoonIcon } from "lucide-react";
+import { MenuIcon, MoonIcon, SunIcon } from "lucide-react";
 import { useTheme } from "next-themes";
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 
 export default function TopMenu() {
-  const { theme, setTheme } = useTheme();
+  const { resolvedTheme, setTheme } = useTheme();
 
   const links = [
     { href: "/", children: "Home" },
@@ -40,33 +39,15 @@ export default function TopMenu() {
           ))}
         </nav>
         <div className="flex items-center space-x-4">
-          <ToggleGroup
-            type="single"
-            value={theme}
-            onValueChange={(e) => (e ? setTheme(e) : null)}
-          >
-            <ToggleGroupItem
-              value="system"
-              aria-label="Toggle system"
-              title="Toggle system"
-            >
-              <SunMoonIcon className="h-5 w-5 transition-colors" />
-            </ToggleGroupItem>
-            <ToggleGroupItem
-              value="light"
-              aria-label="Toggle light"
-              title="Toggle light"
-            >
+          {resolvedTheme === "dark" ? (
+            <Button onClick={() => setTheme("light")} variant="ghost">
               <SunIcon className="h-5 w-5 transition-colors" />
-            </ToggleGroupItem>
-            <ToggleGroupItem
-              value="dark"
-              aria-label="Toggle dark"
-              title="Toggle dark"
-            >
+            </Button>
+          ) : (
+            <Button onClick={() => setTheme("dark")} variant="ghost">
               <MoonIcon className="h-5 w-5 transition-colors" />
-            </ToggleGroupItem>
-          </ToggleGroup>
+            </Button>
+          )}
           <Sheet>
             <SheetTrigger asChild>
               <Button variant="outline" size="icon" className="md:hidden">
