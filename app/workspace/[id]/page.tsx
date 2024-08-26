@@ -7,7 +7,6 @@ import {
   ResizablePanel,
   ResizableHandle,
 } from "@/components/ui/resizable";
-import { Preview } from "@/components/webcontainer/preview";
 import Cli from "@/components/workspace/cli";
 import Editor from "@/components/workspace/editor";
 import FileExplorer from "@/components/workspace/file-explorer";
@@ -21,20 +20,7 @@ export default function Page() {
       </ResizablePanel>
       <ResizableHandle />
       <ResizablePanel defaultSize={75}>
-        <TopBottom
-          top={
-            <ResizablePanelGroup direction="horizontal">
-              <ResizablePanel defaultSize={50}>
-                <Editor />
-              </ResizablePanel>
-              <ResizableHandle />
-              <ResizablePanel defaultSize={50}>
-                <Preview />
-              </ResizablePanel>
-            </ResizablePanelGroup>
-          }
-          bottom={<Cli />}
-        />
+        <TopBottom top={<Editor />} bottom={<Cli />} />
       </ResizablePanel>
     </ResizablePanelGroup>
   );
