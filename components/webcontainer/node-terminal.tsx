@@ -7,6 +7,7 @@ import { FitAddon } from "@xterm/addon-fit";
 import { WebContainer } from "@webcontainer/api";
 import { useWebContainer } from "./use-web-container";
 import { useTheme } from "next-themes";
+import { useLoadFiles } from "./use-load-files";
 
 async function startShell(
   terminal: Terminal,
@@ -45,6 +46,7 @@ export function NodeTerminal() {
   const terminalRef = useRef<Terminal>();
   const webContainer = useWebContainer();
   const { resolvedTheme } = useTheme();
+  const loadFiles = useLoadFiles();
 
   useEffect(() => {
     if (!!terminalElRef.current && !terminalRef.current && !!webContainer) {
@@ -81,6 +83,10 @@ export function NodeTerminal() {
       terminal.options.theme = isLightMode ? lightTheme : undefined;
     }
   }, [resolvedTheme, terminalRef]);
+
+  useEffect(() => {
+    loadFiles();
+  }, [loadFiles]);
 
   return <div ref={terminalElRef} className="p-2"></div>;
 }

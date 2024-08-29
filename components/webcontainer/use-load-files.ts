@@ -56,7 +56,7 @@ export function useLoadFiles() {
       });
       webContainer.mount(root);
     }
-  }, [id, pathname]);
+  }, [id, pathname, webContainer]);
 
   return loadFiles;
 }

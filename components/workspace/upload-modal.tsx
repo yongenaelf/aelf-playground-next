@@ -71,7 +71,7 @@ export default function UploadModal() {
         );
 
         await refreshFileExplorer();
-        loadFiles();
+        await loadFiles();
         setIsOpen(false);
       } catch (err) {
         alert(String(err));
