@@ -63,7 +63,7 @@ export function NodeTerminal() {
 
       startShell(terminal, webContainer);
     }
-  }, [terminalElRef.current, terminalRef.current, webContainer]);
+  }, [terminalElRef.current, terminalRef, webContainer]);
 
   useEffect(() => {
     const terminal = terminalRef.current;
@@ -80,7 +80,7 @@ export function NodeTerminal() {
     if (terminal) {
       terminal.options.theme = isLightMode ? lightTheme : undefined;
     }
-  }, [resolvedTheme, terminalRef.current]);
+  }, [resolvedTheme, terminalRef]);
 
   return <div ref={terminalElRef} className="p-2"></div>;
 }
