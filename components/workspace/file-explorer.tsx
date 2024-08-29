@@ -10,7 +10,7 @@ import {
 import { db } from "@/data/db";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
-import useSWR from "swr";
+import useSWR, { mutate } from "swr";
 import { FileIcon } from "./file-icon";
 
 type TOCProps = {
@@ -117,6 +117,15 @@ const FileExplorer = () => {
   if (!toc) return <p>Loading...</p>;
 
   return <TOC toc={toc} pathname={pathname} />;
+};
+
+/**
+ *
+ * @returns Function to refresh the file explorer in the current view
+ */
+export const useRefreshFileExplorer = () => {
+  const pathname = usePathname();
+  return () => mutate(`file-explorer-${pathname}`);
 };
 
 export default FileExplorer;
