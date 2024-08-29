@@ -46,6 +46,16 @@ export async function GET() {
       lang: "C#",
       langId: "csharp",
     },
+    {
+      id: "todo",
+      img: "/todo.jpeg",
+      title: "ToDo Contract",
+      description: "A basic ToDo smart contract",
+      level: "Intermediate",
+      levelId: "intermediate",
+      lang: "C#",
+      langId: "csharp",
+    },
   ].filter((i) => (solidityEnabled ? true : i.langId !== "solidity"));
 
   return Response.json(data);

@@ -8,9 +8,11 @@ import { mutate } from "swr";
 export default function GenerateTemplate({
   name = "HelloWorld",
   template = "aelf",
+  renameHelloWorldProto = "hello_world_contract",
 }: {
   name?: string;
   template?: string;
+  renameHelloWorldProto?: string;
 }) {
   const pathname = usePathname();
 
@@ -29,8 +31,22 @@ export default function GenerateTemplate({
       const res = await fetch(
         `/api/get-template-data?id=${template}&name=${name}`
       );
-      const templateData: { path: string; contents: string }[] =
+      const _templateData: { path: string; contents: string }[] =
         await res.json();
+
+      const templateData = _templateData.map((i) => {
+        if (i.path.includes("hello_world_contract.proto")) {
+          return {
+            ...i,
+            path: i.path.replace(
+              "hello_world_contract.proto",
+              `${renameHelloWorldProto}.proto`
+            ),
+          };
+        }
+
+        return i;
+      });
 
       await db.files.bulkDelete(
         (await db.files.toArray())
