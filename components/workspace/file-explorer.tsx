@@ -37,6 +37,7 @@ function convert(data: string[]) {
           path,
           (node = {
             name: label,
+            id: path.slice(1),
             metadata: { path: path.slice(1) },
           } as TreeViewElement)
         );
@@ -70,6 +71,7 @@ interface IFileExplorerState {
   showDelete: boolean;
   path?: string;
   type?: FileOrFolder;
+  focusedId?: string;
 }
 
 const initialState: IFileExplorerState = {
@@ -78,10 +80,7 @@ const initialState: IFileExplorerState = {
 };
 
 // Our reducer function that uses a switch statement to handle our actions
-function counterReducer(
-  state: IFileExplorerState,
-  action: IFileExplorerAction
-) {
+function reducer(state: IFileExplorerState, action: IFileExplorerAction) {
   const { type, payload } = action;
   switch (type) {
     case IFileExplorerActionKind.RENAME:
@@ -116,7 +115,7 @@ const FileExplorer = () => {
   const pathname = usePathname();
   const setSearchParams = useSetSearchParams();
 
-  const [state, dispatch] = useReducer(counterReducer, initialState);
+  const [state, dispatch] = useReducer(reducer, initialState);
 
   const { data } = useSWR(`file-explorer-${pathname}`, async () => {
     const files = await db.files.filter((file) =>
@@ -138,21 +137,25 @@ const FileExplorer = () => {
       <div className="file-tree">
         <TreeView
           data={data}
+          focusedId={state.focusedId}
           aria-label="directory tree"
           onNodeSelect={(props) => {
-            const { path } = props.element.metadata || {};
+            const { id } = props.element;
 
-            if (typeof path !== "string") return;
+            if (typeof id !== "string") return;
 
             const { children } = props.element;
 
             dispatch({
               type: IFileExplorerActionKind.SELECT,
-              payload: { type: children.length > 0 ? "folder" : "file", path },
+              payload: {
+                type: children.length > 0 ? "folder" : "file",
+                path: id,
+              },
             });
 
             if (children.length === 0) {
-              setSearchParams("file", encodeURIComponent(path));
+              setSearchParams("file", encodeURIComponent(id));
             }
           }}
           // @ts-expect-error
@@ -186,7 +189,7 @@ const FileExplorer = () => {
                     type: IFileExplorerActionKind.RENAME,
                     payload: {
                       type: isBranch ? "folder" : "file",
-                      path: element.metadata!.path as string,
+                      path: element.id as string,
                     },
                   })
                 }
@@ -195,7 +198,7 @@ const FileExplorer = () => {
                     type: IFileExplorerActionKind.DELETE,
                     payload: {
                       type: isBranch ? "folder" : "file",
-                      path: element.metadata!.path as string,
+                      path: element.id as string,
                     },
                   })
                 }
@@ -241,10 +244,6 @@ const NodeRenderer = ({
 }) => {
   const { name } = element;
 
-  const { path } = element.metadata || {};
-
-  const type = isBranch ? "folder" : "file";
-
   const handleClick = (action: IAction) => {
     switch (action) {
       case IAction.DELETE:
@@ -255,8 +254,6 @@ const NodeRenderer = ({
         break;
     }
   };
-
-  if (typeof path !== "string") return null;
 
   const node = (
     <span className="flex px-2">
