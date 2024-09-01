@@ -83,7 +83,7 @@ export default function UploadModal() {
   const { getRootProps, getInputProps } = useDropzone({ onDrop });
 
   return (
-    <Dialog open={isOpen}>
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         <Tooltip text="Upload Files">
           <Button variant="ghost" size="icon" onClick={() => setIsOpen(true)}>
