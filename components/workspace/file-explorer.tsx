@@ -4,11 +4,13 @@ import { db } from "@/data/db";
 import { usePathname } from "next/navigation";
 import useSWR, { mutate } from "swr";
 import { FileExplorerTopMenu } from "./file-explorer-top-menu";
-import TreeView, { flattenTree } from "react-accessible-treeview";
+import TreeView, { flattenTree, INode } from "react-accessible-treeview";
 import { FolderOpen, FolderClosed } from "lucide-react";
 import { FileIcon } from "./file-icon";
 import "./file-explorer.css";
 import { useSetSearchParams } from "@/lib/set-search-params";
+import { FileContextMenu, FolderContextMenu } from "./context-menu";
+import { IFlatMetadata } from "react-accessible-treeview/dist/TreeView/utils";
 
 interface TreeViewElement {
   name: string;
@@ -85,21 +87,48 @@ const FileExplorer = () => {
             level,
           }) => (
             <div {...getNodeProps()} style={{ paddingLeft: 20 * (level - 1) }}>
-              <span className="flex px-2">
-                <span className="my-1">
-                  {isBranch ? (
-                    <FolderIcon isOpen={isExpanded} />
-                  ) : (
-                    <FileIcon filename={element.name} />
-                  )}
-                </span>
-                <span className="ml-2 line-clamp-1">{element.name}</span>
-              </span>
+              <NodeRenderer
+                isBranch={isBranch}
+                isExpanded={isExpanded}
+                element={element}
+              />
             </div>
           )}
         />
       </div>
     </>
+  );
+};
+
+export type Element = INode<IFlatMetadata>;
+
+const NodeRenderer = ({
+  isBranch,
+  isExpanded,
+  element,
+}: {
+  isBranch: boolean;
+  isExpanded: boolean;
+  element: Element;
+}) => {
+  const { name } = element;
+  const node = (
+    <span className="flex px-2">
+      <span className="my-1">
+        {isBranch ? (
+          <FolderIcon isOpen={isExpanded} />
+        ) : (
+          <FileIcon filename={name} />
+        )}
+      </span>
+      <span className="ml-2 line-clamp-1">{name}</span>
+    </span>
+  );
+
+  return isBranch ? (
+    <FolderContextMenu element={element}>{node}</FolderContextMenu>
+  ) : (
+    <FileContextMenu element={element}>{node}</FileContextMenu>
   );
 };
 
