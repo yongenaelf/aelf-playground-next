@@ -9,8 +9,11 @@ import { FolderOpen, FolderClosed } from "lucide-react";
 import { FileIcon } from "./file-icon";
 import "./file-explorer.css";
 import { useSetSearchParams } from "@/lib/set-search-params";
-import { FileContextMenu, FolderContextMenu } from "./context-menu";
+import { FileContextMenu, FolderContextMenu, IAction } from "./context-menu";
 import { IFlatMetadata } from "react-accessible-treeview/dist/TreeView/utils";
+import { useState } from "react";
+import Rename from "./rename";
+import Delete from "./delete";
 
 interface TreeViewElement {
   name: string;
@@ -48,6 +51,10 @@ function convert(data: string[]) {
 const FileExplorer = () => {
   const pathname = usePathname();
   const setSearchParams = useSetSearchParams();
+  const [selectedPath, setSelectedPath] = useState<string>();
+  const [showRename, setShowRename] = useState(false);
+  const [type, setType] = useState<"file" | "folder">();
+  const [showDelete, setShowDelete] = useState(false);
 
   const { data } = useSWR(`file-explorer-${pathname}`, async () => {
     const files = await db.files.filter((file) =>
@@ -71,12 +78,12 @@ const FileExplorer = () => {
           data={data}
           aria-label="directory tree"
           onNodeSelect={(props) => {
+            const { path } = props.element.metadata || {};
+
+            if (typeof path !== "string") return;
+
             if (!props.isBranch) {
-              // file
-
-              const { path } = props.element.metadata || {};
-
-              if (path) setSearchParams("file", encodeURIComponent(path));
+              setSearchParams("file", encodeURIComponent(path));
             }
           }}
           nodeRenderer={({
@@ -91,11 +98,36 @@ const FileExplorer = () => {
                 isBranch={isBranch}
                 isExpanded={isExpanded}
                 element={element}
+                handleClick={(action) => {
+                  setType(isBranch ? "folder" : "file");
+                  setSelectedPath(String(element.metadata!.path));
+
+                  switch (action) {
+                    case IAction.RENAME:
+                      setShowRename(true);
+                      break;
+                    case IAction.DELETE:
+                      setShowDelete(true);
+                      break;
+                  }
+                }}
               />
             </div>
           )}
         />
       </div>
+      <Rename
+        type={type}
+        path={selectedPath}
+        isOpen={showRename}
+        setIsOpen={setShowRename}
+      />
+      <Delete
+        type={type}
+        path={selectedPath}
+        isOpen={showDelete}
+        setIsOpen={setShowDelete}
+      />
     </>
   );
 };
@@ -106,10 +138,12 @@ const NodeRenderer = ({
   isBranch,
   isExpanded,
   element,
+  handleClick,
 }: {
   isBranch: boolean;
   isExpanded: boolean;
   element: Element;
+  handleClick: (action: IAction) => void;
 }) => {
   const { name } = element;
   const node = (
@@ -126,9 +160,9 @@ const NodeRenderer = ({
   );
 
   return isBranch ? (
-    <FolderContextMenu element={element}>{node}</FolderContextMenu>
+    <FolderContextMenu handleClick={handleClick}>{node}</FolderContextMenu>
   ) : (
-    <FileContextMenu element={element}>{node}</FileContextMenu>
+    <FileContextMenu handleClick={handleClick}>{node}</FileContextMenu>
   );
 };
 
