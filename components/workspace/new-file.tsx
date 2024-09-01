@@ -13,6 +13,7 @@ import {
 import { useState } from "react";
 import { FilePlus } from "lucide-react";
 import { NewFileForm } from "./new-file-form";
+import { Tooltip } from "../tooltip";
 
 export default function NewFile() {
   const [isOpen, setIsOpen] = useState(false);
@@ -20,9 +21,11 @@ export default function NewFile() {
   return (
     <Dialog open={isOpen} onOpenChange={(open) => setIsOpen(open)}>
       <DialogTrigger asChild>
-        <Button variant="ghost" size="icon" onClick={() => setIsOpen(true)}>
-          <FilePlus className="h-4 w-4" />
-        </Button>
+        <Tooltip text="Add file...">
+          <Button variant="ghost" size="icon" onClick={() => setIsOpen(true)}>
+            <FilePlus className="h-4 w-4" />
+          </Button>
+        </Tooltip>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
