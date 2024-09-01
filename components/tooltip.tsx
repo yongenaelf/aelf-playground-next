@@ -8,11 +8,12 @@ import {
 export function Tooltip({
   children,
   text,
-}: React.PropsWithChildren<{ text: string }>) {
+  asChild = true,
+}: React.PropsWithChildren<{ text: string; asChild?: boolean }>) {
   return (
     <TooltipProvider>
       <_Tooltip delayDuration={0}>
-        <TooltipTrigger>{children}</TooltipTrigger>
+        <TooltipTrigger asChild={asChild}>{children}</TooltipTrigger>
         <TooltipContent>
           <p>{text}</p>
         </TooltipContent>
