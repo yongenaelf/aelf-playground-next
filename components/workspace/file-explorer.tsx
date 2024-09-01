@@ -13,6 +13,7 @@ import { usePathname, useSearchParams } from "next/navigation";
 import useSWR, { mutate } from "swr";
 import { FileIcon } from "./file-icon";
 import { FileExplorerTopMenu } from "./file-explorer-top-menu";
+import TreeView, { flattenTree } from "react-accessible-treeview";
 
 type TOCProps = {
   toc: TreeViewElement[];
@@ -91,7 +92,7 @@ function convert(data: string[]) {
       path += "/" + label;
       let node = map.get(path);
       if (!node) {
-        map.set(path, (node = { id: name, name: label } as TreeViewElement));
+        map.set(path, (node = { id: path, name: label } as TreeViewElement));
         (parent.children ??= []).push(node);
       }
       parent = node;
@@ -114,6 +115,8 @@ const FileExplorer = () => {
       )
     );
   });
+
+  console.log(toc);
 
   if (!toc) return <p>Loading...</p>;
 
