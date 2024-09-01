@@ -17,6 +17,7 @@ import { useDropzone, DropzoneOptions } from "react-dropzone";
 import { usePathname } from "next/navigation";
 import { useRefreshFileExplorer } from "./file-explorer";
 import { useLoadFiles } from "../webcontainer/use-load-files";
+import { Tooltip } from "../tooltip";
 
 export default function UploadModal() {
   const refreshFileExplorer = useRefreshFileExplorer();
@@ -84,9 +85,11 @@ export default function UploadModal() {
   return (
     <Dialog open={isOpen}>
       <DialogTrigger asChild>
-        <Button variant="ghost" size="icon" onClick={() => setIsOpen(true)}>
-          <Upload className="h-4 w-4" />
-        </Button>
+        <Tooltip text="Upload Files">
+          <Button variant="ghost" size="icon" onClick={() => setIsOpen(true)}>
+            <Upload className="h-4 w-4" />
+          </Button>
+        </Tooltip>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>

@@ -6,8 +6,9 @@ import { useCliCommands } from "./workspace/use-cli-commands";
 import useSWR, { mutate } from "swr";
 import { db } from "@/data/db";
 import { useWorkspaceId } from "./workspace/use-workspace-id";
-import { Download, Rocket, ShieldCheck, Wrench, Upload } from "lucide-react";
+import { Download, Rocket, ShieldCheck, Wrench } from "lucide-react";
 import UploadModal from "./workspace/upload-modal";
+import { Tooltip } from "./tooltip";
 
 export function BuildDeployPanel() {
   const commands = useCliCommands();
@@ -89,18 +90,22 @@ export function BuildDeployPanel() {
   return (
     <div className="p-4 border-b-2 flex gap-2">
       {buttons.map((button) => (
-        <Button
-          key={button.title}
-          disabled={button.disabled}
-          title={button.title}
-          variant="ghost"
-          className="rounded-none p-2"
-          onClick={button.onClick}
-        >
-          <button.icon className="w-4 h-4" />
-        </Button>
+        <Tooltip text={button.title}>
+          <Button
+            key={button.title}
+            disabled={button.disabled}
+            variant="ghost"
+            className="rounded-none p-2"
+            onClick={button.onClick}
+          >
+            <button.icon className="w-4 h-4" />
+          </Button>
+        </Tooltip>
       ))}
       <UploadModal />
     </div>
   );
 }
+
+
+
