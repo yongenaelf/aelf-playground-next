@@ -49,7 +49,7 @@ export function NewFileForm({
       await refreshFileExplorer();
       onSubmit?.(data.path);
     } catch (err) {
-      form.setError("path", { message: String(err) });
+      form.setError("path", { message: "Path already exists." });
     }
   }
 
