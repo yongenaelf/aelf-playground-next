@@ -1,90 +1,26 @@
 "use client";
 
-import {
-  Tree,
-  TreeViewElement,
-  File,
-  Folder,
-  CollapseButton,
-} from "@/components/extension/tree-view-api";
 import { db } from "@/data/db";
-import Link from "next/link";
-import { usePathname, useSearchParams } from "next/navigation";
+import { usePathname } from "next/navigation";
 import useSWR, { mutate } from "swr";
-import { FileIcon } from "./file-icon";
 import { FileExplorerTopMenu } from "./file-explorer-top-menu";
 import TreeView, { flattenTree } from "react-accessible-treeview";
+import { FolderOpen, FolderClosed } from "lucide-react";
+import { FileIcon } from "./file-icon";
+import "./file-explorer.css";
+import { useSetSearchParams } from "@/lib/set-search-params";
 
-type TOCProps = {
-  toc: TreeViewElement[];
-  pathname: string;
-};
-
-const TOC = ({ toc, pathname }: TOCProps) => {
-  return (
-    <Tree className="w-full bg-background p-2 rounded-md" indicator={true}>
-      {toc.map((element, _) => (
-        <TreeItem key={element.id} elements={[element]} pathname={pathname} />
-      ))}
-      <CollapseButton elements={toc} expandAll={true} />
-    </Tree>
-  );
-};
-
-type TreeItemProps = {
-  elements: TreeViewElement[];
-  pathname: string;
-};
-
-export const TreeItem = ({ elements, pathname }: TreeItemProps) => {
-  const searchParams = useSearchParams();
-  return (
-    <ul className="w-full space-y-1">
-      {elements.map((element) => (
-        <li key={element.id} className="w-full space-y-2">
-          {element.children && element.children?.length > 0 ? (
-            <Folder
-              element={element.name}
-              value={element.id}
-              isSelectable={element.isSelectable}
-              className="px-px pr-1"
-            >
-              <TreeItem
-                key={element.id}
-                aria-label={`folder ${element.name}`}
-                elements={element.children}
-                pathname={pathname}
-              />
-            </Folder>
-          ) : (
-            <File
-              key={element.id}
-              value={element.id}
-              isSelectable={element.isSelectable}
-              fileIcon={<FileIcon filename={element.name} /> || undefined}
-            >
-              <Link
-                href={{
-                  query: {
-                    file: `${encodeURIComponent(element.id)}`,
-                    auditId: searchParams.get("auditId") || undefined,
-                  },
-                }}
-                scroll={false}
-              >
-                {element?.name}
-              </Link>
-            </File>
-          )}
-        </li>
-      ))}
-    </ul>
-  );
-};
+interface TreeViewElement {
+  name: string;
+  children?: TreeViewElement[];
+}
 
 function convert(data: string[]) {
   const map = new Map();
-  const root: { children: TreeViewElement[] } = { children: [] };
+  const root: TreeViewElement = {
+    name: "",
+    children: [],
+  };
   for (const name of data) {
     let path = "";
     let parent = root;
@@ -94,20 +30,24 @@ function convert(data: string[]) {
       if (!node) {
         map.set(
           path,
-          (node = { id: path.slice(1), name: label } as TreeViewElement)
+          (node = {
+            name: label,
+            metadata: { path: path.slice(1) },
+          } as TreeViewElement)
         );
         (parent.children ??= []).push(node);
       }
       parent = node;
     }
   }
-  return root.children;
+  return flattenTree(root);
 }
 
 const FileExplorer = () => {
   const pathname = usePathname();
+  const setSearchParams = useSetSearchParams();
 
-  const { data: toc } = useSWR(`file-explorer-${pathname}`, async () => {
+  const { data } = useSWR(`file-explorer-${pathname}`, async () => {
     const files = await db.files.filter((file) =>
       file.path.startsWith(pathname + "/")
     );
@@ -119,17 +59,56 @@ const FileExplorer = () => {
     );
   });
 
-  console.log(toc);
-
-  if (!toc) return <p>Loading...</p>;
+  if (!data) return <p>Loading...</p>;
 
   return (
     <>
       <FileExplorerTopMenu />
-      <TOC toc={toc} pathname={pathname} />
+      <div className="file-tree">
+        <TreeView
+          data={data}
+          aria-label="directory tree"
+          onNodeSelect={(props) => {
+            if (!props.isBranch) {
+              // file
+
+              const { path } = props.element.metadata || {};
+
+              if (path) setSearchParams("file", encodeURIComponent(path));
+            }
+          }}
+          nodeRenderer={({
+            element,
+            isBranch,
+            isExpanded,
+            getNodeProps,
+            level,
+          }) => (
+            <div {...getNodeProps()} style={{ paddingLeft: 20 * (level - 1) }}>
+              <span className="flex px-2">
+                <span className="my-1">
+                  {isBranch ? (
+                    <FolderIcon isOpen={isExpanded} />
+                  ) : (
+                    <FileIcon filename={element.name} />
+                  )}
+                </span>
+                <span className="ml-2 line-clamp-1">{element.name}</span>
+              </span>
+            </div>
+          )}
+        />
+      </div>
     </>
   );
 };
+
+const FolderIcon = ({ isOpen }: { isOpen: boolean }) =>
+  isOpen ? (
+    <FolderOpen className="w-4 h-4" />
+  ) : (
+    <FolderClosed className="w-4 h-4" />
+  );
 
 /**
  *
