@@ -92,7 +92,10 @@ function convert(data: string[]) {
       path += "/" + label;
       let node = map.get(path);
       if (!node) {
-        map.set(path, (node = { id: path, name: label } as TreeViewElement));
+        map.set(
+          path,
+          (node = { id: path.slice(1), name: label } as TreeViewElement)
+        );
         (parent.children ??= []).push(node);
       }
       parent = node;
