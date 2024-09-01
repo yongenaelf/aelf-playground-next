@@ -11,7 +11,7 @@ import "./file-explorer.css";
 import { useSetSearchParams } from "@/lib/set-search-params";
 import { FileContextMenu, FolderContextMenu, IAction } from "./context-menu";
 import { IFlatMetadata } from "react-accessible-treeview/dist/TreeView/utils";
-import { useState } from "react";
+import { useReducer } from "react";
 import Rename from "./rename";
 import Delete from "./delete";
 
@@ -48,13 +48,75 @@ function convert(data: string[]) {
   return flattenTree(root);
 }
 
+// An enum with all the types of actions to use in our reducer
+enum IFileExplorerActionKind {
+  RENAME,
+  DELETE,
+  SELECT,
+  CLOSE_MODAL,
+}
+
+type FileOrFolder = "file" | "folder";
+
+// An interface for our actions
+interface IFileExplorerAction {
+  type: IFileExplorerActionKind;
+  payload?: { path?: string; type?: FileOrFolder };
+}
+
+// An interface for our state
+interface IFileExplorerState {
+  showRename: boolean;
+  showDelete: boolean;
+  path?: string;
+  type?: FileOrFolder;
+}
+
+const initialState: IFileExplorerState = {
+  showRename: false,
+  showDelete: false,
+};
+
+// Our reducer function that uses a switch statement to handle our actions
+function counterReducer(
+  state: IFileExplorerState,
+  action: IFileExplorerAction
+) {
+  const { type, payload } = action;
+  switch (type) {
+    case IFileExplorerActionKind.RENAME:
+      return {
+        ...state,
+        ...(payload || {}),
+        showRename: true,
+      };
+    case IFileExplorerActionKind.DELETE:
+      return {
+        ...state,
+        ...(payload || {}),
+        showDelete: true,
+      };
+    case IFileExplorerActionKind.SELECT:
+      return {
+        ...state,
+        ...(payload || {}),
+      };
+    case IFileExplorerActionKind.CLOSE_MODAL:
+      return {
+        ...state,
+        showRename: false,
+        showDelete: false,
+      };
+    default:
+      return state;
+  }
+}
+
 const FileExplorer = () => {
   const pathname = usePathname();
   const setSearchParams = useSetSearchParams();
-  const [selectedPath, setSelectedPath] = useState<string>();
-  const [showRename, setShowRename] = useState(false);
-  const [type, setType] = useState<"file" | "folder">();
-  const [showDelete, setShowDelete] = useState(false);
+
+  const [state, dispatch] = useReducer(counterReducer, initialState);
 
   const { data } = useSWR(`file-explorer-${pathname}`, async () => {
     const files = await db.files.filter((file) =>
@@ -84,8 +146,10 @@ const FileExplorer = () => {
 
             const { children } = props.element;
 
-            setType(children.length > 0 ? "folder" : "file");
-            setSelectedPath(path);
+            dispatch({
+              type: IFileExplorerActionKind.SELECT,
+              payload: { type: children.length > 0 ? "folder" : "file", path },
+            });
 
             if (children.length === 0) {
               setSearchParams("file", encodeURIComponent(path));
@@ -96,13 +160,13 @@ const FileExplorer = () => {
             if (e.key === "F2") {
               e.stopPropagation();
 
-              setShowRename(true);
+              dispatch({ type: IFileExplorerActionKind.RENAME });
             }
 
             if (e.code === "Delete") {
               e.stopPropagation();
 
-              setShowDelete(true);
+              dispatch({ type: IFileExplorerActionKind.DELETE });
             }
           }}
           nodeRenderer={({
@@ -117,22 +181,44 @@ const FileExplorer = () => {
                 isBranch={isBranch}
                 isExpanded={isExpanded}
                 element={element}
+                handleRename={() =>
+                  dispatch({
+                    type: IFileExplorerActionKind.RENAME,
+                    payload: {
+                      type: isBranch ? "folder" : "file",
+                      path: element.metadata!.path as string,
+                    },
+                  })
+                }
+                handleDelete={() =>
+                  dispatch({
+                    type: IFileExplorerActionKind.DELETE,
+                    payload: {
+                      type: isBranch ? "folder" : "file",
+                      path: element.metadata!.path as string,
+                    },
+                  })
+                }
               />
             </div>
           )}
         />
       </div>
       <Rename
-        type={type}
-        path={selectedPath}
-        isOpen={showRename}
-        setIsOpen={setShowRename}
+        type={state.type}
+        path={state.path}
+        isOpen={state.showRename}
+        setIsOpen={() =>
+          dispatch({ type: IFileExplorerActionKind.CLOSE_MODAL })
+        }
       />
       <Delete
-        type={type}
-        path={selectedPath}
-        isOpen={showDelete}
-        setIsOpen={setShowDelete}
+        type={state.type}
+        path={state.path}
+        isOpen={state.showDelete}
+        setIsOpen={() =>
+          dispatch({ type: IFileExplorerActionKind.CLOSE_MODAL })
+        }
       />
     </>
   );
@@ -144,14 +230,15 @@ const NodeRenderer = ({
   isBranch,
   isExpanded,
   element,
+  handleRename,
+  handleDelete,
 }: {
   isBranch: boolean;
   isExpanded: boolean;
   element: Element;
+  handleRename: () => void;
+  handleDelete: () => void;
 }) => {
-  const [showRename, setShowRename] = useState(false);
-  const [showDelete, setShowDelete] = useState(false);
-
   const { name } = element;
 
   const { path } = element.metadata || {};
@@ -161,10 +248,10 @@ const NodeRenderer = ({
   const handleClick = (action: IAction) => {
     switch (action) {
       case IAction.DELETE:
-        setShowDelete(true);
+        handleDelete();
         break;
       case IAction.RENAME:
-        setShowRename(true);
+        handleRename();
         break;
     }
   };
@@ -181,18 +268,6 @@ const NodeRenderer = ({
         )}
       </span>
       <span className="ml-2 line-clamp-1">{name}</span>
-      <Rename
-        type={type}
-        path={path}
-        isOpen={showRename}
-        setIsOpen={setShowRename}
-      />
-      <Delete
-        type={type}
-        path={path}
-        isOpen={showDelete}
-        setIsOpen={setShowDelete}
-      />
     </span>
   );
 
