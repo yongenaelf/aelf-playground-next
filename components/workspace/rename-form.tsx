@@ -59,6 +59,15 @@ export function RenameForm({
           contents: currentFile?.contents || "",
         });
         await db.files.delete(currentKey);
+      } else {
+        const currentKey = `${pathname}/${encodeURIComponent(path)}`;
+        const currentFiles = await db.files.filter(file => file.path.startsWith(currentKey)).toArray();
+
+        const newKey = `${pathname}/${encodeURIComponent(data.path)}`;
+        const newFiles = currentFiles.map(i => ({...i, path: i.path.replace(currentKey, newKey)}));
+
+        await db.files.bulkAdd(newFiles);
+        await db.files.bulkDelete(currentFiles.map(i => i.path));
       }
 
       await refreshFileExplorer();

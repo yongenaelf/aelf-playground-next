@@ -82,8 +82,27 @@ const FileExplorer = () => {
 
             if (typeof path !== "string") return;
 
-            if (!props.isBranch) {
+            const { children } = props.element;
+
+            setType(children.length > 0 ? "folder" : "file");
+            setSelectedPath(path);
+
+            if (children.length === 0) {
               setSearchParams("file", encodeURIComponent(path));
+            }
+          }}
+          // @ts-expect-error
+          onKeyDown={(e: React.KeyboardEvent<HTMLSpanElement>) => {
+            if (e.key === "F2") {
+              e.stopPropagation();
+
+              setShowRename(true);
+            }
+
+            if (e.code === "Delete") {
+              e.stopPropagation();
+
+              setShowDelete(true);
             }
           }}
           nodeRenderer={({
@@ -98,19 +117,6 @@ const FileExplorer = () => {
                 isBranch={isBranch}
                 isExpanded={isExpanded}
                 element={element}
-                handleClick={(action) => {
-                  setType(isBranch ? "folder" : "file");
-                  setSelectedPath(String(element.metadata!.path));
-
-                  switch (action) {
-                    case IAction.RENAME:
-                      setShowRename(true);
-                      break;
-                    case IAction.DELETE:
-                      setShowDelete(true);
-                      break;
-                  }
-                }}
               />
             </div>
           )}
@@ -138,14 +144,33 @@ const NodeRenderer = ({
   isBranch,
   isExpanded,
   element,
-  handleClick,
 }: {
   isBranch: boolean;
   isExpanded: boolean;
   element: Element;
-  handleClick: (action: IAction) => void;
 }) => {
+  const [showRename, setShowRename] = useState(false);
+  const [showDelete, setShowDelete] = useState(false);
+
   const { name } = element;
+
+  const { path } = element.metadata || {};
+
+  const type = isBranch ? "folder" : "file";
+
+  const handleClick = (action: IAction) => {
+    switch (action) {
+      case IAction.DELETE:
+        setShowDelete(true);
+        break;
+      case IAction.RENAME:
+        setShowRename(true);
+        break;
+    }
+  };
+
+  if (typeof path !== "string") return null;
+
   const node = (
     <span className="flex px-2">
       <span className="my-1">
@@ -156,6 +181,18 @@ const NodeRenderer = ({
         )}
       </span>
       <span className="ml-2 line-clamp-1">{name}</span>
+      <Rename
+        type={type}
+        path={path}
+        isOpen={showRename}
+        setIsOpen={setShowRename}
+      />
+      <Delete
+        type={type}
+        path={path}
+        isOpen={showDelete}
+        setIsOpen={setShowDelete}
+      />
     </span>
   );
 
