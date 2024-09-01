@@ -90,9 +90,8 @@ export function BuildDeployPanel() {
   return (
     <div className="p-4 border-b-2 flex gap-2">
       {buttons.map((button) => (
-        <Tooltip text={button.title}>
+        <Tooltip text={button.title} key={button.title}>
           <Button
-            key={button.title}
             disabled={button.disabled}
             variant="ghost"
             className="rounded-none p-2"
