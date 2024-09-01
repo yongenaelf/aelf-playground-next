@@ -12,6 +12,7 @@ import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import useSWR, { mutate } from "swr";
 import { FileIcon } from "./file-icon";
+import { FileExplorerTopMenu } from "./file-explorer-top-menu";
 
 type TOCProps = {
   toc: TreeViewElement[];
@@ -116,7 +117,12 @@ const FileExplorer = () => {
 
   if (!toc) return <p>Loading...</p>;
 
-  return <TOC toc={toc} pathname={pathname} />;
+  return (
+    <>
+      <FileExplorerTopMenu />
+      <TOC toc={toc} pathname={pathname} />
+    </>
+  );
 };
 
 /**
