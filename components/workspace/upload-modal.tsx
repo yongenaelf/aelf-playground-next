@@ -15,7 +15,7 @@ import { db, FileContent } from "@/data/db";
 import { useCallback, useState } from "react";
 import { useDropzone, DropzoneOptions } from "react-dropzone";
 import { usePathname } from "next/navigation";
-import { useRefreshFileExplorer } from "./file-explorer";
+import { useRefreshFileExplorer } from "@/components/file-explorer";
 import { useLoadFiles } from "../webcontainer/use-load-files";
 import { Tooltip } from "../tooltip";
 
