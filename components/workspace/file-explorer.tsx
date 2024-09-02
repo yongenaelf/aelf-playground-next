@@ -255,23 +255,24 @@ const NodeRenderer = ({
     }
   };
 
-  const node = (
-    <span className="flex px-2">
-      <span className="my-1">
-        {isBranch ? (
-          <FolderIcon isOpen={isExpanded} />
-        ) : (
-          <FileIcon filename={name} />
-        )}
-      </span>
-      <span className="ml-2 line-clamp-1">{name}</span>
-    </span>
-  );
-
   return isBranch ? (
-    <FolderContextMenu handleClick={handleClick}>{node}</FolderContextMenu>
+    <FolderContextMenu handleClick={handleClick}>
+      <span className="flex px-2">
+        <span className="my-1">
+          <FolderIcon isOpen={isExpanded} />
+        </span>
+        <span className="ml-2 line-clamp-1">{name}</span>
+      </span>
+    </FolderContextMenu>
   ) : (
-    <FileContextMenu handleClick={handleClick}>{node}</FileContextMenu>
+    <FileContextMenu handleClick={handleClick}>
+      <span className="flex px-2">
+        <span className="my-1">
+          <FileIcon filename={name} />
+        </span>
+        <span className="ml-2 line-clamp-1">{name}</span>
+      </span>
+    </FileContextMenu>
   );
 };
 
