@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/resizable";
 import Cli from "@/components/workspace/cli";
 import Editor from "@/components/workspace/editor";
-import FileExplorer from "@/components/workspace/file-explorer";
+import FileExplorer from "@/components/file-explorer";
 import { PropsWithChildren } from "react";
 
 export default function Layout({ children }: PropsWithChildren) {

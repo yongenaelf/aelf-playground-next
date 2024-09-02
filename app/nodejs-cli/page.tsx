@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/resizable";
 import NodeTerminal from "@/components/webcontainer/node-terminal";
 import Editor from "@/components/workspace/editor";
-import FileExplorer from "@/components/workspace/file-explorer";
+import FileExplorer from "@/components/file-explorer";
 
 export default function Page() {
   return (

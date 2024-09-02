@@ -1,0 +1,43 @@
+.file-tree {
+  user-select: none;
+  border-radius: 0.4em;
+}
+
+.file-tree .tree,
+.file-tree .tree-node,
+.file-tree .tree-node-group {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.file-tree .tree-branch-wrapper,
+.file-tree .tree-node__leaf {
+  outline: none;
+  outline: none;
+}
+
+.file-tree .tree-node {
+  cursor: pointer;
+}
+
+.file-tree .tree-node:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.file-tree .tree .tree-node--focused {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.file-tree .tree .tree-node--selected {
+  background: rgba(48, 107, 176);
+}
+
+.file-tree .tree-node__branch {
+  display: block;
+}
+
+.file-tree .icon {
+  vertical-align: middle;
+  margin-right: 5px;
+}
