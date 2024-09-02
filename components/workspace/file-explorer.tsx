@@ -54,6 +54,7 @@ enum IFileExplorerActionKind {
   DELETE,
   SELECT,
   CLOSE_MODAL,
+  ADD,
 }
 
 type FileOrFolder = "file" | "folder";
@@ -71,11 +72,14 @@ interface IFileExplorerState {
   path?: string;
   type?: FileOrFolder;
   focusedId?: string;
+  showAdd: boolean;
+  addType?: FileOrFolder;
 }
 
 const initialState: IFileExplorerState = {
   showRename: false,
   showDelete: false,
+  showAdd: false,
 };
 
 // Our reducer function that uses a switch statement to handle our actions
@@ -104,6 +108,13 @@ function reducer(state: IFileExplorerState, action: IFileExplorerAction) {
         ...state,
         showRename: false,
         showDelete: false,
+        showAdd: false,
+      };
+    case IFileExplorerActionKind.ADD:
+      return {
+        ...state,
+        addType: payload?.type,
+        showAdd: true,
       };
     default:
       return state;
@@ -113,6 +124,7 @@ function reducer(state: IFileExplorerState, action: IFileExplorerAction) {
 const FileExplorer = () => {
   const pathname = usePathname();
   const setSearchParams = useSetSearchParams();
+  const refreshFileExplorer = useRefreshFileExplorer();
 
   const [state, dispatch] = useReducer(reducer, initialState);
 
@@ -170,6 +182,26 @@ const FileExplorer = () => {
 
               dispatch({ type: IFileExplorerActionKind.DELETE });
             }
+
+            if (state.type === "folder") {
+              if (e.ctrlKey && e.key.toUpperCase() === "N") {
+                if (e.shiftKey) {
+                  dispatch({
+                    type: IFileExplorerActionKind.ADD,
+                    payload: {
+                      type: "folder",
+                    },
+                  });
+                } else {
+                  dispatch({
+                    type: IFileExplorerActionKind.ADD,
+                    payload: {
+                      type: "file",
+                    },
+                  });
+                }
+              }
+            }
           }}
           nodeRenderer={({
             element,
@@ -201,7 +233,55 @@ const FileExplorer = () => {
                     },
                   })
                 }
+                handleNewFile={() =>
+                  dispatch({
+                    type: IFileExplorerActionKind.ADD,
+                    payload: {
+                      type: "file",
+                      path: element.id as string,
+                    },
+                  })
+                }
+                handleNewFolder={() =>
+                  dispatch({
+                    type: IFileExplorerActionKind.ADD,
+                    payload: {
+                      type: "folder",
+                      path: element.id as string,
+                    },
+                  })
+                }
               />
+              {state.showAdd && state.path === element.id ? (
+                <input
+                  ref={(ref) => {
+                    setTimeout(() => {
+                      ref?.focus();
+                    }, 200);
+                  }}
+                  className="ml-8"
+                  onBlur={() =>
+                    dispatch({ type: IFileExplorerActionKind.CLOSE_MODAL })
+                  }
+                  onKeyDown={async (e) => {
+                    if (e.key === "Escape")
+                      dispatch({ type: IFileExplorerActionKind.CLOSE_MODAL });
+
+                    if (e.key === "Enter") {
+                      await db.files.add({
+                        path: `${pathname}/${encodeURIComponent(
+                          `${state.path}/${e.currentTarget.value}${
+                            state.addType === "folder" ? "/.gitkeep" : ""
+                          }`
+                        )}`,
+                        contents: "",
+                      });
+                      await refreshFileExplorer();
+                      dispatch({ type: IFileExplorerActionKind.CLOSE_MODAL });
+                    }
+                  }}
+                />
+              ) : null}
             </div>
           )}
         />
@@ -234,12 +314,16 @@ const NodeRenderer = ({
   element,
   handleRename,
   handleDelete,
+  handleNewFile,
+  handleNewFolder,
 }: {
   isBranch: boolean;
   isExpanded: boolean;
   element: Element;
   handleRename: () => void;
   handleDelete: () => void;
+  handleNewFile: () => void;
+  handleNewFolder: () => void;
 }) => {
   const { name } = element;
 
@@ -251,8 +335,16 @@ const NodeRenderer = ({
       case IAction.RENAME:
         handleRename();
         break;
+      case IAction.NEW_FILE:
+        handleNewFile();
+        break;
+      case IAction.NEW_FOLDER:
+        handleNewFolder();
+        break;
     }
   };
+
+  if (name.startsWith(".")) return null;
 
   return isBranch ? (
     <FolderContextMenu handleClick={handleClick}>

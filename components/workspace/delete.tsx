@@ -48,7 +48,15 @@ export default function Delete({
                   `${pathname}/${encodeURIComponent(path)}`
                 );
               } else {
-                const all = (await db.files.filter(file => file.path.startsWith(`${pathname}/${encodeURIComponent(path)}`)).toArray()).map(i => i.path);
+                const all = (
+                  await db.files
+                    .filter((file) =>
+                      file.path.startsWith(
+                        `${pathname}/${encodeURIComponent(path + "/")}`
+                      )
+                    )
+                    .toArray()
+                ).map((i) => i.path);
                 await db.files.bulkDelete(all);
               }
 
