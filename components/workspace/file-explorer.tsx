@@ -38,7 +38,6 @@ function convert(data: string[]) {
           (node = {
             name: label,
             id: path.slice(1),
-            metadata: { path: path.slice(1) },
           } as TreeViewElement)
         );
         (parent.children ??= []).push(node);
