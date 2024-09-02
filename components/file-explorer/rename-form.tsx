@@ -18,16 +18,20 @@ import { Input } from "@/components/ui/input";
 import { usePathname } from "next/navigation";
 import { db } from "@/data/db";
 import { Loader2 } from "lucide-react";
-import { useRefreshFileExplorer } from "./file-explorer";
+import { useRefreshFileExplorer } from "./";
 
 const FormSchema = z.object({
   path: z.string(),
 });
 
-export function NewFileForm({
+export function RenameForm({
   onSubmit,
+  type,
+  path,
 }: {
   onSubmit?: (path: string) => void;
+  type?: "file" | "folder";
+  path?: string;
 }) {
   const pathname = usePathname();
   const refreshFileExplorer = useRefreshFileExplorer();
@@ -35,17 +39,42 @@ export function NewFileForm({
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      path: "",
+      path,
     },
   });
 
   async function _onSubmit(data: z.infer<typeof FormSchema>) {
     form.clearErrors();
+
+    if (!path) return;
+
     try {
-      await db.files.add({
-        path: `${pathname}/${encodeURIComponent(data.path)}`,
-        contents: "",
-      });
+      if (type === "file") {
+        const currentKey = `${pathname}/${encodeURIComponent(path)}`;
+        const currentFile = await db.files.get(currentKey);
+
+        const newKey = `${pathname}/${encodeURIComponent(data.path)}`;
+        await db.files.add({
+          path: newKey,
+          contents: currentFile?.contents || "",
+        });
+        await db.files.delete(currentKey);
+      } else {
+        const currentKey = `${pathname}/${encodeURIComponent(path)}`;
+        const currentFiles = await db.files
+          .filter((file) => file.path.startsWith(currentKey))
+          .toArray();
+
+        const newKey = `${pathname}/${encodeURIComponent(data.path)}`;
+        const newFiles = currentFiles.map((i) => ({
+          ...i,
+          path: i.path.replace(currentKey, newKey),
+        }));
+
+        await db.files.bulkAdd(newFiles);
+        await db.files.bulkDelete(currentFiles.map((i) => i.path));
+      }
+
       await refreshFileExplorer();
       onSubmit?.(data.path);
     } catch (err) {
@@ -66,10 +95,10 @@ export function NewFileForm({
             <FormItem>
               <FormLabel>Path</FormLabel>
               <FormControl>
-                <Input className="w-full" placeholder="file path" {...field} />
+                <Input className="w-full" placeholder="path" {...field} />
               </FormControl>
               <FormDescription>
-                This is the path of your new file.
+                This is the new path of your {type}.
               </FormDescription>
               <FormMessage />
             </FormItem>

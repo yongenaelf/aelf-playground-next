@@ -11,7 +11,7 @@ import {
 import { Button } from "../ui/button";
 import { db } from "@/data/db";
 import { usePathname } from "next/navigation";
-import { useRefreshFileExplorer } from "./file-explorer";
+import { useRefreshFileExplorer } from "./";
 
 export default function Delete({
   type,
