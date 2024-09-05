@@ -168,7 +168,7 @@ export function useCliCommands() {
         <>
           <p>Loaded files: {files.map((i) => i.path).join(", ")}</p>
           <p>
-            <Loader2 className="h-4 w-4 animate-spin inline" /> Building...
+            <Loader2 className="h-4 w-4 animate-spin inline" /> Running tests...
           </p>
         </>
       );
