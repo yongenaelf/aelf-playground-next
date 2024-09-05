@@ -6,7 +6,7 @@ import { useCliCommands } from "./workspace/use-cli-commands";
 import useSWR, { mutate } from "swr";
 import { db } from "@/data/db";
 import { useWorkspaceId } from "./workspace/use-workspace-id";
-import { Download, Rocket, ShieldCheck, Wrench } from "lucide-react";
+import { Download, Rocket, ShieldCheck, Wrench, TestTube } from "lucide-react";
 import UploadModal from "./workspace/upload-modal";
 import { Tooltip } from "./tooltip";
 
@@ -15,6 +15,7 @@ export function BuildDeployPanel() {
   const [isAuditing, setIsAuditing] = useState(false);
   const [isBuilding, setIsBuilding] = useState(false);
   const [isDeploying, setIsDeploying] = useState(false);
+  const [isTesting, setIsTesting] = useState(false);
   const id = useWorkspaceId();
 
   const { data: isDeployable } = useSWR(
@@ -60,6 +61,20 @@ export function BuildDeployPanel() {
         }
       },
       icon: Wrench,
+    },
+    {
+      disabled: isTesting,
+      title: "Test",
+      onClick: async () => {
+        try {
+          setIsTesting(true);
+          await commands.test();
+        } catch (err) {
+        } finally {
+          setIsTesting(false);
+        }
+      },
+      icon: TestTube,
     },
     {
       disabled: isBuilding || !isDeployable || isDeploying,

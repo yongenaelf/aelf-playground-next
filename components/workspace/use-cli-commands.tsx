@@ -31,6 +31,7 @@ export function useCliCommands() {
               audit - audits the current workspace using AI
             </li>
             <li className="ml-8">build - builds the current workspace</li>
+            <li className="ml-8">test - tests the current workspace</li>
             <li className="ml-8">deploy - deploys the built smart contract</li>
             <li className="ml-8">export - exports the current workspace</li>
             <li className="ml-8">
@@ -141,6 +142,49 @@ export function useCliCommands() {
           );
           return;
         }
+      } catch (err) {
+        if (err instanceof Error)
+          terminalContext.setBufferedContent(<>{err.message}</>);
+        return;
+      }
+    },
+    test: async () => {
+      if (typeof id !== "string") throw new Error("id is not string");
+
+      const start = `${pathname}/`;
+      terminalContext.setBufferedContent(
+        <>
+          <p>Loading files...</p>
+        </>
+      );
+      const files = (
+        await db.files.filter((file) => file.path.startsWith(start)).toArray()
+      ).map((file) => ({
+        path: decodeURIComponent(file.path.replace(start, "")),
+        contents: file.contents,
+      }));
+
+      terminalContext.setBufferedContent(
+        <>
+          <p>Loaded files: {files.map((i) => i.path).join(", ")}</p>
+          <p>
+            <Loader2 className="h-4 w-4 animate-spin inline" /> Building...
+          </p>
+        </>
+      );
+
+      try {
+        const res = await fetch(`/api/test`, {
+          method: "POST",
+          body: JSON.stringify({ files }),
+        });
+        const { message } = await res.json();
+
+        terminalContext.setBufferedContent(
+          <>
+            <p>{message}</p>
+          </>
+        );
       } catch (err) {
         if (err instanceof Error)
           terminalContext.setBufferedContent(<>{err.message}</>);
