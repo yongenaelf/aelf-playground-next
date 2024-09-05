@@ -12,6 +12,7 @@ import clsx from "clsx";
 import { fileContentToZip } from "@/lib/file-content-to-zip";
 import { saveAs } from "file-saver";
 import { useSetSearchParams } from "@/lib/set-search-params";
+import { FormatErrors } from "./format-errors";
 
 export function useCliCommands() {
   const terminalContext = useContext(TerminalContext);
@@ -181,9 +182,7 @@ export function useCliCommands() {
         const { message } = await res.json();
 
         terminalContext.setBufferedContent(
-          <>
-            <p>{message}</p>
-          </>
+          <FormatErrors inputString={message} />
         );
       } catch (err) {
         if (err instanceof Error)
