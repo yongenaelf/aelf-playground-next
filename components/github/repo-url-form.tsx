@@ -32,7 +32,7 @@ export function RepoUrlForm({
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      url: "https://github.com/AElfProject/aelf-developer-tools",
+      url: "https://github.com/AElfProject/aelf-samples",
     },
   });
 

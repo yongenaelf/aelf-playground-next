@@ -70,7 +70,7 @@ export default function GitHub() {
       ) : null}
       {selected.length > 0 && repo && branch ? (
         <div>
-          {selected.join(", ")} selected.{" "}
+          {selected.length} files or folders selected.{" "}
           <button
             className="text-red-600 hover:font-bold"
             onClick={() => {
