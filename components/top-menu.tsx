@@ -19,7 +19,6 @@ export default function TopMenu() {
     { href: "/workspaces", children: "Workspaces" },
     { href: "/tutorials", children: "Tutorials" },
     { href: "/deployments", children: "Deployments" },
-    { href: "/visual-editor", children: "Visual Editor" },
     { href: "https://github.com/AElfProject", children: "GitHub" },
   ];
 
