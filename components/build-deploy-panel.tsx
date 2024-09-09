@@ -6,7 +6,7 @@ import { useCliCommands } from "./workspace/use-cli-commands";
 import useSWR, { mutate } from "swr";
 import { db } from "@/data/db";
 import { useWorkspaceId } from "./workspace/use-workspace-id";
-import { Download, Rocket, ShieldCheck, Wrench, TestTube } from "lucide-react";
+import { Download, Rocket, ShieldCheck, Wrench, TestTube2 } from "lucide-react";
 import UploadModal from "./workspace/upload-modal";
 import { Tooltip } from "./tooltip";
 
@@ -74,7 +74,7 @@ export function BuildDeployPanel() {
           setIsTesting(false);
         }
       },
-      icon: TestTube,
+      icon: TestTube2,
     },
     {
       disabled: isBuilding || !isDeployable || isDeploying,
