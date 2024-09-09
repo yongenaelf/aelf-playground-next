@@ -1,4 +1,4 @@
-import { TutorialFilter } from "./filter";
+import { Filter } from "@/components/listing-page/filter";
 
 const level = [
   {
@@ -16,5 +16,5 @@ const level = [
 ];
 
 export function TutorialLevelFilter() {
-  return <TutorialFilter searchKey="level" title="Level" options={level} />;
+  return <Filter searchKey="level" title="Level" options={level} />;
 }

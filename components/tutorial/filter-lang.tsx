@@ -1,4 +1,4 @@
-import { TutorialFilter } from "./filter";
+import { Filter } from "@/components/listing-page/filter";
 
 const lang = [
   {
@@ -12,5 +12,5 @@ const lang = [
 ];
 
 export function TutorialLangFilter() {
-  return <TutorialFilter searchKey="lang" title="Language" options={lang} />;
+  return <Filter searchKey="lang" title="Language" options={lang} />;
 }

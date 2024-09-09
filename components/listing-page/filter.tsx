@@ -20,7 +20,7 @@ const FormSchema = z.object({
   items: z.array(z.string()),
 });
 
-export function TutorialFilter({
+export function Filter({
   searchKey,
   title,
   options,
