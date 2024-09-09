@@ -49,7 +49,7 @@ export function RepoWorkspaceName({
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      name: "",
+      name: paths.find(i => i.endsWith(".csproj"))?.split("/").pop()?.replace(".csproj", ""),
       template: `github.com/${repo}/tree/${branch}`,
     },
   });
@@ -79,9 +79,11 @@ export function RepoWorkspaceName({
 
       const parsedData = getRepoBlobsSchema.parse(fileData);
 
+      const rootPath = parsedData.find(i => i.path.endsWith(".csproj"))?.path.split("/").slice(0, -2).join("/")
+
       await db.files.bulkAdd(
         parsedData.map(({ path, contents }) => ({
-          path: `/workspace/${data.name}/${encodeURIComponent(path)}`,
+          path: `/workspace/${data.name}/${encodeURIComponent(rootPath ? path.replace(rootPath + "/", "") : path)}`,
           contents,
         }))
       );

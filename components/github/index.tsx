@@ -2,10 +2,10 @@
 
 import { useState } from "react";
 import { RepoUrlForm } from "./repo-url-form";
-import { RepoSelectFiles } from "./repo-select-files";
 import { X } from "lucide-react";
 import { RepoBranchSelection } from "./repo-branch-selection";
 import { RepoWorkspaceName } from "./repo-workspace-name";
+import ProjectSelection from "./project-selection";
 
 export default function GitHub() {
   const [repo, setRepo] = useState<string>();
@@ -58,10 +58,10 @@ export default function GitHub() {
             />
           )}
           {branch && selected.length === 0 ? (
-            <RepoSelectFiles
+            <ProjectSelection
               repo={repo}
               branch={branch}
-              onSubmit={async (paths) => {
+              onSelect={async (paths) => {
                 setSelected(paths);
               }}
             />
@@ -70,7 +70,8 @@ export default function GitHub() {
       ) : null}
       {selected.length > 0 && repo && branch ? (
         <div>
-          {selected.length} files or folders selected.{" "}
+          You have selected <b>{selected.find((i) => i.endsWith(".csproj"))}</b>
+          .
           <button
             className="text-red-600 hover:font-bold"
             onClick={() => {
