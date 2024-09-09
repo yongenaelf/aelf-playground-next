@@ -87,12 +87,12 @@ export default function Home() {
           ))}
         </div>
         <h3 className="text-xl font-bold">
-          ... enter a{" "}
+          ... or enter a{" "}
           <Link href="/import" className="hover:underline">
             GitHub repo url (click here)
           </Link>{" "}
         </h3>
-        <h3 className="text-xl font-bold">... or generate from a prompt:</h3>
+        {/* <h3 className="text-xl font-bold">... or generate from a prompt:</h3>
         <div className="grid w-full grid-cols-1 gap-6 md:grid-cols-2">
           <div className="rounded-lg border bg-background p-6 shadow-sm">
             <div className="flex flex-col space-y-3">
@@ -107,7 +107,7 @@ export default function Home() {
             <h4 className="text-2xl font-bold">DeepChat AI</h4>
             <p className="text-muted-foreground">Coming soon.</p>
           </div>
-        </div>
+        </div> */}
       </div>
     </section>
   );
