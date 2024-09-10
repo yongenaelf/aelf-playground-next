@@ -1,7 +1,7 @@
 "use client";
 
 import useSWR from "swr";
-import { db } from "./db";
+import { db, FileContent } from "./db";
 import { ProposalInfo } from "./proposal-info-types";
 import AElf from "aelf-sdk";
 import { Transactions } from "./transactions-types";
@@ -144,9 +144,7 @@ export function useTutorialList() {
 }
 
 export function useShare(id: string) {
-  return useSWR<
-    Record<string, string>
-  >(`get-share-${id}`, async () => {
+  return useSWR<FileContent[]>(`get-share-${id}`, async () => {
     const res = await fetch(`/api/get-share?id=${id}`);
 
     const data = await res.json();

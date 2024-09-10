@@ -1,5 +1,6 @@
+import { FileContent } from "@/data/db";
 import { getBuildServerBaseUrl } from "@/lib/env";
-import { unzipSync } from "fflate";
+import { unzipSync, strFromU8 } from "fflate";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -13,11 +14,24 @@ export async function GET(request: Request) {
     `${getBuildServerBaseUrl()}/playground/share/get/${id}`
   );
 
-  const data = await res.text();
+  const data = await res.arrayBuffer();
 
-  const zipData = Buffer.from(data, "base64");
+  try {
+    const unzipped = unzipSync(Buffer.from(data));
 
-  const unzipped = unzipSync(zipData);
+    let files: FileContent[] = [];
 
-  return Response.json(unzipped);
+    Object.entries(unzipped).forEach(([k, v]) => {
+      files.push({
+        path: k,
+        contents: strFromU8(v)
+      })
+    })
+
+    return Response.json(files);
+  } catch (err) {
+    if (err instanceof Error) {
+      return Response.json({ message: err.message }, { status: 500 });
+    }
+  }
 }
