@@ -6,7 +6,7 @@ import { useCliCommands } from "./workspace/use-cli-commands";
 import useSWR, { mutate } from "swr";
 import { db } from "@/data/db";
 import { useWorkspaceId } from "./workspace/use-workspace-id";
-import { Download, Rocket, ShieldCheck, Wrench, TestTube2 } from "lucide-react";
+import { Download, Rocket, ShieldCheck, Wrench, TestTube2, Link2 } from "lucide-react";
 import UploadModal from "./workspace/upload-modal";
 import { Tooltip } from "./tooltip";
 
@@ -99,6 +99,16 @@ export function BuildDeployPanel() {
         } catch (err) {}
       },
       icon: Download,
+    },
+    {
+      disabled: false,
+      title: "Share",
+      onClick: async () => {
+        try {
+          await commands.share();
+        } catch (err) {}
+      },
+      icon: Link2,
     },
   ];
 

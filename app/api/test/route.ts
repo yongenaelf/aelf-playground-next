@@ -1,9 +1,8 @@
 import { FileContent } from "@/data/db";
-import { getBuildServerBaseUrl, getSolangBuildServerBaseUrl } from "@/lib/env";
+import { getBuildServerBaseUrl } from "@/lib/env";
 import { fileContentToZip } from "@/lib/file-content-to-zip";
 import { type NextRequest } from "next/server";
 import { v4 as uuidv4 } from "uuid";
-import { strFromU8, strToU8 } from "fflate";
 
 export async function POST(request: NextRequest) {
   const { files } = (await request.json()) as { files: FileContent[] };

@@ -7,6 +7,7 @@ import clsx from "clsx";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import { getGoogleAnalyticsTag } from "@/lib/env";
 import Providers from "@/components/providers";
+import { Toaster } from "@/components/ui/toaster"
 
 const font = Poppins({
   weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
@@ -30,6 +31,7 @@ export default function RootLayout({ children }: PropsWithChildren) {
           <main className="h-[calc(100vh-66px)] overflow-auto">
             <Suspense>{children}</Suspense>
           </main>
+          <Toaster />
         </Providers>
       </body>
       {gaId ? <GoogleAnalytics gaId={gaId} /> : null}
