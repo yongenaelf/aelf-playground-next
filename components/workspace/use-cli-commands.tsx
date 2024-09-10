@@ -13,6 +13,7 @@ import { fileContentToZip } from "@/lib/file-content-to-zip";
 import { saveAs } from "file-saver";
 import { useSetSearchParams } from "@/lib/set-search-params";
 import { FormatErrors } from "./format-errors";
+import { ShareLink } from "./share-link";
 
 export function useCliCommands() {
   const terminalContext = useContext(TerminalContext);
@@ -35,6 +36,7 @@ export function useCliCommands() {
             <li className="ml-8">test - tests the current workspace</li>
             <li className="ml-8">deploy - deploys the built smart contract</li>
             <li className="ml-8">export - exports the current workspace</li>
+            <li className="ml-8">share - generates a share link for the current workspace</li>
             <li className="ml-8">
               check txID - checks the result of transaction
             </li>
@@ -260,6 +262,46 @@ export function useCliCommands() {
       );
       saveAs(file);
     },
+    share: async () => {
+      if (typeof id !== "string") throw new Error("id is not string");
+      const start = `${pathname}/`;
+      terminalContext.setBufferedContent(
+        <>
+          <p>Loading files...</p>
+        </>
+      );
+      const files = (
+        await db.files.filter((file) => file.path.startsWith(start)).toArray()
+      ).map((file) => ({
+        path: decodeURIComponent(file.path.replace(start, "")),
+        contents: file.contents,
+      }));
+
+      terminalContext.setBufferedContent(
+        <>
+          <p>Loaded files: {files.map((i) => i.path).join(", ")}</p>
+          <p>
+            <Loader2 className="h-4 w-4 animate-spin inline" /> Generating share link...
+          </p>
+        </>
+      );
+
+      try {
+        const res = await fetch(`/api/share`, {
+          method: "POST",
+          body: JSON.stringify({ files }),
+        });
+        const { id } = await res.json();
+
+        terminalContext.setBufferedContent(
+          <ShareLink id={id} />
+        );
+      } catch (err) {
+        if (err instanceof Error)
+          terminalContext.setBufferedContent(<>{err.message}</>);
+        return;
+      }
+    },
   };
 
   return commands;
@@ -396,3 +438,4 @@ function AuditReportResult({ codeHash }: { codeHash: string }) {
     </>
   );
 }
+

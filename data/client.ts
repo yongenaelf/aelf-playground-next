@@ -142,3 +142,15 @@ export function useTutorialList() {
     return data;
   });
 }
+
+export function useShare(id: string) {
+  return useSWR<
+    Record<string, string>
+  >(`get-share-${id}`, async () => {
+    const res = await fetch(`/api/get-share?id=${id}`);
+
+    const data = await res.json();
+
+    return data;
+  });
+}
