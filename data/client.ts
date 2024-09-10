@@ -144,11 +144,14 @@ export function useTutorialList() {
 }
 
 export function useShare(id: string) {
-  return useSWR<FileContent[]>(`get-share-${id}`, async () => {
-    const res = await fetch(`/api/get-share?id=${id}`);
+  return useSWR<{ files?: FileContent[]; message?: string; success: boolean }>(
+    `get-share-${id}`,
+    async () => {
+      const res = await fetch(`/api/get-share?id=${id}`);
 
-    const data = await res.json();
+      const data = await res.json();
 
-    return data;
-  });
+      return data;
+    }
+  );
 }

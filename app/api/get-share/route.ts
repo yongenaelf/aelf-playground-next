@@ -10,13 +10,13 @@ export async function GET(request: Request) {
     throw new Error("no id");
   }
 
-  const res = await fetch(
-    `${getBuildServerBaseUrl()}/playground/share/get/${id}`
-  );
-
-  const data = await res.arrayBuffer();
-
   try {
+    const res = await fetch(
+      `${getBuildServerBaseUrl()}/playground/share/get/${id}`
+    );
+
+    const data = await res.arrayBuffer();
+
     const unzipped = unzipSync(Buffer.from(data));
 
     let files: FileContent[] = [];
@@ -24,14 +24,19 @@ export async function GET(request: Request) {
     Object.entries(unzipped).forEach(([k, v]) => {
       files.push({
         path: k,
-        contents: strFromU8(v)
-      })
-    })
+        contents: strFromU8(v),
+      });
+    });
 
-    return Response.json(files);
+    return Response.json({ files, success: true });
   } catch (err) {
     if (err instanceof Error) {
-      return Response.json({ message: err.message }, { status: 500 });
+      let error = err.message;
+
+      if (error === "invalid zip data")
+        error = "This share ID is not available.";
+
+      return Response.json({ message: error, success: false });
     }
   }
 }
