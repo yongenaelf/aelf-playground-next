@@ -1,0 +1,46 @@
+import { processTestOutput } from './process-test-output';
+import { describe, it, expect } from 'vitest';
+
+const testString = `Process exited with code 1. Details:   Determining projects to restore...\n  Restored /tmp/playground/08993f10-e0ef-4bbf-b6e0-5a5ce4fa71e3/src/MyWayDAO.csproj (in 1.57 sec).\n  Restored /tmp/playground/08993f10-e0ef-4bbf-b6e0-5a5ce4fa71e3/test/MyWayDAO.Tests.csproj (in 3.28 sec).\nProtobuf/reference/acs12.proto(13,1): warning : warning: Import aelf/core.proto is unused. [/tmp/playground/08993f10-e0ef-4bbf-b6e0-5a5ce4fa71e3/src/MyWayDAO.csproj]\n  MyWayDAO -> /tmp/playground/08993f10-e0ef-4bbf-b6e0-5a5ce4fa71e3/src/bin/Debug/net6.0/MyWayDAO.dll\n  [CONTRACT-PATCHER] Saving as /tmp/playground/08993f10-e0ef-4bbf-b6e0-5a5ce4fa71e3/src/bin/Debug/net6.0/MyWayDAO.dll.patched\nProtobuf/reference/acs12.proto(13,1): warning : warning: Import aelf/core.proto is unused. [/tmp/playground/08993f10-e0ef-4bbf-b6e0-5a5ce4fa71e3/test/MyWayDAO.Tests.csproj]\n  MyWayDAO.Tests -> /tmp/playground/08993f10-e0ef-4bbf-b6e0-5a5ce4fa71e3/test/bin/Debug/net6.0/MyWayDAO.Tests.dll\nTest run for /tmp/playground/08993f10-e0ef-4bbf-b6e0-5a5ce4fa71e3/test/bin/Debug/net6.0/MyWayDAO.Tests.dll (.NETCoreApp,Version=v6.0)\nMicrosoft (R) Test Execution Command Line Tool Version 17.3.3 (x64)\nCopyright (c) Microsoft Corporation.  All rights reserved.\n\nStarting test execution, please wait...\nA total of 1 test files matched the specified pattern.\n/tmp/playground/08993f10-e0ef-4bbf-b6e0-5a5ce4fa71e3/test/bin/Debug/net6.0/MyWayDAO.Tests.dll\n[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v2.4.1 (64-bit .NET 6.0.18)\n[xUnit.net 00:00:03.21]   Discovering: MyWayDAO.Tests\n[xUnit.net 00:00:03.27]   Discovered:  MyWayDAO.Tests\n[xUnit.net 00:00:03.28]   Starting:    MyWayDAO.Tests\n  Passed AElf.Contracts.MyWayDAO.MyWayDAOTests.GetAllProposals_Empty [5 s]\n  Passed AElf.Contracts.MyWayDAO.MyWayDAOTests.HasVoted_ProposalNotFound_ShouldThrow [2 s]\n  Passed AElf.Contracts.MyWayDAO.MyWayDAOTests.Vote_MultipleUsers_ShouldSucceed [2 s]\n  Passed AElf.Contracts.MyWayDAO.MyWayDAOTests.Vote_ProposalNotFound_ShouldThrow [1 s]\n  Passed AElf.Contracts.MyWayDAO.MyWayDAOTests.Vote_Success_Reject [838 ms]\n  Passed AElf.Contracts.MyWayDAO.MyWayDAOTests.CreateProposal_InvalidStartTime_ShouldThrow [835 ms]\n  Passed AElf.Contracts.MyWayDAO.MyWayDAOTests.Vote_Success_Approve [1 s]\n  Passed AElf.Contracts.MyWayDAO.MyWayDAOTests.GetAllProposals_ProposalsWithDifferentStates [715 ms]\n  Passed AElf.Contracts.MyWayDAO.MyWayDAOTests.Withdraw_ProposalNotFound_ShouldThrow [1 s]\n  Passed AElf.Contracts.MyWayDAO.MyWayDAOTests.GetProposal_Success [867 ms]\n  Passed AElf.Contracts.MyWayDAO.MyWayDAOTests.GetAllProposals_MultipleProposals [606 ms]\n  Passed AElf.Contracts.MyWayDAO.MyWayDAOTests.InitializeContract_Fail_AlreadyInitialized [848 ms]\n\nTotal tests: Unknown\n     Passed: 12\n Total time: 28.0595 Seconds\n\nThe active test run was aborted. Reason: Test host process crashed\nTest Run Aborted with error System.Exception: One or more errors occurred.\n ---> System.Exception: Unable to read beyond the end of the stream.\n   at System.IO.BinaryReader.Read7BitEncodedInt()\n   at System.IO.BinaryReader.ReadString()\n   at Microsoft.VisualStudio.TestPlatform.CommunicationUtilities.LengthPrefixCommunicationChannel.NotifyDataAvailable()\n   at Microsoft.VisualStudio.TestPlatform.CommunicationUtilities.TcpClientExtensions.MessageLoopAsync(TcpClient client, ICommunicationChannel channel, Action\`1 errorHandler, CancellationToken cancellationToken)\n   --- End of inner exception stack trace ---.\n\n`;
+
+describe('processTestOutput', () => {
+  it('should return an empty array for an empty string', () => {
+    const result = processTestOutput('');
+    expect(result).toEqual([]);
+  });
+
+  it('should return an array of test results for a valid test output string', () => {
+    const result = processTestOutput(testString);
+    expect(result).toEqual([
+      { status: 'passed', name: 'AElf.Contracts.MyWayDAO.MyWayDAOTests.GetAllProposals_Empty', duration: 5000 },
+      { status: 'passed', name: 'AElf.Contracts.MyWayDAO.MyWayDAOTests.HasVoted_ProposalNotFound_ShouldThrow', duration: 2000 },
+      { status: 'passed', name: 'AElf.Contracts.MyWayDAO.MyWayDAOTests.Vote_MultipleUsers_ShouldSucceed', duration: 2000 },
+      { status: 'passed', name: 'AElf.Contracts.MyWayDAO.MyWayDAOTests.Vote_ProposalNotFound_ShouldThrow', duration: 1000 },
+      { status: 'passed', name: 'AElf.Contracts.MyWayDAO.MyWayDAOTests.Vote_Success_Reject', duration: 838 },
+      { status: 'passed', name: 'AElf.Contracts.MyWayDAO.MyWayDAOTests.CreateProposal_InvalidStartTime_ShouldThrow', duration: 835 },
+      { status: 'passed', name: 'AElf.Contracts.MyWayDAO.MyWayDAOTests.Vote_Success_Approve', duration: 1000 },
+      { status: 'passed', name: 'AElf.Contracts.MyWayDAO.MyWayDAOTests.GetAllProposals_ProposalsWithDifferentStates', duration: 715 },
+      { status: 'passed', name: 'AElf.Contracts.MyWayDAO.MyWayDAOTests.Withdraw_ProposalNotFound_ShouldThrow', duration: 1000 },
+      { status: 'passed', name: 'AElf.Contracts.MyWayDAO.MyWayDAOTests.GetProposal_Success', duration: 867 },
+      { status: 'passed', name: 'AElf.Contracts.MyWayDAO.MyWayDAOTests.GetAllProposals_MultipleProposals', duration: 606 },
+      { status: 'passed', name: 'AElf.Contracts.MyWayDAO.MyWayDAOTests.InitializeContract_Fail_AlreadyInitialized', duration: 848 }
+    ]);
+  });
+
+  it('should handle test output with no passed tests', () => {
+    const noPassedTestsString = `Test run for /tmp/playground/08993f10-e0ef-4bbf-b6e0-5a5ce4fa71e3/test/bin/Debug/net6.0/MyWayDAO.Tests.dll (.NETCoreApp,Version=v6.0)\nMicrosoft (R) Test Execution Command Line Tool Version 17.3.3 (x64)\nCopyright (c) Microsoft Corporation.  All rights reserved.\n\nStarting test execution, please wait...\nA total of 1 test files matched the specified pattern.\n/tmp/playground/08993f10-e0ef-4bbf-b6e0-5a5ce4fa71e3/test/bin/Debug/net6.0/MyWayDAO.Tests.dll\n[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v2.4.1 (64-bit .NET 6.0.18)\n[xUnit.net 00:00:03.21]   Discovering: MyWayDAO.Tests\n[xUnit.net 00:00:03.27]   Discovered:  MyWayDAO.Tests\n[xUnit.net 00:00:03.28]   Starting:    MyWayDAO.Tests\n\nTotal tests: Unknown\n     Passed: 0\n Total time: 0 Seconds\n\nThe active test run was aborted. Reason: Test host process crashed\nTest Run Aborted with error System.Exception: One or more errors occurred.\n ---> System.Exception: Unable to read beyond the end of the stream.\n   at System.IO.BinaryReader.Read7BitEncodedInt()\n   at System.IO.BinaryReader.ReadString()\n   at Microsoft.VisualStudio.TestPlatform.CommunicationUtilities.LengthPrefixCommunicationChannel.NotifyDataAvailable()\n   at Microsoft.VisualStudio.TestPlatform.CommunicationUtilities.TcpClientExtensions.MessageLoopAsync(TcpClient client, ICommunicationChannel channel, Action\`1 errorHandler, CancellationToken cancellationToken)\n   --- End of inner exception stack trace ---.\n\n`;
+    const result = processTestOutput(noPassedTestsString);
+    expect(result).toEqual([]);
+  });
+
+  it('should handle test output with mixed results', () => {
+    const mixedResultsString = `Test run for /tmp/playground/08993f10-e0ef-4bbf-b6e0-5a5ce4fa71e3/test/bin/Debug/net6.0/MyWayDAO.Tests.dll (.NETCoreApp,Version=v6.0)\nMicrosoft (R) Test Execution Command Line Tool Version 17.3.3 (x64)\nCopyright (c) Microsoft Corporation.  All rights reserved.\n\nStarting test execution, please wait...\nA total of 1 test files matched the specified pattern.\n/tmp/playground/08993f10-e0ef-4bbf-b6e0-5a5ce4fa71e3/test/bin/Debug/net6.0/MyWayDAO.Tests.dll\n[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v2.4.1 (64-bit .NET 6.0.18)\n[xUnit.net 00:00:03.21]   Discovering: MyWayDAO.Tests\n[xUnit.net 00:00:03.27]   Discovered:  MyWayDAO.Tests\n[xUnit.net 00:00:03.28]   Starting:    MyWayDAO.Tests\n  Passed AElf.Contracts.MyWayDAO.MyWayDAOTests.GetAllProposals_Empty [5 s]\n  Failed AElf.Contracts.MyWayDAO.MyWayDAOTests.HasVoted_ProposalNotFound_ShouldThrow [2 s]\n\nTotal tests: Unknown\n     Passed: 1\n     Failed: 1\n Total time: 7 Seconds\n\nThe active test run was aborted. Reason: Test host process crashed\nTest Run Aborted with error System.Exception: One or more errors occurred.\n ---> System.Exception: Unable to read beyond the end of the stream.\n   at System.IO.BinaryReader.Read7BitEncodedInt()\n   at System.IO.BinaryReader.ReadString()\n   at Microsoft.VisualStudio.TestPlatform.CommunicationUtilities.LengthPrefixCommunicationChannel.NotifyDataAvailable()\n   at Microsoft.VisualStudio.TestPlatform.CommunicationUtilities.TcpClientExtensions.MessageLoopAsync(TcpClient client, ICommunicationChannel channel, Action\`1 errorHandler, CancellationToken cancellationToken)\n   --- End of inner exception stack trace ---.\n\n`;
+    const result = processTestOutput(mixedResultsString);
+    expect(result).toEqual([
+      { status: 'passed', name: 'AElf.Contracts.MyWayDAO.MyWayDAOTests.GetAllProposals_Empty', duration: 5000 },
+      { status: 'failed', name: 'AElf.Contracts.MyWayDAO.MyWayDAOTests.HasVoted_ProposalNotFound_ShouldThrow', duration: 2000 }
+    ]);
+  });
+});
+
+
