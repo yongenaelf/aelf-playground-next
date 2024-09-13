@@ -1,5 +1,6 @@
 import { badgeVariants, Badge } from "@/components/ui/badge";
 import Link from "next/link";
+import { processTestOutput } from "./process-test-output";
 
 export function FormatErrors({ inputString }: { inputString: string }) {
   // Detect and remove the dynamic path
@@ -13,25 +14,54 @@ export function FormatErrors({ inputString }: { inputString: string }) {
     /(\w+\/[^\n]*): (error|warning) [^\n]*/g
   );
 
-  // Print each error or warning message on a new line
-  if (errorMessages) {
-    return (
-      <table>
-        <thead>
-          <tr>
-            <th className="p-2">Path</th>
-            <th className="p-2">Type</th>
-            <th className="p-2">Description</th>
-          </tr>
-        </thead>
-        {errorMessages.map((m) => (
-          <ErrorMessage key={m} message={m} />
-        ))}
-      </table>
-    );
-  } else {
-    return <p>No errors or warnings.</p>;
-  }
+  const testResults = processTestOutput(inputString);
+
+  return (
+    <>
+      {errorMessages ? (
+        <table>
+          <thead>
+            <tr>
+              <th className="p-2">Path</th>
+              <th className="p-2">Type</th>
+              <th className="p-2">Description</th>
+            </tr>
+          </thead>
+          {errorMessages.map((m) => (
+            <ErrorMessage key={m} message={m} />
+          ))}
+        </table>
+      ) : null}
+      {testResults.length > 0 ? (
+        <table>
+          <thead>
+            <tr>
+              <th className="p-2">Status</th>
+              <th className="p-2">Name</th>
+              <th className="p-2">Duration (ms)</th>
+            </tr>
+          </thead>
+          {testResults.map((test, key) => (
+            <TestResult key={`${test.name}-${key}`} test={test} />
+          ))}
+        </table>
+      ) : null}
+    </>
+  );
+}
+
+function TestResult({ test }: { test: { status: string; name: string; duration: number, message?: string } }) {
+  return (
+    <tr className="border border-black">
+      <td className="p-2">
+        <Badge variant={test.status === "passed" ? "default" : "destructive"}>
+          {test.status}
+        </Badge>
+      </td>
+      <td className="p-2">{test.name}<br />{test?.message}</td>
+      <td className="p-2">{test.duration}</td>
+    </tr>
+  );
 }
 
 function ErrorMessage({ message }: { message: string }) {
