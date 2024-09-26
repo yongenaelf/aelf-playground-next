@@ -38,6 +38,10 @@ if (process.env.NODE_ENV === "development") {
         source: "/api/playground/report/:path*",
         destination: `https://playground-next.test.aelf.dev/api/playground/report/:path*`,
       },
+      {
+        source: "/api/playground/adjustGasFee/:path*",
+        destination: `https://playground-next.test.aelf.dev/api/playground/adjustGasFee/:path*`,
+      },
     ];
   };
 }

@@ -6,13 +6,15 @@ import { useCliCommands } from "./workspace/use-cli-commands";
 import useSWR, { mutate } from "swr";
 import { db } from "@/data/db";
 import { useWorkspaceId } from "./workspace/use-workspace-id";
-import { Download, Rocket, ShieldCheck, Wrench, TestTube2, Link2 } from "lucide-react";
+import { Download, Rocket, ShieldCheck, Wrench, TestTube2, Link2, HandCoins } from "lucide-react";
 import UploadModal from "./workspace/upload-modal";
 import { Tooltip } from "./tooltip";
+import { AuditType } from "@/data/audit";
 
 export function BuildDeployPanel() {
   const commands = useCliCommands();
   const [isAuditing, setIsAuditing] = useState(false);
+  const [isSaveGasFeeAuditing, setIsSaveGasFeeAuditing] = useState(false);
   const [isBuilding, setIsBuilding] = useState(false);
   const [isDeploying, setIsDeploying] = useState(false);
   const [isTesting, setIsTesting] = useState(false);
@@ -38,7 +40,7 @@ export function BuildDeployPanel() {
       onClick: async () => {
         setIsAuditing(true);
         try {
-          await commands.audit();
+          await commands.audit(AuditType.DEFAULT);
         } catch (err) {
           console.log(err);
         } finally {
@@ -46,6 +48,21 @@ export function BuildDeployPanel() {
         }
       },
       icon: ShieldCheck,
+    },
+    {
+      disabled: isSaveGasFeeAuditing,
+      title: "Save Gas Fee",
+      onClick: async () => {
+        setIsSaveGasFeeAuditing(true);
+        try {
+          await commands.audit(AuditType.SAVE_GAS_FEE);
+        } catch (err) {
+          console.log(err);
+        } finally {
+          setIsSaveGasFeeAuditing(false);
+        }
+      },
+      icon: HandCoins,
     },
     {
       disabled: isBuilding,

@@ -9,11 +9,16 @@ export function useSetSearchParams() {
   const router = useRouter();
 
   const createQueryString = useCallback(
-    (key: string, value?: string) => {
+    (paramsObj: Record<string, string | undefined>) => {
       const params = new URLSearchParams(searchParams.toString());
-      params.delete(key);
 
-      if (value) params.set(key, value);
+      Object.keys(paramsObj).forEach((key) => {
+        params.delete(key);
+        const value = paramsObj[key];
+        if (value) {
+          params.set(key, value);
+        }
+      });
 
       const res = params.toString();
 
@@ -24,7 +29,7 @@ export function useSetSearchParams() {
     [searchParams]
   );
 
-  return (key: string, value?: string) => {
-    router.push(pathname + createQueryString(key, value));
+  return (paramsObj: Record<string, string | undefined>) => {
+    router.push(pathname + createQueryString(paramsObj));
   };
 }

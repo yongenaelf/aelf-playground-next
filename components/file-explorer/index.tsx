@@ -94,7 +94,7 @@ const FileExplorer = () => {
             });
 
             if (children.length === 0) {
-              setSearchParams("file", encodeURIComponent(id));
+              setSearchParams({ file: encodeURIComponent(id) });
             }
           }}
           // @ts-expect-error
