@@ -7,9 +7,30 @@ import { fileContentToZip } from "@/lib/file-content-to-zip";
 import { v4 as uuidv4 } from "uuid";
 import { useSearchParams } from "next/navigation";
 
+export enum AuditType {
+  DEFAULT = "default",
+  SAVE_GAS_FEE = "saveGasFee",
+}
+
+const URL_CONFIG = {
+  [AuditType.DEFAULT]: {
+    uploadContractCode: "/api/playground/audit/uploadContractCode",
+    auditContractCode: "/api/playground/audit/auditContractCode",
+    report: "/api/playground/report",
+  },
+  [AuditType.SAVE_GAS_FEE]: {
+    uploadContractCode: "/api/playground/adjustGasFee/uploadContractCode",
+    auditContractCode: "/api/playground/adjustGasFee/execute",
+    report: "/api/playground/adjustGasFee/report",
+  },
+};
+
 const uploadContractCodeSchema = z.object({ codeHash: z.string() });
 
-export async function uploadContractCode(files: FileContent[]) {
+export async function uploadContractCode(
+  auditType: AuditType,
+  files: FileContent[]
+) {
   const zippedData = fileContentToZip(files);
 
   const formData = new FormData();
@@ -27,7 +48,7 @@ export async function uploadContractCode(files: FileContent[]) {
   };
 
   const res = await fetch(
-    `/api/playground/audit/uploadContractCode`,
+    URL_CONFIG[auditType].uploadContractCode,
     requestInit
   );
 
@@ -46,12 +67,16 @@ export async function uploadContractCode(files: FileContent[]) {
 
 const auditSchema = z.object({ reportUrl: z.string() });
 
-export function useAudit(auditId?: string, transactionId?: string) {
+export function useAudit(
+  auditType: AuditType,
+  auditId?: string,
+  transactionId?: string
+) {
   return useSWRImmutable(
     auditId && transactionId ? `audit-${auditId}-${transactionId}` : undefined,
     async () => {
       const res = await fetch(
-        `/api/playground/audit/auditContractCode?auditId=${auditId}&transactionId=${transactionId}`
+        `${URL_CONFIG[auditType].auditContractCode}?auditId=${auditId}&transactionId=${transactionId}`
       );
 
       const data = await res.json();
@@ -75,11 +100,13 @@ const auditReportSchema = z.record(
   )
 );
 
-export function useAuditReport(auditId?: string) {
+export function useAuditReport(auditType?: AuditType, auditId?: string) {
   return useSWRImmutable(
     auditId ? `audit-report-${auditId}` : undefined,
     async () => {
-      const res = await fetch(`/api/playground/report/${auditId}`);
+      if (!auditType) return;
+
+      const res = await fetch(`${URL_CONFIG[auditType].report}/${auditId}`);
 
       const data = await res.json();
 
@@ -94,5 +121,6 @@ export function useAuditReport(auditId?: string) {
 export function useAuditReportSearchParam() {
   const params = useSearchParams();
   const auditId = params.get("auditId");
-  return useAuditReport(auditId || undefined);
+  const auditType = params.get("auditType") as AuditType | null;
+  return useAuditReport(auditType || undefined, auditId || undefined);
 }

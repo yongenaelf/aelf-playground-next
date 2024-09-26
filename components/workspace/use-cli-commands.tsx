@@ -7,7 +7,12 @@ import { usePathname } from "next/navigation";
 import { PropsWithChildren, useContext, useEffect, useState } from "react";
 import { TerminalContext } from "react-terminal";
 import { useWorkspaceId } from "./use-workspace-id";
-import { uploadContractCode, useAudit, useAuditReport } from "@/data/audit";
+import {
+  AuditType,
+  uploadContractCode,
+  useAudit,
+  useAuditReport,
+} from "@/data/audit";
 import clsx from "clsx";
 import { fileContentToZip } from "@/lib/file-content-to-zip";
 import { saveAs } from "file-saver";
@@ -36,7 +41,9 @@ export function useCliCommands() {
             <li className="ml-8">test - tests the current workspace</li>
             <li className="ml-8">deploy - deploys the built smart contract</li>
             <li className="ml-8">export - exports the current workspace</li>
-            <li className="ml-8">share - generates a share link for the current workspace</li>
+            <li className="ml-8">
+              share - generates a share link for the current workspace
+            </li>
             <li className="ml-8">
               check txID - checks the result of transaction
             </li>
@@ -44,7 +51,7 @@ export function useCliCommands() {
         </div>
       );
     },
-    audit: async () => {
+    audit: async (auditType: AuditType) => {
       const start = `${pathname}/`;
       terminalContext.setBufferedContent(
         <>
@@ -70,7 +77,7 @@ export function useCliCommands() {
       );
 
       try {
-        const codeHash = await uploadContractCode(files);
+        const codeHash = await uploadContractCode(auditType, files);
 
         terminalContext.setBufferedContent(
           <>
@@ -80,13 +87,17 @@ export function useCliCommands() {
 
         if (!wallet) return;
 
-        setSearchParams("auditId", codeHash);
+        setSearchParams({ auditId: codeHash, auditType });
 
         const { TransactionId } = await wallet.auditTransfer(codeHash);
 
         terminalContext.setBufferedContent(
           <>
-            <AuditReport codeHash={codeHash} transactionId={TransactionId} />
+            <AuditReport
+              auditType={auditType}
+              codeHash={codeHash}
+              transactionId={TransactionId}
+            />
           </>
         );
       } catch (err) {
@@ -258,7 +269,9 @@ export function useCliCommands() {
       const file = new File(
         [zip],
         `${pathname?.split("/")?.pop() || "export"}.zip`,
-        { type: "data:application/octet-stream;base64," }
+        {
+          type: "data:application/octet-stream;base64,",
+        }
       );
       saveAs(file);
     },
@@ -281,7 +294,8 @@ export function useCliCommands() {
         <>
           <p>Loaded files: {files.map((i) => i.path).join(", ")}</p>
           <p>
-            <Loader2 className="h-4 w-4 animate-spin inline" /> Generating share link...
+            <Loader2 className="h-4 w-4 animate-spin inline" /> Generating share
+            link...
           </p>
         </>
       );
@@ -293,9 +307,7 @@ export function useCliCommands() {
         });
         const { id } = await res.json();
 
-        terminalContext.setBufferedContent(
-          <ShareLink id={id} />
-        );
+        terminalContext.setBufferedContent(<ShareLink id={id} />);
       } catch (err) {
         if (err instanceof Error)
           terminalContext.setBufferedContent(<>{err.message}</>);
@@ -385,21 +397,29 @@ function DeployedContractDetails({ id }: { id?: string }) {
 }
 
 function AuditReport({
+  auditType,
   codeHash,
   transactionId,
 }: {
+  auditType: AuditType;
   codeHash: string;
   transactionId: string;
 }) {
-  const { isLoading, error } = useAudit(codeHash, transactionId);
+  const { isLoading, error } = useAudit(auditType, codeHash, transactionId);
 
   if (isLoading || !!error) return <Loading>Loading report...</Loading>;
 
-  return <AuditReportResult codeHash={codeHash} />;
+  return <AuditReportResult auditType={auditType} codeHash={codeHash} />;
 }
 
-function AuditReportResult({ codeHash }: { codeHash: string }) {
-  const { data, isLoading } = useAuditReport(codeHash);
+function AuditReportResult({
+  auditType,
+  codeHash,
+}: {
+  auditType: AuditType;
+  codeHash: string;
+}) {
+  const { data, isLoading } = useAuditReport(auditType, codeHash);
 
   if (isLoading || !data) return <Loading>Loading report...</Loading>;
 
@@ -438,4 +458,3 @@ function AuditReportResult({ codeHash }: { codeHash: string }) {
     </>
   );
 }
-
