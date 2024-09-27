@@ -21,7 +21,7 @@ export function FileUpload() {
           // Do whatever you want with the file contents
           const binaryStr = reader.result;
           if (binaryStr instanceof ArrayBuffer) {
-            const contents = Buffer.from(binaryStr).toString("ascii");
+            const contents = Buffer.from(binaryStr).toString("utf-8");
             // @ts-expect-error
             const filename = file.path!;
 
