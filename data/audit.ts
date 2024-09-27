@@ -73,7 +73,9 @@ export function useAudit(
   transactionId?: string
 ) {
   return useSWRImmutable(
-    auditId && transactionId ? `audit-${auditId}-${transactionId}` : undefined,
+    auditId && transactionId
+      ? `audit-${auditType}-${auditId}-${transactionId}`
+      : undefined,
     async () => {
       const res = await fetch(
         `${URL_CONFIG[auditType].auditContractCode}?auditId=${auditId}&transactionId=${transactionId}`
@@ -102,7 +104,7 @@ const auditReportSchema = z.record(
 
 export function useAuditReport(auditType?: AuditType, auditId?: string) {
   return useSWRImmutable(
-    auditId ? `audit-report-${auditId}` : undefined,
+    auditType && auditId ? `audit-report-${auditType}-${auditId}` : undefined,
     async () => {
       if (!auditType) return;
 
