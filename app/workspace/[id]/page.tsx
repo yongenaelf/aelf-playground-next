@@ -1,6 +1,5 @@
 "use client";
 
-import { Fragment } from "react";
 import { BuildDeployPanel } from "@/components/build-deploy-panel";
 import TopBottom from "@/components/top-bottom";
 import {
@@ -19,10 +18,10 @@ export default function Page({params: {id}}: {params: {id: string}}) {
       <ResizablePanel defaultSize={25} className="flex flex-col">
         <TopBottom
           top={
-            <Fragment>
+            <>
               <BuildDeployPanel />
               <FileExplorer />
-            </Fragment>
+            </>
           }
           bottom={<ContractViewer name={id}/>}
           topDefaultSize={30}
