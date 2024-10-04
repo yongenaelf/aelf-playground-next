@@ -1,6 +1,5 @@
 "use client";
 
-import { BuildDeployPanel } from "@/components/build-deploy-panel";
 import TopBottom from "@/components/top-bottom";
 import {
   ResizablePanelGroup,
@@ -9,15 +8,12 @@ import {
 } from "@/components/ui/resizable";
 import Cli from "@/components/workspace/cli";
 import Editor from "@/components/workspace/editor";
-import FileExplorer from "@/components/file-explorer";
+import LeftSide from "@/components/left-side";
 
-export default function Page() {
+export default function Page({params: {id}}: {params: {id: string}}) {
   return (
     <ResizablePanelGroup direction="horizontal" className="border">
-      <ResizablePanel defaultSize={25}>
-        <BuildDeployPanel />
-        <FileExplorer />
-      </ResizablePanel>
+      <LeftSide name={id} />
       <ResizableHandle />
       <ResizablePanel defaultSize={75}>
         <TopBottom top={<Editor />} bottom={<Cli />} />

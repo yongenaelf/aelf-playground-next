@@ -390,6 +390,15 @@ function CheckProposalInfo({ id }: { id: string }) {
 
 function DeployedContractDetails({ id }: { id?: string }) {
   const { data } = useLogs(id);
+  const setSearchParams = useSetSearchParams();
+
+  useEffect(() => {
+  
+    if (data?.address) {
+        setSearchParams({ "contract-viewer-address": data.address });
+    }
+  
+  }, [data]);
 
   if (!data) return <Deploying />;
 
