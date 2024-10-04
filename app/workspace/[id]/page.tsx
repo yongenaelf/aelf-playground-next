@@ -10,13 +10,16 @@ import {
 import Cli from "@/components/workspace/cli";
 import Editor from "@/components/workspace/editor";
 import FileExplorer from "@/components/file-explorer";
+import ContractViewer from "@/components/contract-viewer";
+
 
 export default function Page() {
   return (
     <ResizablePanelGroup direction="horizontal" className="border">
-      <ResizablePanel defaultSize={25}>
+      <ResizablePanel defaultSize={25} className="flex flex-col">
         <BuildDeployPanel />
         <FileExplorer />
+        <ContractViewer />
       </ResizablePanel>
       <ResizableHandle />
       <ResizablePanel defaultSize={75}>

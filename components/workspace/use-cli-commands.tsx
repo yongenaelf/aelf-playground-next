@@ -3,7 +3,7 @@ import { useLogs, useProposalInfo, useTransactionResult } from "@/data/client";
 import { db } from "@/data/db";
 import { useWallet } from "@/data/wallet";
 import { Loader2 } from "lucide-react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { PropsWithChildren, useContext, useEffect, useState } from "react";
 import { TerminalContext } from "react-terminal";
 import { useWorkspaceId } from "./use-workspace-id";
@@ -390,8 +390,18 @@ function CheckProposalInfo({ id }: { id: string }) {
 
 function DeployedContractDetails({ id }: { id?: string }) {
   const { data } = useLogs(id);
+  const pathname = usePathname();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const contractViewerAddress = searchParams.get("contract-viewer-address");
 
   if (!data) return <Deploying />;
+
+  if(data?.address){
+    if(!contractViewerAddress){
+      router.replace(pathname + `?contract-viewer-address=${data.address}`);
+    }
+  }
 
   return <p>Contract Address: {data.address}</p>;
 }
