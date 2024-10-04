@@ -392,11 +392,15 @@ function DeployedContractDetails({ id }: { id?: string }) {
   const { data } = useLogs(id);
   const setSearchParams = useSetSearchParams();
 
-  if (!data) return <Deploying />;
+  useEffect(() => {
+  
+    if (data?.address) {
+        setSearchParams({ "contract-viewer-address": data.address });
+    }
+  
+  }, [data]);
 
-  if (data?.address) {
-    setSearchParams({ "contract-viewer-address": data.address });
-  }
+  if (!data) return <Deploying />;
 
   return <p>Contract Address: {data.address}</p>;
 }
