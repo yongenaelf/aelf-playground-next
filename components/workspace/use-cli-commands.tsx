@@ -390,17 +390,12 @@ function CheckProposalInfo({ id }: { id: string }) {
 
 function DeployedContractDetails({ id }: { id?: string }) {
   const { data } = useLogs(id);
-  const pathname = usePathname();
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const contractViewerAddress = searchParams.get("contract-viewer-address");
+  const setSearchParams = useSetSearchParams();
 
   if (!data) return <Deploying />;
 
-  if(data?.address){
-    if(!contractViewerAddress){
-      router.replace(pathname + `?contract-viewer-address=${data.address}`);
-    }
+  if (data?.address) {
+      setSearchParams({ ["contract-viewer-address"]: data.address });
   }
 
   return <p>Contract Address: {data.address}</p>;
