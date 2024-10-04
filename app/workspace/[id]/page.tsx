@@ -11,15 +11,23 @@ import Cli from "@/components/workspace/cli";
 import Editor from "@/components/workspace/editor";
 import FileExplorer from "@/components/file-explorer";
 import ContractViewer from "@/components/contract-viewer";
-
+import { Fragment } from "react";
 
 export default function Page() {
   return (
     <ResizablePanelGroup direction="horizontal" className="border">
       <ResizablePanel defaultSize={25} className="flex flex-col">
-        <BuildDeployPanel />
-        <FileExplorer />
-        <ContractViewer />
+        <TopBottom
+          top={
+            <Fragment>
+              <BuildDeployPanel />
+              <FileExplorer />
+            </Fragment>
+          }
+          bottom={<ContractViewer />}
+          topDefaultSize={30}
+          bottomDefaultSize={70}
+        />
       </ResizablePanel>
       <ResizableHandle />
       <ResizablePanel defaultSize={75}>
