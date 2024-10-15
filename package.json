@@ -46,7 +46,7 @@
     "@xterm/addon-fit": "^0.10.0",
     "@xterm/xterm": "^5.5.0",
     "aelf-sdk": "^3.4.14-beta.1",
-    "aelf-smartcontract-viewer": "^1.0.1",
+    "aelf-smartcontract-viewer": "^1.0.2",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "cmdk": "^1.0.0",
