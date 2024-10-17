@@ -7,10 +7,10 @@ import TopBottom from "./top-bottom";
 import { ResizablePanel } from "./ui/resizable";
 
 const TopSections = () => (
-  <>
+  <div className="h-full">
     <BuildDeployPanel />
     <FileExplorer />
-  </>
+  </div>
 );
 const LeftSide = ({ name }: { name: string }) => {
   const searchParams = useSearchParams();

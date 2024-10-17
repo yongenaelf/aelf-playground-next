@@ -57,12 +57,12 @@ const FileExplorer = () => {
   const [state, dispatch] = useFileExplorerReducer();
 
   const { data } = useSWR(`file-explorer-${pathname}`, async () => {
-    const files = await db.files.filter((file) =>
+    const files = await db.files.filter(file =>
       file.path.startsWith(pathname + "/")
     );
     const filesArray = await files.toArray();
     return convert(
-      filesArray.map((i) =>
+      filesArray.map(i =>
         decodeURIComponent(i.path.replace(`${pathname}/`, ""))
       )
     );
@@ -73,12 +73,12 @@ const FileExplorer = () => {
   return (
     <FileExplorerContext.Provider value={[state, dispatch]}>
       <FileExplorerTopMenu />
-      <div className="file-tree">
+      <div className="file-tree h-[calc(100%-114px)] overflow-auto">
         <TreeView
           data={data}
           focusedId={state.focusedId}
           aria-label="directory tree"
-          onNodeSelect={(props) => {
+          onNodeSelect={props => {
             const { id } = props.element;
 
             if (typeof id !== "string") return;
@@ -146,7 +146,7 @@ const FileExplorer = () => {
               />
               {state.showAdd && state.path === element.id ? (
                 <input
-                  ref={(ref) => {
+                  ref={ref => {
                     setTimeout(() => {
                       ref?.focus();
                     }, 200);
@@ -155,7 +155,7 @@ const FileExplorer = () => {
                   onBlur={() =>
                     dispatch({ type: IFileExplorerActionKind.CLOSE_MODAL })
                   }
-                  onKeyDown={async (e) => {
+                  onKeyDown={async e => {
                     if (e.key === "Escape")
                       dispatch({ type: IFileExplorerActionKind.CLOSE_MODAL });
 
