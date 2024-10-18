@@ -2,7 +2,8 @@ import { badgeVariants, Badge } from "@/components/ui/badge";
 import Link from "next/link";
 import { processTestOutput } from "./process-test-output";
 
-export function FormatErrors({ inputString }: { inputString: string }) {
+export function FormatErrors({ inputString }: { inputString?: string }) {
+  if (!inputString) return "";
   // Detect and remove the dynamic path
   const cleanedString = inputString.replace(
     /\/tmp\/playground\/[a-f0-9\-]+\//g,
@@ -50,7 +51,11 @@ export function FormatErrors({ inputString }: { inputString: string }) {
   );
 }
 
-function TestResult({ test }: { test: { status: string; name: string; duration: number, message?: string } }) {
+function TestResult({
+  test,
+}: {
+  test: { status: string; name: string; duration: number; message?: string };
+}) {
   return (
     <tr className="border border-black">
       <td className="p-2">
@@ -58,7 +63,11 @@ function TestResult({ test }: { test: { status: string; name: string; duration: 
           {test.status}
         </Badge>
       </td>
-      <td className="p-2">{test.name}<br />{test?.message}</td>
+      <td className="p-2">
+        {test.name}
+        <br />
+        {test?.message}
+      </td>
       <td className="p-2">{test.duration}</td>
     </tr>
   );
