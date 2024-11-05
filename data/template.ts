@@ -1,20 +1,15 @@
 import { getBuildServerBaseUrl } from "@/lib/env";
-import { unzipSync } from "fflate";
+import { unzipBlob } from "./unzip-blob";
 
-export async function getTemplateData(id: string, name: string = "test") {
-  const res = await fetch(
-    `${getBuildServerBaseUrl()}/playground/template?template=${id}&projectName=${name}`
-  );
+export async function getTemplateData(id: string) {
+  const res = await fetch(`${getBuildServerBaseUrl()}/template?template=${id}`);
 
-  const data = await res.text();
-
-  const zipData = Buffer.from(data, "base64");
-
-  return unzipSync(zipData);
+  const blob = await res.blob();
+  return unzipBlob(blob);
 }
 
 export async function getTemplateNames() {
-  const res = await fetch(`${getBuildServerBaseUrl()}/playground/templates`);
+  const res = await fetch(`${getBuildServerBaseUrl()}/templates`);
   const data = await res.json();
 
   return data as string[];

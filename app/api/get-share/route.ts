@@ -1,6 +1,7 @@
 import { FileContent } from "@/data/db";
+import { unzipBlob } from "@/data/unzip-blob";
 import { getBuildServerBaseUrl } from "@/lib/env";
-import { unzipSync, strFromU8 } from "fflate";
+import { strFromU8 } from "fflate";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -11,13 +12,11 @@ export async function GET(request: Request) {
   }
 
   try {
-    const res = await fetch(
-      `${getBuildServerBaseUrl()}/playground/share/get/${id}`
-    );
+    const res = await fetch(`${getBuildServerBaseUrl()}/share/get?key=${id}`);
 
-    const data = await res.arrayBuffer();
+    const blob = await res.blob();
 
-    const unzipped = unzipSync(Buffer.from(data));
+    const unzipped = await unzipBlob(blob);
 
     let files: FileContent[] = [];
 

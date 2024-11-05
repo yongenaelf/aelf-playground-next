@@ -5,10 +5,7 @@ import { processTestOutput } from "./process-test-output";
 export function FormatErrors({ inputString }: { inputString?: string }) {
   if (!inputString) return "";
   // Detect and remove the dynamic path
-  const cleanedString = inputString.replace(
-    /\/tmp\/playground\/[a-f0-9\-]+\//g,
-    ""
-  );
+  const cleanedString = inputString.replace(/\/tmp\/[a-f0-9\-]+\//g, "");
 
   // Regular expression to match lines containing errors and warnings
   const errorMessages = cleanedString.match(
