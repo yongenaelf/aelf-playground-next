@@ -25,3 +25,11 @@ export function getGitHubToken() {
 export function getSolidityEnabled() {
   return getEnv("SOLIDITY_ENABLED") === "true";
 }
+
+export function getFaucetUrl() {
+  return getEnv("FAUCET_API_URL")
+}
+
+export function getGoogleCaptchaSitekey() {
+  return getEnv("GOOGLE_CAPTCA_SIKEY_KEY");
+}

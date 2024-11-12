@@ -28,6 +28,7 @@ import {
   DialogHeader,
 } from "@/components/ui/dialog";
 import { useWallet } from "@/data/wallet";
+import { getFaucetUrl, getGoogleCaptchaSitekey } from "@/lib/env";
 
 export function BuildDeployPanel() {
   const commands = useCliCommands();
@@ -38,10 +39,15 @@ export function BuildDeployPanel() {
   const [isTesting, setIsTesting] = useState(false);
   const [captchaType, setCaptchaType] = useState<"" | "audit" | "deploy">("");
   const [isRecaptchaCheck, setIsRecaptchaCheck] = useState(false);
-  const [checkingBalanceType, setCheckingBalanceType] = useState<"" | "audit" | "deploy">("");
+  const [checkingBalanceType, setCheckingBalanceType] = useState<
+    "" | "audit" | "deploy"
+  >("");
+  const [captchaToken, setCaptchaToken] = useState<string>("");
   const id = useWorkspaceId();
   const recaptchaRef = useRef<ReCAPTCHA>(null);
   const wallet = useWallet();
+  const faucetUrl = getFaucetUrl();
+  const captchaSitekey = getGoogleCaptchaSitekey();
 
   const { data: isDeployable } = useSWR(
     id ? `deployable-${id}` : undefined,
@@ -67,7 +73,7 @@ export function BuildDeployPanel() {
         return true;
       }
     } catch (error) {
-      return false
+      return false;
     }
   };
 
@@ -110,13 +116,19 @@ export function BuildDeployPanel() {
     try {
       await (
         await fetch(
-          `https://faucet.aelf.dev/api/claim?walletAddress=${wallet?.wallet.address}`,
-          { method: "POST" }
+          `${faucetUrl}/api/claim?walletAddress=${wallet?.wallet.address}&recaptchaToken=${captchaToken}`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Platform: "Playground", // Add the custom header here
+            },
+          }
         )
       ).json();
-      return true
+      return true;
     } catch (err) {
-      return false
+      return false;
     }
   };
 
@@ -125,14 +137,14 @@ export function BuildDeployPanel() {
     title: string;
     onClick: () => void;
     icon: React.FunctionComponent<{ className?: string }>;
-    isLoading?:boolean
+    isLoading?: boolean;
   }> = [
     {
       disabled: isAuditing,
       title: "AI Audit",
       onClick: handleAudit,
       icon: ShieldCheck,
-      isLoading : checkingBalanceType === "audit",
+      isLoading: checkingBalanceType === "audit",
     },
     {
       disabled: isSaveGasFeeAuditing,
@@ -183,7 +195,7 @@ export function BuildDeployPanel() {
       title: "Deploy",
       onClick: handleDeploye,
       icon: Rocket,
-      isLoading : checkingBalanceType === "deploy",
+      isLoading: checkingBalanceType === "deploy",
     },
     {
       disabled: false,
@@ -211,14 +223,14 @@ export function BuildDeployPanel() {
     try {
       if (captchaType === "deploy") {
         setIsDeploying(true);
-        const res = await getTokenBalance()
+        const res = await getTokenBalance();
         setCheckingBalanceType("");
-        res && await commands.deploy();
+        res && (await commands.deploy());
       } else if (captchaType === "audit") {
         setIsAuditing(true);
         const res = await getTokenBalance();
         setCheckingBalanceType("");
-        res && await commands.audit(AuditType.DEFAULT);
+        res && (await commands.audit(AuditType.DEFAULT));
       }
     } catch (err) {
     } finally {
@@ -229,6 +241,7 @@ export function BuildDeployPanel() {
 
   const onReCAPTCHAChange = (token: string | null) => {
     if (token) {
+      setCaptchaToken(token);
       setIsRecaptchaCheck(false);
       handleCaptchaSuccess();
     }
@@ -236,7 +249,7 @@ export function BuildDeployPanel() {
 
   return (
     <div className="p-4 border-b-2 flex gap-2">
-      {buttons.map((button,i) => (
+      {buttons.map((button, i) => (
         <Tooltip text={button.title} key={button.title}>
           <Button
             disabled={button.disabled}
@@ -244,7 +257,11 @@ export function BuildDeployPanel() {
             className="rounded-none p-2"
             onClick={button.onClick}
           >
-            {button?.isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <button.icon className="w-4 h-4" />}
+            {button?.isLoading ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <button.icon className="w-4 h-4" />
+            )}
           </Button>
         </Tooltip>
       ))}
@@ -258,7 +275,7 @@ export function BuildDeployPanel() {
               <div className="flex items-center justify-center min-h-[90px]">
                 <ReCAPTCHA
                   ref={recaptchaRef}
-                  sitekey="6LdimFgqAAAAAIpc63ce4qqdkIjAgaSPKPci65zz" // Replace with your reCAPTCHA site key
+                  sitekey={captchaSitekey}
                   onChange={onReCAPTCHAChange}
                 />
               </div>
