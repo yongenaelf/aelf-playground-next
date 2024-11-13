@@ -13,7 +13,7 @@ export async function GET(request: Request) {
     throw new Error("no name");
   }
 
-  const res = await getTemplateData(id, name);
+  let res = await getTemplateDataRecursive(id, name);
 
   const data = Object.entries(res).map(([key, value]) => ({
     path: encodeURIComponent(key),
@@ -21,4 +21,17 @@ export async function GET(request: Request) {
   }));
 
   return Response.json(data);
+}
+
+async function getTemplateDataRecursive(id: string, name: string) {
+  const res = await getTemplateData(id, name);
+
+  const length = Object.keys(res).length;
+  if (length === 0) {
+    // wait for 1 second
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    return await getTemplateDataRecursive(id, name);
+  }
+
+  return res;
 }
