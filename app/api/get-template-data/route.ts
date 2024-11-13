@@ -13,7 +13,7 @@ export async function GET(request: Request) {
     throw new Error("no name");
   }
 
-  const res = await getTemplateData(id);
+  const res = await getTemplateData(id, name);
 
   const data = Object.entries(res).map(([key, value]) => ({
     path: encodeURIComponent(key),

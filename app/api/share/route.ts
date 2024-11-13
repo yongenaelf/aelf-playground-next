@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
   };
 
   const response = await fetch(
-    `${getBuildServerBaseUrl()}/share/create`,
+    `${getBuildServerBaseUrl()}/playground/share/create`,
     requestInit
   );
 
@@ -33,5 +33,5 @@ export async function POST(request: NextRequest) {
     return Response.json({ error: message }, { status: response.status });
   }
 
-  return Response.json({ id: await response.text() });
+  return Response.json(await response.json());
 }

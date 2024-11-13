@@ -13,7 +13,7 @@ export async function POST(request: NextRequest) {
     const formData = new FormData();
     const filePath = uuidv4() + ".zip";
     formData.append(
-      "file",
+      "contractFiles",
       new File([zippedData], filePath, { type: "application/zip" }),
       filePath
     );
@@ -25,7 +25,7 @@ export async function POST(request: NextRequest) {
     };
 
     const response = await fetch(
-      `${getBuildServerBaseUrl()}/test`,
+      `${getBuildServerBaseUrl()}/playground/test`,
       requestInit
     );
 
