@@ -275,7 +275,7 @@ export function BuildDeployPanel() {
               <div className="flex items-center justify-center min-h-[90px]">
                 <ReCAPTCHA
                   ref={recaptchaRef}
-                  sitekey={captchaSitekey}
+                  sitekey={captchaSitekey as string}
                   onChange={onReCAPTCHAChange}
                 />
               </div>

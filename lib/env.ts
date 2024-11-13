@@ -31,5 +31,5 @@ export function getFaucetUrl() {
 }
 
 export function getGoogleCaptchaSitekey() {
-  return getEnv("GOOGLE_CAPTCA_SIKEY_KEY");
+  return getEnv("GOOGLE_CAPTCHA_SITEKEY");
 }
