@@ -92,7 +92,7 @@ function ErrorTypeLink({ type }: { type: string }) {
 
   if (kind === "warning") return <Badge variant="secondary">warning</Badge>;
 
-  if (kind === "error" && code.startsWith("CS"))
+  if (kind === "error" && code?.startsWith("CS"))
     return (
       <Link
         className={badgeVariants({
