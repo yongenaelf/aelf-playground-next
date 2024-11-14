@@ -50,7 +50,7 @@ export const TreeView = ({
   });
 
   const { height = getTotalSize(), width } = useResizeObserver({
-    ref: containerRef,
+    ref: containerRef as React.RefObject<Element>,
   });
   return (
     <div
