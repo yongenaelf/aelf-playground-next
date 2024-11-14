@@ -42,7 +42,6 @@ export function BuildDeployPanel() {
   const [checkingBalanceType, setCheckingBalanceType] = useState<
     "" | "audit" | "deploy"
   >("");
-  const [captchaToken, setCaptchaToken] = useState<string>("");
   const id = useWorkspaceId();
   const recaptchaRef = useRef<ReCAPTCHA>(null);
   const wallet = useWallet();
@@ -112,9 +111,9 @@ export function BuildDeployPanel() {
     }
   };
 
-  const getTokenBalance = async () => {
+  const getTokenBalance = async (captchaToken:string) => {
     try {
-      await (
+      const result = await (
         await fetch(
           `${faucetUrl}/api/claim?walletAddress=${wallet?.wallet.address}&recaptchaToken=${captchaToken}`,
           {
@@ -126,7 +125,7 @@ export function BuildDeployPanel() {
           }
         )
       ).json();
-      return true;
+      return result.isSuccess;
     } catch (err) {
       return false;
     }
@@ -219,16 +218,16 @@ export function BuildDeployPanel() {
     },
   ];
 
-  const handleCaptchaSuccess = async () => {
+  const handleCaptchaSuccess = async (captchaToken:string) => {
     try {
       if (captchaType === "deploy") {
         setIsDeploying(true);
-        const res = await getTokenBalance();
+        const res = await getTokenBalance(captchaToken);
         setCheckingBalanceType("");
         res && (await commands.deploy());
       } else if (captchaType === "audit") {
         setIsAuditing(true);
-        const res = await getTokenBalance();
+        const res = await getTokenBalance(captchaToken);
         setCheckingBalanceType("");
         res && (await commands.audit(AuditType.DEFAULT));
       }
@@ -241,11 +240,15 @@ export function BuildDeployPanel() {
 
   const onReCAPTCHAChange = (token: string | null) => {
     if (token) {
-      setCaptchaToken(token);
       setIsRecaptchaCheck(false);
-      handleCaptchaSuccess();
+      handleCaptchaSuccess(token);
     }
   };
+
+  const closeRecaptcha = () =>{
+    setIsRecaptchaCheck(false);
+    setCheckingBalanceType("");
+  }
 
   return (
     <div className="p-4 border-b-2 flex gap-2">
@@ -267,7 +270,7 @@ export function BuildDeployPanel() {
       ))}
       <Dialog
         open={isRecaptchaCheck}
-        onOpenChange={(open) => setIsRecaptchaCheck(open)}
+        onOpenChange={closeRecaptcha}
       >
         <DialogContent>
           <DialogHeader>
