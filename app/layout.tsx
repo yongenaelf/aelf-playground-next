@@ -7,7 +7,8 @@ import clsx from "clsx";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import { getGoogleAnalyticsTag } from "@/lib/env";
 import Providers from "@/components/providers";
-import { Toaster } from "@/components/ui/toaster"
+import { Toaster } from "@/components/ui/toaster";
+import { PublicEnvScript } from 'next-runtime-env';
 
 const font = Poppins({
   weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
@@ -25,7 +26,10 @@ export default function RootLayout({ children }: PropsWithChildren) {
 
   return (
     <html lang="en">
-      <body className={clsx(font.className, "overflow-hidden")}>
+      <head>
+        <PublicEnvScript />
+      </head>
+      <body className={clsx(font.className, "overflow-hidden !pointer-events-auto")}>
         <Providers>
           <TopMenu />
           <main className="h-[calc(100vh-66px)] overflow-auto">
