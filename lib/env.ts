@@ -27,13 +27,9 @@ export function getSolidityEnabled() {
 }
 
 export function getFaucetUrl() {
-  noStore();
-
   return process.env["NEXT_PUBLIC_FAUCET_API_URL"];
 }
 
 export function getGoogleCaptchaSitekey() {
-  noStore();
-  
   return process.env["NEXT_PUBLIC_GOOGLE_CAPTCHA_SITEKEY"];
 }
