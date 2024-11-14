@@ -43,7 +43,7 @@ async function startShell(
 
 export function NodeTerminal() {
   const terminalElRef = useRef<HTMLDivElement>(null);
-  const terminalRef = useRef<Terminal>();
+  const terminalRef = useRef<Terminal>(null);
   const webContainer = useWebContainer();
   const { resolvedTheme } = useTheme();
   const loadFiles = useLoadFiles();
