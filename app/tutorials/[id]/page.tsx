@@ -5,11 +5,17 @@ import GenerateTemplate from "@/components/tutorial/generate-template";
 import GenerateTemplateSolidity from "@/components/tutorial/generate-template-solidity";
 import "./page.scss";
 
-export default async function Page({
-  params: { id },
-}: {
-  params: { id: string };
-}) {
+export default async function Page(
+  props: {
+    params: Promise<{ id: string }>;
+  }
+) {
+  const params = await props.params;
+
+  const {
+    id
+  } = params;
+
   let res = { default: "" };
   try {
     res = await import("./_content/" + id + "/" + id + ".mdx");

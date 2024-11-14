@@ -84,11 +84,20 @@ const getData = async ({ path, user, repo, branch }: Params) => {
   return response;
 };
 
-export default async function Page({
-  params: { path, user, repo, branch },
-}: {
-  params: Params;
-}) {
+export default async function Page(
+  props: {
+    params: Promise<Params>;
+  }
+) {
+  const params = await props.params;
+
+  const {
+    path,
+    user,
+    repo,
+    branch
+  } = params;
+
   const data = await getData({ path, user, repo, branch });
 
   return (

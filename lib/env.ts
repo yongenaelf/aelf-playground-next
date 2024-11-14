@@ -27,9 +27,12 @@ export function getSolidityEnabled() {
 }
 
 export function getFaucetUrl() {
-  return process.env["NEXT_PUBLIC_FAUCET_API_URL"];
+  // https://nextjs.org/docs/app/building-your-application/configuring/environment-variables#bundling-environment-variables-for-the-browser:~:text=Note%20that%20dynamic%20lookups%20will%20not%20be%20inlined%2C%20such%20as%3A
+  const varName = "NEXT_PUBLIC_FAUCET_API_URL";
+  return process.env[varName];
 }
 
 export function getGoogleCaptchaSitekey() {
-  return process.env["NEXT_PUBLIC_GOOGLE_CAPTCHA_SITEKEY"];
+  const varName = "NEXT_PUBLIC_GOOGLE_CAPTCHA_SITEKEY";
+  return process.env[varName];
 }
