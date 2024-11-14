@@ -27,9 +27,9 @@ export function getSolidityEnabled() {
 }
 
 export function getFaucetUrl() {
-  return getEnv("FAUCET_API_URL")
+  return getEnv("NEXT_PUBLIC_FAUCET_API_URL")
 }
 
 export function getGoogleCaptchaSitekey() {
-  return getEnv("GOOGLE_CAPTCHA_SITEKEY");
+  return getEnv("NEXT_PUBLIC_GOOGLE_CAPTCHA_SITEKEY");
 }
