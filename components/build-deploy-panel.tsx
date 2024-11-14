@@ -24,11 +24,11 @@ import { AuditType } from "@/data/audit";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
-  DialogHeader,
+  DialogPortal
 } from "@/components/ui/dialog";
 import { useWallet } from "@/data/wallet";
-import { getFaucetUrl, getGoogleCaptchaSitekey } from "@/lib/env";
+import { env } from 'next-runtime-env';
+import { DialogOverlay } from "@radix-ui/react-dialog";
 
 export function BuildDeployPanel() {
   const commands = useCliCommands();
@@ -45,8 +45,8 @@ export function BuildDeployPanel() {
   const id = useWorkspaceId();
   const recaptchaRef = useRef<ReCAPTCHA>(null);
   const wallet = useWallet();
-  const faucetUrl = getFaucetUrl();
-  const captchaSitekey = getGoogleCaptchaSitekey();
+  const faucetUrl = env('NEXT_PUBLIC_FAUCET_API_URL');
+  const captchaSitekey = env('NEXT_PUBLIC_GOOGLE_CAPTCHA_SITEKEY');
 
   const { data: isDeployable } = useSWR(
     id ? `deployable-${id}` : undefined,
@@ -218,16 +218,29 @@ export function BuildDeployPanel() {
     },
   ];
 
+  const checkBalanceRecursive = async (type: "audit" | "deploy" | "") => {
+    if (type === "") return false;
+    let hasBalance = await isBalanceAvailable(type);
+    if (!hasBalance) {
+      // wait 1s before checking again
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      return await checkBalanceRecursive(type);
+    }
+    return true;
+  }
+
   const handleCaptchaSuccess = async (captchaToken:string) => {
     try {
       if (captchaType === "deploy") {
         setIsDeploying(true);
         const res = await getTokenBalance(captchaToken);
+        await checkBalanceRecursive(checkingBalanceType);
         setCheckingBalanceType("");
         res && (await commands.deploy());
       } else if (captchaType === "audit") {
         setIsAuditing(true);
         const res = await getTokenBalance(captchaToken);
+        await checkBalanceRecursive(checkingBalanceType);
         setCheckingBalanceType("");
         res && (await commands.audit(AuditType.DEFAULT));
       }
@@ -235,6 +248,7 @@ export function BuildDeployPanel() {
     } finally {
       setIsDeploying(false);
       setIsAuditing(false);
+      closeRecaptcha();
     }
   };
 
@@ -268,23 +282,22 @@ export function BuildDeployPanel() {
           </Button>
         </Tooltip>
       ))}
+      
       <Dialog
         open={isRecaptchaCheck}
-        onOpenChange={closeRecaptcha}
       >
-        <DialogContent>
-          <DialogHeader>
-            <DialogDescription>
-              <div className="flex items-center justify-center min-h-[90px]">
-                <ReCAPTCHA
-                  ref={recaptchaRef}
-                  sitekey={captchaSitekey as string}
-                  onChange={onReCAPTCHAChange}
-                />
-              </div>
-            </DialogDescription>
-          </DialogHeader>
-        </DialogContent>
+        <DialogPortal>
+          <DialogOverlay />
+          <DialogContent>
+            <div className="flex items-center justify-center min-h-[90px]">
+              <ReCAPTCHA
+                ref={recaptchaRef}
+                sitekey={captchaSitekey as string}
+                onChange={onReCAPTCHAChange}
+              />
+            </div>
+          </DialogContent>
+        </DialogPortal>
       </Dialog>
       <UploadModal />
     </div>

@@ -61,6 +61,7 @@
     "lucide-react": "^0.408.0",
     "next": "15.0.3",
     "next-mdx-remote": "^5.0.0",
+    "next-runtime-env": "^3.2.2",
     "next-themes": "^0.3.0",
     "octokit": "^4.0.2",
     "parse-github-url": "^1.0.3",
