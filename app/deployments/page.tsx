@@ -11,12 +11,13 @@ import {
 } from "@/components/ui/table";
 import { format } from "date-fns";
 import Link from "next/link";
-import { useLogs, useProposalsInfo, useTransactions } from "@/data/client";
+import { useContractList } from "@/data/graphql";
 
 export default function Page() {
   const wallet = useWallet();
-  const { data } = useTransactions(wallet?.wallet.address);
-  const contractTransactions = data?.filter(i => i.method === "DeployUserSmartContract");
+  const { data, loading } = useContractList(wallet?.wallet.address);
+
+  if (loading) return <div>Loading...</div>;
 
   return (
     <div className="container px-4 py-12 md:px-6 lg:py-16">
@@ -26,20 +27,16 @@ export default function Page() {
           <TableRow>
             <TableHead className="w-1/3">Date and time</TableHead>
             <TableHead className="w-1/3">Contract Address</TableHead>
-            <TableHead className="w-1/3">Proposal</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {contractTransactions ? (
-            contractTransactions
+          {data ? (
+            data.contractList.items
               .map((i) => (
-                <TableRow key={i.id}>
-                  <TableCell>{format(i.time, "PPPppp")}</TableCell>
+                <TableRow key={i.address}>
+                  <TableCell>{format(i.metadata.block.blockTime, "PPPppp")}</TableCell>
                   <TableCell>
-                    <ContractAddress id={i.tx_id} />
-                  </TableCell>
-                  <TableCell>
-                    <Proposal id={i.tx_id} />
+                    <ViewAddressOnExplorer address={i.address} />
                   </TableCell>
                 </TableRow>
               ))
@@ -59,26 +56,6 @@ export default function Page() {
   );
 }
 
-function Proposal({ id }: { id: string }) {
-  const { data, isLoading, error } = useLogs(id);
-
-  if (isLoading) return <span>Loading...</span>;
-  if (error || !data || !data.proposalId) return <span>-</span>;
-
-  return <ViewProposalOnExplorer id={data.proposalId} />;
-}
-
-function ContractAddress({ id }: { id: string }) {
-  const { data: logs } = useLogs(id);
-  const { data: info } = useProposalsInfo(logs?.proposalId ? [logs.proposalId] : []);
-  const { data, isLoading, error } = useLogs(info?.getNetworkDaoProposalReleasedIndex.data?.[0]?.transactionInfo.transactionId);
-
-  if (isLoading) return <span>Loading...</span>;
-  if (error || !data) return <span>-</span>;
-
-  return <ViewAddressOnExplorer address={data.address} />;
-}
-
 function ViewAddressOnExplorer({ address }: { address: string }) {
   return (
     <Link
@@ -89,20 +66,6 @@ function ViewAddressOnExplorer({ address }: { address: string }) {
       rel="noopener noreferrer"
     >
       AELF_{address}_tDVW
-    </Link>
-  );
-}
-
-function ViewProposalOnExplorer({ id }: { id: string }) {
-  return (
-    <Link
-      className="hover:underline"
-      href={`https://test.tmrwdao.com/network-dao/proposal/${id}?chainId=tDVW`}
-      title="View on TMRWDAO"
-      target="_blank"
-      rel="noopener noreferrer"
-    >
-      {id}
     </Link>
   );
 }
