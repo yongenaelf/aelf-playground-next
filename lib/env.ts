@@ -14,10 +14,6 @@ export function getSolangBuildServerBaseUrl() {
   return getEnv("SOLANG_BUILD_SERVER_BASE_URL");
 }
 
-export function getGoogleAnalyticsTag() {
-  return getEnv("GA_TAG");
-}
-
 export function getGitHubToken() {
   return getEnv("GITHUB_API_KEY");
 }

@@ -5,10 +5,9 @@ import { PropsWithChildren, Suspense } from "react";
 import TopMenu from "@/components/top-menu";
 import clsx from "clsx";
 import { GoogleAnalytics } from "@next/third-parties/google";
-import { getGoogleAnalyticsTag } from "@/lib/env";
 import Providers from "@/components/providers";
 import { Toaster } from "@/components/ui/toaster";
-import { PublicEnvScript } from 'next-runtime-env';
+import { env, PublicEnvScript } from 'next-runtime-env';
 
 const font = Poppins({
   weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
@@ -22,7 +21,7 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: PropsWithChildren) {
-  const gaId = getGoogleAnalyticsTag();
+  const gaId = env("NEXT_PUBLIC_GOOGLE_ANALYTICS_ID");
 
   return (
     <html lang="en">
