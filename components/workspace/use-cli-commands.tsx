@@ -1,5 +1,5 @@
 "use client";
-import { useLogs, useProposalInfo, useTransactionResult } from "@/data/client";
+import { useLogs, useProposalsInfo, useTransactionResult } from "@/data/client";
 import { db } from "@/data/db";
 import { useWallet } from "@/data/wallet";
 import { Loader2 } from "lucide-react";
@@ -364,22 +364,22 @@ function CheckProposalId({ id }: { id: string }) {
 }
 
 function CheckProposalInfo({ id }: { id: string }) {
-  const [shouldPoll, setShouldPoll] = useState(true);
+  const [releasedTxId, setReleasedTxId] = useState<string>();
 
-  const { data: proposalInfo } = useProposalInfo(
-    id,
-    shouldPoll ? 1000 : undefined
+  const {data, loading} = useProposalsInfo(
+    [id],
+    releasedTxId ? 1000 : undefined
   );
-  const { status, releasedTxId } = proposalInfo?.proposal || {};
 
   useEffect(() => {
-    if (status === "expired" || status === "released") setShouldPoll(false);
-  }, [status]);
+    const releasedTxId = data?.getNetworkDaoProposalReleasedIndex.data?.[0]?.transactionInfo.transactionId;
+    setReleasedTxId(releasedTxId);
+  }, [loading]);
 
   return (
     <>
-      <p>Proposal status: {status || "pending"}</p>
-      {status === "released" ? (
+      <p>Proposal status: {releasedTxId ? 'released' : 'pending'}</p>
+      {releasedTxId ? (
         <DeployedContractDetails id={releasedTxId} />
       ) : (
         <Deploying />

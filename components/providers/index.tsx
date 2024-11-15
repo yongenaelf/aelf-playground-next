@@ -5,6 +5,7 @@ import { ThemeProvider } from "./theme-provider";
 import { InversifyProvider } from "@/di/providers";
 import { TerminalContextProvider } from "react-terminal";
 import WebContainerProvider from "@/components/webcontainer/provider";
+import { ApolloWrapper } from "./apollo-wrapper";
 
 export default function Providers({ children }: PropsWithChildren) {
   return (
@@ -15,11 +16,13 @@ export default function Providers({ children }: PropsWithChildren) {
       disableTransitionOnChange
       storageKey="next-theme"
     >
-      <InversifyProvider>
-        <WebContainerProvider>
-          <TerminalContextProvider>{children}</TerminalContextProvider>
-        </WebContainerProvider>
-      </InversifyProvider>
+      <ApolloWrapper>
+        <InversifyProvider>
+          <WebContainerProvider>
+            <TerminalContextProvider>{children}</TerminalContextProvider>
+          </WebContainerProvider>
+        </InversifyProvider>
+      </ApolloWrapper>
     </ThemeProvider>
   );
 }

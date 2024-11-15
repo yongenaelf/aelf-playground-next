@@ -5,6 +5,7 @@ import { db, FileContent } from "./db";
 import { ProposalInfo } from "./proposal-info-types";
 import AElf from "aelf-sdk";
 import { Transactions } from "./transactions-types";
+import { useProposalReleaseInfo } from "./graphql";
 const { deserializeLog } = AElf.pbUtils;
 
 const aelf = new AElf(
@@ -75,17 +76,8 @@ export function useTransactionResult(id?: string, refreshInterval?: number) {
   );
 }
 
-export function useProposalInfo(id?: string, refreshInterval?: number) {
-  return useSWR(
-    id ? `get-proposal-info-${id}` : undefined,
-    async () => {
-      const res = await fetch(`/api/get-proposal-info?id=${id}`);
-      const { data }: ProposalInfo = await res.json();
-
-      return data;
-    },
-    { refreshInterval }
-  );
+export function useProposalsInfo(ids?: string[], refreshInterval?: number) {
+  return useProposalReleaseInfo(ids, refreshInterval);
 }
 
 export function useLogs(id?: string, refreshInterval?: number) {
