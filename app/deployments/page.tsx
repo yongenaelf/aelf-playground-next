@@ -11,11 +11,12 @@ import {
 } from "@/components/ui/table";
 import { format } from "date-fns";
 import Link from "next/link";
-import { useLogs, useProposalInfo, useTransactions } from "@/data/client";
+import { useLogs, useProposalsInfo, useTransactions } from "@/data/client";
 
 export default function Page() {
   const wallet = useWallet();
   const { data } = useTransactions(wallet?.wallet.address);
+  const contractTransactions = data?.filter(i => i.method === "DeployUserSmartContract");
 
   return (
     <div className="container px-4 py-12 md:px-6 lg:py-16">
@@ -29,9 +30,8 @@ export default function Page() {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {data ? (
-            data
-              .filter((i) => i.method === "DeployUserSmartContract")
+          {contractTransactions ? (
+            contractTransactions
               .map((i) => (
                 <TableRow key={i.id}>
                   <TableCell>{format(i.time, "PPPppp")}</TableCell>
@@ -70,8 +70,8 @@ function Proposal({ id }: { id: string }) {
 
 function ContractAddress({ id }: { id: string }) {
   const { data: logs } = useLogs(id);
-  const { data: info } = useProposalInfo(logs?.proposalId);
-  const { data, isLoading, error } = useLogs(info?.proposal.releasedTxId);
+  const { data: info } = useProposalsInfo(logs?.proposalId ? [logs.proposalId] : []);
+  const { data, isLoading, error } = useLogs(info?.getNetworkDaoProposalReleasedIndex.data?.[0]?.transactionInfo.transactionId);
 
   if (isLoading) return <span>Loading...</span>;
   if (error || !data) return <span>-</span>;
@@ -83,8 +83,8 @@ function ViewAddressOnExplorer({ address }: { address: string }) {
   return (
     <Link
       className="hover:underline"
-      href={`https://explorer-test-side02.aelf.io/address/AELF_${address}_tDVW`}
-      title="View on Explorer"
+      href={`https://testnet.aelfscan.io/tDVW/address/ELF_${address}_tDVW`}
+      title="View on aelf Explorer"
       target="_blank"
       rel="noopener noreferrer"
     >
@@ -97,8 +97,8 @@ function ViewProposalOnExplorer({ id }: { id: string }) {
   return (
     <Link
       className="hover:underline"
-      href={`https://explorer-test-side02.aelf.io/proposal/proposalsDetail/${id}`}
-      title="View on Explorer"
+      href={`https://test.tmrwdao.com/network-dao/proposal/${id}?chainId=tDVW`}
+      title="View on TMRWDAO"
       target="_blank"
       rel="noopener noreferrer"
     >

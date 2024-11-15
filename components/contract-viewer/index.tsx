@@ -6,7 +6,7 @@ import { useWallet } from "@/data/wallet";
 import { ContractView } from "aelf-smartcontract-viewer";
 import { useTheme } from "next-themes";
 
-const sideChainTestnetRpc = "https://explorer-test-side02.aelf.io/chain";
+const sideChainTestnetRpc = "https://tdvw-test-node.aelf.io";
 
 const ContractViewer = ({ name }: { name: string }) => {
   const searchParams = useSearchParams();
