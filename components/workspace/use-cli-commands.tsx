@@ -365,6 +365,7 @@ function CheckProposalId({ id }: { id: string }) {
 
 function CheckProposalInfo({ id }: { id: string }) {
   const [releasedTxId, setReleasedTxId] = useState<string>();
+  const [timedOut, setTimedOut] = useState(false);
 
   const {data, loading} = useProposalsInfo(
     [id],
@@ -375,6 +376,16 @@ function CheckProposalInfo({ id }: { id: string }) {
     const releasedTxId = data?.getNetworkDaoProposalReleasedIndex.data?.[0]?.transactionInfo.transactionId;
     setReleasedTxId(releasedTxId);
   }, [loading]);
+
+  useEffect(() => {
+    setTimedOut(false);
+    const timer = setTimeout(() => {
+      setTimedOut(true);
+    }, 120000);
+    return () => clearTimeout(timer);
+  }, [id])
+
+  if (timedOut) return <p>Timed out. Please check the status later.</p>;
 
   return (
     <>
