@@ -19,6 +19,7 @@ import { saveAs } from "file-saver";
 import { useSetSearchParams } from "@/lib/set-search-params";
 import { FormatErrors } from "./format-errors";
 import { ShareLink } from "./share-link";
+import Link from "next/link";
 
 export function useCliCommands() {
   const terminalContext = useContext(TerminalContext);
@@ -233,9 +234,12 @@ export function useCliCommands() {
         dll,
         template === "solidity" ? 1 : 0
       );
+
+      const url = `https://testnet.aelfscan.io/tDVW/tx/${TransactionId}`;
+
       terminalContext.setBufferedContent(
         <>
-          <p>TransactionId: {TransactionId}</p>
+          <p>TransactionId: <Link href={url} target="_blank" rel="noopener noreferrer">{TransactionId}</Link></p>
           <Deployment id={TransactionId} />
         </>
       );
@@ -385,7 +389,11 @@ function CheckProposalInfo({ id }: { id: string }) {
     return () => clearTimeout(timer);
   }, [id])
 
-  if (timedOut) return <p>Timed out. Please check the status later.</p>;
+  const url = `https://test.tmrwdao.com/network-dao/proposal/${id}?chainId=tDVW`
+
+  if (timedOut) return <p>Timed out. Proposal ID: <Link href={url} className="ml-4" target="_blank" rel="noopener noreferrer">
+    {id}
+  </Link>.</p>;
 
   return (
     <>
