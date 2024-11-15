@@ -391,7 +391,7 @@ function CheckProposalInfo({ id }: { id: string }) {
 
   const url = `https://test.tmrwdao.com/network-dao/proposal/${id}?chainId=tDVW`
 
-  if (timedOut) return <p>Timed out. Proposal ID: <Link href={url} className="ml-4" target="_blank" rel="noopener noreferrer">
+  if (timedOut) return <p>Timed out. Proposal ID: <Link href={url} target="_blank" rel="noopener noreferrer">
     {id}
   </Link>.</p>;
 
