@@ -28,7 +28,7 @@ export default function TopMenu() {
         <Link href="/" className="text-lg font-semibold">
           aelf Playground
         </Link>
-        <nav className="hidden space-x-4 md:flex">
+        <nav className="max-md:hidden md:flex space-x-4">
           {links.map((link) => (
             <Link
               key={link.children}
