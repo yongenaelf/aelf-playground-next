@@ -379,7 +379,7 @@ function CheckProposalInfo({ id }: { id: string }) {
   useEffect(() => {
     const releasedTxId = data?.getNetworkDaoProposalReleasedIndex.data?.[0]?.transactionInfo.transactionId;
     setReleasedTxId(releasedTxId);
-  }, [loading]);
+  }, [loading, data]);
 
   const PROPOSAL_TIMEOUT = 15 * 60 * 1000; // proposal expires after 15 minutes
 
