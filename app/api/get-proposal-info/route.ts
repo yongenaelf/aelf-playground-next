@@ -7,7 +7,7 @@ export async function GET(request: Request) {
   }
 
   const res = await fetch(
-    `https://explorer-test-side02.aelf.io/api/proposal/proposalInfo?proposalId=${id}`
+    `https://test.tmrwdao.com/side-explorer-api/proposal/proposalInfo?proposalId=${id}`
   );
   const data = await res.json();
 
