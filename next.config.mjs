@@ -1,11 +1,16 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: "standalone",
-  webpack: (config) => {
+  webpack: (config, {webpack}) => {
     config.module.rules.push({
       test: /\.mdx$/,
       type: "asset/source",
     });
+    config.plugins.push(
+      new webpack.DefinePlugin({
+        "globalThis.__DEV__": false,
+      })
+    );
     return config;
   },
   async headers() {
