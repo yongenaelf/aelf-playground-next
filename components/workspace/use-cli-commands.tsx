@@ -381,11 +381,13 @@ function CheckProposalInfo({ id }: { id: string }) {
     setReleasedTxId(releasedTxId);
   }, [loading]);
 
+  const PROPOSAL_TIMEOUT = 15 * 60 * 1000; // proposal expires after 15 minutes
+
   useEffect(() => {
     setTimedOut(false);
     const timer = setTimeout(() => {
       setTimedOut(true);
-    }, 120000);
+    }, PROPOSAL_TIMEOUT);
     return () => clearTimeout(timer);
   }, [id])
 
