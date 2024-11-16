@@ -21,6 +21,8 @@ import { FormatErrors } from "./format-errors";
 import { ShareLink } from "./share-link";
 import Link from "next/link";
 
+const PROPOSAL_TIMEOUT = 15 * 60 * 1000; // proposal expires after 15 minutes
+
 export function useCliCommands() {
   const terminalContext = useContext(TerminalContext);
   const pathname = usePathname();
@@ -373,15 +375,13 @@ function CheckProposalInfo({ id }: { id: string }) {
 
   const {data, loading} = useProposalsInfo(
     [id],
-    releasedTxId ? 1000 : undefined
+    releasedTxId ? undefined : 1000
   );
 
   useEffect(() => {
     const releasedTxId = data?.getNetworkDaoProposalReleasedIndex.data?.[0]?.transactionInfo.transactionId;
     setReleasedTxId(releasedTxId);
   }, [loading, data]);
-
-  const PROPOSAL_TIMEOUT = 15 * 60 * 1000; // proposal expires after 15 minutes
 
   useEffect(() => {
     setTimedOut(false);
