@@ -41,7 +41,7 @@ export async function POST(request: NextRequest) {
       return Response.json({ error: content }, { status: 400 });
     }
 
-    return Response.json({ dll: await response.text() });
+    return Response.json({ dll: content });
   } else if (files.some((i) => i.path.endsWith(".sol"))) {
     const formData = new FormData();
     const file = files[0];

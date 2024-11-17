@@ -20,6 +20,7 @@ import { useSetSearchParams } from "@/lib/set-search-params";
 import { FormatErrors } from "./format-errors";
 import { ShareLink } from "./share-link";
 import Link from "next/link";
+import { FormatBuildErrors } from "./format-build-errors";
 
 const PROPOSAL_TIMEOUT = 15 * 60 * 1000; // proposal expires after 15 minutes
 
@@ -153,9 +154,7 @@ export function useCliCommands() {
           return;
         } else {
           terminalContext.setBufferedContent(
-            <>
-              <p>{error}</p>
-            </>
+            <FormatBuildErrors inputString={error} />
           );
           return;
         }
