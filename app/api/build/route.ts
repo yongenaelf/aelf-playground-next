@@ -35,6 +35,12 @@ export async function POST(request: NextRequest) {
       return Response.json({ error: message }, { status: response.status });
     }
 
+    const content = await response.text();
+
+    if (content.includes("Determining projects to restore")) {
+      return Response.json({ error: content }, { status: 400 });
+    }
+
     return Response.json({ dll: await response.text() });
   } else if (files.some((i) => i.path.endsWith(".sol"))) {
     const formData = new FormData();
