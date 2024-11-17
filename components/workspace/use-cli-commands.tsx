@@ -310,12 +310,15 @@ export function useCliCommands() {
           method: "POST",
           body: JSON.stringify({ files }),
         });
-        const { id } = await res.json();
+        const { id, error } = await res.json();
+
+        if (error || !id)
+          throw new Error(error);
 
         terminalContext.setBufferedContent(<ShareLink id={id} />);
       } catch (err) {
         if (err instanceof Error)
-          terminalContext.setBufferedContent(<>{err.message}</>);
+          terminalContext.setBufferedContent(<p>{err.message?.trim() || "There was an error generating the share link. Please try again later."}</p>);
         return;
       }
     },
