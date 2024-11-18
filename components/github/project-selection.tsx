@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from "react";
+import { useMemo } from "react";
 import { useRepoTree } from "./use-octokit";
 import {
   Select,

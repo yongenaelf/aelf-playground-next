@@ -47,7 +47,7 @@ export const useLinter = () => {
             severity: "warning",
             source: "AI Audit",
             message: j.Description,
-            renderMessage: (view) => {
+            renderMessage: () => {
               const div = document.createElement("span");
 
               div.classList.add("text-sm");

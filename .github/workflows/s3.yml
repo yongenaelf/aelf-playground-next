@@ -21,7 +21,7 @@ jobs:
         echo VITE_GOOGLE_ANALYTICS_ID=${{ vars.TYPESENSE_SERVER_HOST }} >> .env
         echo VITE_FAUCET_API_URL=${{ vars.TYPESENSE_SEARCH_ONLY_APIKEY }} >> .env
         echo VITE_GOOGLE_CAPTCHA_SITEKEY=${{ vars.TYPESENSE_SEARCH_ONLY_APIKEY }} >> .env
-    - run: npm run build
+    - run: bun run build
     
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v2

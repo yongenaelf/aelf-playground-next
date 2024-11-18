@@ -69,7 +69,7 @@ export default function Editor() {
   }, [lang, linter]);
 
   const onChange = React.useCallback(
-    async (val: string, viewUpdate: any) => {
+    async (val: string) => {
       await db.files.update(pathname, { contents: val });
     },
     [pathname]

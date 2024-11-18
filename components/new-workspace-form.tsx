@@ -29,7 +29,6 @@ import { useNavigate } from "react-router-dom";
 import { db } from "@/data/db";
 import { Loader2 } from "lucide-react";
 import { playgroundService } from "@/data/playground-service";
-import { useEffect } from "react";
 
 const FormSchema = z.object({
   name: z.string().min(2, {
