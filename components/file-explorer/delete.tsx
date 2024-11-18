@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "../ui/button";
 import { db } from "@/data/db";
-import { usePathname } from "next/navigation";
+import { usePathname } from "@/lib/use-pathname";
 import { useRefreshFileExplorer } from "./";
 
 export default function Delete({

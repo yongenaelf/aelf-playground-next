@@ -5,7 +5,7 @@ import { z } from "zod";
 import { FileContent } from "./db";
 import { fileContentToZip } from "@/lib/file-content-to-zip";
 import { v4 as uuidv4 } from "uuid";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams } from "react-router-dom";
 
 export enum AuditType {
   DEFAULT = "default",
@@ -121,7 +121,7 @@ export function useAuditReport(auditType?: AuditType, auditId?: string) {
 }
 
 export function useAuditReportSearchParam() {
-  const params = useSearchParams();
+  const [params] = useSearchParams();
   const auditId = params.get("auditId");
   const auditType = params.get("auditType") as AuditType | null;
   return useAuditReport(auditType || undefined, auditId || undefined);

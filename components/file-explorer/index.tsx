@@ -1,7 +1,7 @@
 "use client";
 
 import { db } from "@/data/db";
-import { usePathname } from "next/navigation";
+import { usePathname } from "@/lib/use-pathname";
 import useSWR, { mutate } from "swr";
 import { FileExplorerTopMenu } from "./file-explorer-top-menu";
 import TreeView, { flattenTree } from "react-accessible-treeview";

@@ -15,7 +15,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Loader2 } from "lucide-react";
 import gh from "parse-github-url";
-import { getRepoInfoSchema } from "./schema";
+import { octokit } from "./octokit";
 
 const FormSchema = z.object({
   url: z.string().refine((arg) => {
@@ -40,15 +40,12 @@ export function RepoUrlForm({
   async function onSubmit(data: z.infer<typeof FormSchema>) {
     form.clearErrors();
     if (!!_onSubmit) {
-      const { owner, repo } = gh(data.url) || {};
-
+      const { repo } = gh(data.url) || {};
       const [o, r] = repo?.split("/") || [];
 
-      const res = await fetch(`/api/get-repo-info?owner=${owner}&repo=${r}`);
+      const res = await octokit.rest.repos.get({ owner: o, repo: r});
 
-      const _data = await res.json();
-
-      const {default_branch} = getRepoInfoSchema.parse(_data);
+      const default_branch = res.data.default_branch;
 
       await _onSubmit({ repo: repo || undefined, branch: default_branch || undefined });
     }

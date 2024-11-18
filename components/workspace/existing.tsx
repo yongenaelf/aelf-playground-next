@@ -10,10 +10,10 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { db } from "@/data/db";
-import Link from "next/link";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Trash2, ExternalLink } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useNavigate } from "react-router-dom";
 import {
   Dialog,
   DialogContent,
@@ -29,7 +29,7 @@ import { useWorkspaces } from "@/data/client";
 export default function Existing() {
   const { data } = useWorkspaces();
 
-  const router = useRouter();
+  const navigate = useNavigate();
 
   return (
     <Table>
@@ -44,7 +44,7 @@ export default function Existing() {
         {data?.map((i) => (
           <TableRow key={i.name}>
             <TableCell className="font-medium w-full">
-              <Link href={`/workspace/${i.name}`}>{i.name}</Link>
+              <Link to={`/workspace/${i.name}`}>{i.name}</Link>
             </TableCell>
             <TableCell>
               <div className="flex gap-4">
@@ -52,7 +52,7 @@ export default function Existing() {
                   variant="outline"
                   size="icon"
                   title="Open"
-                  onClick={() => router.push(`/workspace/${i.name}`)}
+                  onClick={() => navigate(`/workspace/${i.name}`)}
                 >
                   <ExternalLink className="h-4 w-4" />
                 </Button>

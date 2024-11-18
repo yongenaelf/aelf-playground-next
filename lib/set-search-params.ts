@@ -1,12 +1,14 @@
 "use client";
 
-import { useSearchParams, useRouter, usePathname } from "next/navigation";
+import { usePathname } from "@/lib/use-pathname";
+import { useSearchParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useCallback } from "react";
 
 export function useSetSearchParams() {
-  const searchParams = useSearchParams();
+  const [searchParams] = useSearchParams();
   const pathname = usePathname();
-  const router = useRouter();
+  const navigate = useNavigate();
 
   const createQueryString = useCallback(
     (paramsObj: Record<string, string | undefined>) => {
@@ -30,6 +32,6 @@ export function useSetSearchParams() {
   );
 
   return (paramsObj: Record<string, string | undefined>) => {
-    router.push(pathname + createQueryString(paramsObj));
+    navigate(pathname + createQueryString(paramsObj));
   };
 }

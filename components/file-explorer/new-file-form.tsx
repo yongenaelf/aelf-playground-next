@@ -15,7 +15,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { usePathname } from "next/navigation";
+import { usePathname } from "@/lib/use-pathname";
 import { db } from "@/data/db";
 import { Loader2 } from "lucide-react";
 import { useRefreshFileExplorer } from "./";

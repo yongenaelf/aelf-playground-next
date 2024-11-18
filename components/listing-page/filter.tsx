@@ -13,7 +13,9 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { useSearchParams, useRouter, usePathname } from "next/navigation";
+import { usePathname } from "@/lib/use-pathname";
+import { useSearchParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useCallback, useEffect } from "react";
 
 const FormSchema = z.object({
@@ -29,9 +31,9 @@ export function Filter({
   title: string;
   options: { id: string; label: string }[];
 }) {
-  const searchParams = useSearchParams();
+  const [searchParams] = useSearchParams();
   const pathname = usePathname();
-  const router = useRouter();
+  const navigate = useNavigate();
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
@@ -61,7 +63,7 @@ export function Filter({
   );
 
   useEffect(() => {
-    router.push(pathname + createQueryString(items));
+    navigate(pathname + createQueryString(items));
   }, [items]);
 
   return (

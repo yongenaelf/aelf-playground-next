@@ -3,7 +3,7 @@ import { useLogs, useProposalsInfo, useTransactionResult } from "@/data/client";
 import { db } from "@/data/db";
 import { useWallet } from "@/data/wallet";
 import { Loader2 } from "lucide-react";
-import { usePathname } from "next/navigation";
+import { usePathname } from "@/lib/use-pathname";
 import { PropsWithChildren, useContext, useEffect, useState } from "react";
 import { TerminalContext } from "react-terminal";
 import { useWorkspaceId } from "./use-workspace-id";
@@ -19,8 +19,10 @@ import { saveAs } from "file-saver";
 import { useSetSearchParams } from "@/lib/set-search-params";
 import { FormatErrors } from "./format-errors";
 import { ShareLink } from "./share-link";
-import Link from "next/link";
+import { Link } from "react-router-dom";
 import { FormatBuildErrors } from "./format-build-errors";
+import { playgroundService } from "@/data/playground-service";
+import { solangBuildService } from "@/data/solang-build-service";
 
 const PROPOSAL_TIMEOUT = 15 * 60 * 1000; // proposal expires after 15 minutes
 
@@ -138,13 +140,16 @@ export function useCliCommands() {
       );
 
       try {
-        const res = await fetch(`/api/build`, {
-          method: "POST",
-          body: JSON.stringify({ files }),
-        });
-        const { dll, error } = await res.json();
+        let dll: string | undefined;
+        if (files.some(file => file.path.endsWith(".cs"))) {
+          dll = (await playgroundService.build(files)).dll;
+        } else if (files.some(file => file.path.endsWith(".sol"))) {
+          dll = (await solangBuildService.build(files)).dll;
+        } else {
+          throw new Error("No supported files found.");
+        }
         console.log(dll, "-- build result");
-        if (typeof dll === "string" && !error) {
+        if (typeof dll === "string") {
           await db.workspaces.update(id, { dll });
           terminalContext.setBufferedContent(
             <>
@@ -152,15 +157,10 @@ export function useCliCommands() {
             </>
           );
           return;
-        } else {
-          terminalContext.setBufferedContent(
-            <FormatBuildErrors inputString={error} />
-          );
-          return;
         }
       } catch (err) {
         if (err instanceof Error)
-          terminalContext.setBufferedContent(<>{err.message}</>);
+          terminalContext.setBufferedContent(<FormatBuildErrors inputString={err.message} />);
         return;
       }
     },
@@ -190,11 +190,7 @@ export function useCliCommands() {
       );
 
       try {
-        const res = await fetch(`/api/test`, {
-          method: "POST",
-          body: JSON.stringify({ files }),
-        });
-        const { message } = await res.json();
+        const { message } = await playgroundService.test(files);
 
         terminalContext.setBufferedContent(
           <FormatErrors inputString={message} />
@@ -240,7 +236,7 @@ export function useCliCommands() {
 
       terminalContext.setBufferedContent(
         <>
-          <p>TransactionId: <Link href={url} target="_blank" rel="noopener noreferrer">{TransactionId}</Link></p>
+          <p>TransactionId: <Link to={url} target="_blank" rel="noopener noreferrer">{TransactionId}</Link></p>
           <Deployment id={TransactionId} />
         </>
       );
@@ -306,14 +302,10 @@ export function useCliCommands() {
       );
 
       try {
-        const res = await fetch(`/api/share`, {
-          method: "POST",
-          body: JSON.stringify({ files }),
-        });
-        const { id, error } = await res.json();
+        const { id } = await playgroundService.createShare(files);
 
-        if (error || !id)
-          throw new Error(error);
+        if (!id)
+          throw new Error("error");
 
         terminalContext.setBufferedContent(<ShareLink id={id} />);
       } catch (err) {
@@ -395,7 +387,7 @@ function CheckProposalInfo({ id }: { id: string }) {
 
   const url = `https://test.tmrwdao.com/network-dao/proposal/${id}?chainId=tDVW`
 
-  if (timedOut) return <p>Timed out. Proposal ID: <Link href={url} target="_blank" rel="noopener noreferrer">
+  if (timedOut) return <p>Timed out. Proposal ID: <Link to={url} target="_blank" rel="noopener noreferrer">
     {id}
   </Link>.</p>;
 

@@ -1,11 +1,9 @@
 import { Octokit } from "octokit";
 import { throttling } from "@octokit/plugin-throttling";
-import { getGitHubToken } from "@/lib/env";
 
 const MyOctokit = Octokit.plugin(throttling);
 
 export const octokit = new MyOctokit({
-  auth: getGitHubToken(),
   throttle: {
     onRateLimit: (retryAfter, options, octokit, retryCount) => {
       octokit.log.warn(

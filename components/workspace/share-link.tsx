@@ -1,6 +1,6 @@
 "use client";
 import { Copy, CopyCheck } from "lucide-react";
-import Link from "next/link";
+import { Link } from "react-router-dom";
 import { useMemo, useState } from "react";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import { useToast } from "@/components/ui/use-toast";
@@ -19,7 +19,7 @@ export function ShareLink({ id }: { id: string }) {
 
   return (
     <div className="flex">
-      <Link href={url} className="mr-4">
+      <Link to={url} className="mr-4">
         {url}
       </Link>
       <CopyToClipboard

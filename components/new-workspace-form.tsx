@@ -24,9 +24,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { db } from "@/data/db";
 import { Loader2 } from "lucide-react";
+import { playgroundService } from "@/data/playground-service";
+import { useEffect } from "react";
 
 const FormSchema = z.object({
   name: z.string().min(2, {
@@ -54,13 +57,9 @@ function getLabel(value: string) {
   }
 }
 
-export function WorkspaceForm({
-  templateOptions = [],
-}: {
-  templateOptions: string[];
-  onSubmit?: () => void;
-}) {
-  const searchParams = useSearchParams();
+export function WorkspaceForm() {
+  const [searchParams] = useSearchParams();
+  const templateOptions = ["aelf", "aelf-lottery", "aelf-nft-sale", "aelf-simple-dao"];
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
@@ -69,7 +68,7 @@ export function WorkspaceForm({
     },
   });
 
-  const router = useRouter();
+  const navigate = useNavigate();
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
     form.clearErrors();
@@ -79,11 +78,7 @@ export function WorkspaceForm({
         template: data.template,
         dll: "",
       });
-      const res = await fetch(
-        `/api/get-template-data?id=${data.template}&name=${data.name}`
-      );
-      const templateData: { path: string; contents: string }[] =
-        await res.json();
+      const templateData = await playgroundService.getTemplateData(data.template, data.name);
 
       await db.files.bulkAdd(
         templateData.map(({ path, contents }) => ({
@@ -91,7 +86,7 @@ export function WorkspaceForm({
           contents,
         }))
       );
-      await router.push(`/workspace/${data.name}`);
+      await navigate(`/workspace/${data.name}`);
     } catch (err) {
       form.setError("name", { message: String(err) });
     }

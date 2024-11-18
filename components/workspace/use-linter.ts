@@ -1,6 +1,6 @@
 import { useAuditReportSearchParam } from "@/data/audit";
 import { linter, Diagnostic } from "@codemirror/lint";
-import { useTheme } from "next-themes";
+import { useTheme } from "@/components/providers/theme-provider";
 import { createHighlighter } from "shiki";
 import { SearchCursor } from "@codemirror/search";
 

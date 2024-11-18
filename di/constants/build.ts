@@ -1,4 +1,0 @@
-export enum BUILD_TYPE {
-  SOLIDITY = "SOLIDITY",
-  CSHARP = "CSHARP",
-}

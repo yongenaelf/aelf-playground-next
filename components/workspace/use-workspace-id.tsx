@@ -1,5 +1,6 @@
 "use client";
-import { useParams, usePathname } from "next/navigation";
+import { useParams } from "react-router-dom";
+import { usePathname } from "@/lib/use-pathname";
 
 export function useWorkspaceId() {
   const pathname = usePathname();

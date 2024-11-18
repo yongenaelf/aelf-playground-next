@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { Link } from "react-router-dom";
 import {
   Sheet,
   SheetTrigger,
@@ -9,23 +9,23 @@ import {
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { MenuIcon, MoonIcon, SunIcon } from "lucide-react";
-import { useTheme } from "next-themes";
+import { useTheme } from "@/components/providers/theme-provider";
 
 export default function TopMenu() {
   const { resolvedTheme, setTheme } = useTheme();
 
   const links = [
-    { href: "/", children: "Home" },
-    { href: "/workspaces", children: "Workspaces" },
-    { href: "/tutorials", children: "Tutorials" },
-    { href: "/deployments", children: "Deployments" },
-    { href: "https://github.com/AElfProject", children: "GitHub" },
+    { to: "/", children: "Home" },
+    { to: "/workspaces", children: "Workspaces" },
+    { to: "/tutorials", children: "Tutorials" },
+    { to: "/deployments", children: "Deployments" },
+    { to: "https://github.com/AElfProject", children: "GitHub" },
   ];
 
   return (
     <header className="sticky top-0 z-50 w-full bg-background shadow-sm transition-colors dark:bg-background-dark">
       <div className="container mx-auto flex h-16 items-center justify-between px-4 md:px-6">
-        <Link href="/" className="text-lg font-semibold">
+        <Link to="/" className="text-lg font-semibold">
           aelf Playground
         </Link>
         <nav className="max-md:hidden md:flex space-x-4">

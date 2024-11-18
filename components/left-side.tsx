@@ -1,4 +1,4 @@
-import { useSearchParams } from "next/navigation";
+import { useSearchParams } from "react-router-dom";
 
 import { BuildDeployPanel } from "./build-deploy-panel";
 import ContractViewer from "./contract-viewer";
@@ -13,7 +13,7 @@ const TopSections = () => (
   </div>
 );
 const LeftSide = ({ name }: { name: string }) => {
-  const searchParams = useSearchParams();
+  const [searchParams] = useSearchParams();
   const contractViewerAddress = searchParams.get("contract-viewer-address");
 
   return (

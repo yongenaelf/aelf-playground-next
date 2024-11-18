@@ -1,10 +1,5 @@
-"use client";
 import useSWR from "swr";
-import {
-  getRepoBranchesSchema,
-  getRepoInfoSchema,
-  getRepoTreeSchema,
-} from "./schema";
+import { octokit } from "./octokit";
 
 export function useRepoTree(ownerrepo?: string, branch?: string) {
   return useSWR(
@@ -12,13 +7,23 @@ export function useRepoTree(ownerrepo?: string, branch?: string) {
     async () => {
       const [owner, repo] = ownerrepo!.split("/");
 
-      const res = await fetch(
-        `/api/get-repo-tree?owner=${owner}&repo=${repo}&branch=${branch}`
-      );
+      const {
+        data: { default_branch },
+      } = await octokit.rest.repos.get({
+        owner,
+        repo,
+      });
+    
+      const {
+        data: { tree },
+      } = await octokit.rest.git.getTree({
+        owner,
+        repo,
+        tree_sha: branch || default_branch,
+        recursive: "true",
+      });
 
-      const data = await res.json();
-
-      return getRepoTreeSchema.parse(data);
+      return tree;
     }
   );
 }
@@ -29,13 +34,9 @@ export function useRepoBranch(ownerrepo?: string) {
     async () => {
       const [owner, repo] = ownerrepo!.split("/");
 
-      const res = await fetch(
-        `/api/get-repo-branches?owner=${owner}&repo=${repo}`
-      );
+      const { data } = await octokit.rest.repos.listBranches({ owner, repo });
 
-      const data = await res.json();
-
-      return getRepoBranchesSchema.parse(data);
+      return data.map((i) => i.name)
     }
   );
 }
@@ -44,10 +45,8 @@ export function useRepoInfo(ownerrepo?: string) {
   return useSWR(ownerrepo ? `repo-info-${ownerrepo}` : undefined, async () => {
     const [owner, repo] = ownerrepo!.split("/");
 
-    const res = await fetch(`/api/get-repo-info?owner=${owner}&repo=${repo}`);
+    const { data } = await octokit.rest.repos.get({ owner, repo });
 
-    const data = await res.json();
-
-    return getRepoInfoSchema.parse(data);
+    return data;
   });
 }

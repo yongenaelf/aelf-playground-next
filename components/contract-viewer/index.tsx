@@ -1,15 +1,15 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams } from "react-router-dom";
 import { useWallet } from "@/data/wallet";
 import { ContractView } from "aelf-smartcontract-viewer";
-import { useTheme } from "next-themes";
+import { useTheme } from "@/components/providers/theme-provider";
 
 const sideChainTestnetRpc = "https://tdvw-test-node.aelf.io";
 
 const ContractViewer = ({ name }: { name: string }) => {
-  const searchParams = useSearchParams();
+  const [searchParams] = useSearchParams();
   const wallet = useWallet();
   const { resolvedTheme } = useTheme();
   const contractViewerAddress = searchParams.get("contract-viewer-address");
