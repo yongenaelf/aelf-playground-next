@@ -1,8 +1,9 @@
 import { useSearchParams } from "react-router-dom";
 import { useMemo } from "react";
 import { List } from "@/components/listing-page/list";
+import { env } from "@/data/env";
 
-const solidityEnabled = import.meta.env.VITE_SOLIDITY_ENABLED === "true";
+const solidityEnabled = env.SOLIDITY_ENABLED;
 const data = [
   {
     id: "hello-world",

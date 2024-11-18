@@ -28,6 +28,7 @@ import {
 } from "@/components/ui/dialog";
 import { useWallet } from "@/data/wallet";
 import { DialogOverlay } from "@radix-ui/react-dialog";
+import { env } from "@/data/env";
 
 export function BuildDeployPanel() {
   const commands = useCliCommands();
@@ -44,8 +45,8 @@ export function BuildDeployPanel() {
   const id = useWorkspaceId();
   const recaptchaRef = useRef<ReCAPTCHA>(null);
   const wallet = useWallet();
-  const faucetUrl = import.meta.env.VITE_FAUCET_API_URL;
-  const captchaSitekey = import.meta.env.VITE_GOOGLE_CAPTCHA_SITEKEY;
+  const faucetUrl = env.FAUCET_API_URL;
+  const captchaSitekey = env.GOOGLE_CAPTCHA_SITEKEY;
 
   const { data: isDeployable } = useSWR(
     id ? `deployable-${id}` : undefined,

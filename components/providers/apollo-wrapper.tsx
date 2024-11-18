@@ -1,14 +1,15 @@
 // https://www.apollographql.com/docs/react/get-started#step-4-connect-your-client-to-react
 
+import { env } from "@/data/env";
 import { HttpLink, ApolloLink, ApolloClient, InMemoryCache, ApolloProvider } from "@apollo/client";
 
 const tmrwdaoLink = new HttpLink({
-  uri: import.meta.env.VITE_TMRWDAO_GRAPHQL_ENDPOINT,
+  uri: env.TMRWDAO_GRAPHQL_ENDPOINT,
   fetchOptions: { cache: "no-store" },
 });
 
 const aelfscanLink = new HttpLink({
-  uri: import.meta.env.VITE_AELFSCAN_GRAPHQL_ENDPOINT,
+  uri: env.AELFSCAN_GRAPHQL_ENDPOINT,
   fetchOptions: { cache: "no-store" },
 });
 

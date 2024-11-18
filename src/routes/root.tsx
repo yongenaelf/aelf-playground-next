@@ -5,8 +5,9 @@ import TopMenu from "@/components/top-menu";
 import { Toaster } from "@/components/ui/toaster";
 import ReactGA from "react-ga4";
 import { useEffect } from "react";
+import { env } from "@/data/env";
 
-const TRACKING_ID = import.meta.env.VITE_GOOGLE_ANALYTICS_ID;
+const TRACKING_ID = env.GOOGLE_ANALYTICS_ID;
 
 export default function Root() {
   useEffect(() => {
