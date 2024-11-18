@@ -78,7 +78,7 @@ export function RepoWorkspaceName({
         data: { tree },
       } = await octokit.rest.git.getTree({
         owner,
-        repo,
+        repo: repoName,
         tree_sha: branch,
         recursive: "true",
       });
@@ -88,21 +88,21 @@ export function RepoWorkspaceName({
       const files = tree
         .filter((i) => i.type === "blob")
         .filter((i) => (i.path ? paths.includes(i.path) : false));
-    
-      for (const file of files) {
+
+      await Promise.all(files.map(async (file) => {
         const {
           data: { content },
         } = await octokit.rest.git.getBlob({
           owner,
-          repo,
+          repo: repoName,
           file_sha: file.sha!,
         });
-    
+
         response.push({
           path: file.path!,
           contents: Buffer.from(content, "base64").toString("ascii"),
         });
-      }
+      }));
 
       const rootPath = response.find(i => i.path.endsWith(".csproj"))?.path.split("/").slice(0, -2).join("/")
 

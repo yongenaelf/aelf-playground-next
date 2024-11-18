@@ -1,8 +1,6 @@
 /// <reference types="vite/client" />
 
 interface ImportMetaEnv {
-  readonly VITE_BUILD_SERVER_BASE_URL: string;
-  readonly VITE_SOLANG_BUILD_SERVER_BASE_URL: string;
   readonly VITE_SOLIDITY_ENABLED: string;
   readonly VITE_GOOGLE_ANALYTICS_ID: string;
   readonly VITE_FAUCET_API_URL: string;
