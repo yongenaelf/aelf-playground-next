@@ -2,7 +2,7 @@ import { WorkspaceForm } from "@/components/new-workspace-form";
 import { FileUpload } from "@/components/workspace/file-upload";
 import Existing from "@/components/workspace/existing";
 
-export default function Workspaces() {
+export function Component() {
   return (
     <div className="container grid grid-cols-1 gap-8 px-4 py-12 md:grid-cols-3 md:gap-12 md:px-6 lg:py-16">
       <div>

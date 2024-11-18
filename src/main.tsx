@@ -2,66 +2,45 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import {
   createBrowserRouter,
+  createRoutesFromElements,
+  Route,
   RouterProvider,
 } from "react-router-dom";
-import Root from "./routes/root";
 import ErrorPage from "./error-page";
-import Home from "./routes/home";
-import Workspaces from "./routes/workspaces";
-import Workspace from "./routes/workspace";
-import Tutorials from "./routes/tutorials";
 import Editor from "@/components/workspace/editor";
-import tutorialRoutes from "./tutorial-routes";
-import Deployments from "./routes/deployments";
-import Import from "./routes/import";
-import Share from "./routes/share";
+import HelloWorld from './tutorials/hello-world.mdx';
+import HelloWorldSolidity from './tutorials/hello-world-solidity.mdx';
+import LotteryGame from './tutorials/lottery-game.mdx';
+import Todo from './tutorials/todo.mdx';
+import VoteContract from './tutorials/vote-contract.mdx';
 
-const router = createBrowserRouter([
-  {
-    path: "/",
-    element: <Root />,
-    errorElement: <ErrorPage />,
-    children: [
-      {
-        path: "",
-        element: <Home />,
-      },
-      {
-        path: "workspaces",
-        element: <Workspaces />,
-      },
-      {
-        path: "workspace/:id",
-        element: <Workspace />,
-        children: [
-          {
-            path: "",
-            element: <Editor />,
-          }
-        ]
-      },
-      {
-        path: "tutorials",
-        element: <Tutorials />,
-      },
-      ...tutorialRoutes,
-      {
-        path: "deployments",
-        element: <Deployments />,
-      },
-      {
-        path: "import",
-        element: <Import />,
-      },
-      {
-        path: "share/:id",
-        element: <Share />,
-      }
-    ]
-  },
-]);
+const router = createBrowserRouter(createRoutesFromElements(<Route path="/" lazy={() => import('./routes/root')}>
+  <Route path="" lazy={() => import('./routes/home')} errorElement={<ErrorPage />} />
+  <Route path="workspaces" lazy={() => import('./routes/workspaces')} />
+  <Route path="workspace/:id" lazy={() => import('./routes/workspace')}>
+    <Route path="" element={<Editor />} />
+  </Route>
+  <Route path="tutorials" lazy={() => import('./routes/tutorials')} />
+  <Route path="tutorials/hello-world" lazy={() => import('./routes/workspace')}>
+    <Route path="" element={<HelloWorld />} />
+  </Route>
+  <Route path="tutorials/hello-world-solidity" lazy={() => import('./routes/workspace')}>
+    <Route path="" element={<HelloWorldSolidity />} />
+  </Route>
+  <Route path="tutorials/lottery-game" lazy={() => import('./routes/workspace')}>
+    <Route path="" element={<LotteryGame />} />
+  </Route>
+  <Route path="tutorials/todo" lazy={() => import('./routes/workspace')}>
+    <Route path="" element={<Todo />} />
+  </Route>
+  <Route path="tutorials/vote-contract" lazy={() => import('./routes/workspace')}>
+    <Route path="" element={<VoteContract />} />
+  </Route>
+  <Route path="deployments" lazy={() => import('./routes/deployments')} />
+  <Route path="import" lazy={() => import('./routes/import')} />
+  <Route path="share/:id" lazy={() => import('./routes/share')} />
+</Route>));
 
-// Render the app
 const rootElement = document.getElementById("root")!;
 if (!rootElement.innerHTML) {
   const root = createRoot(rootElement);

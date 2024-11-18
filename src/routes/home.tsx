@@ -35,7 +35,7 @@ import {
     );
   }
   
-  export default function Home() {
+  export function Component() {
     const links = [
       {
         title: "Hello World",

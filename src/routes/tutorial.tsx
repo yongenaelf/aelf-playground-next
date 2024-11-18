@@ -7,7 +7,7 @@ import Editor from "@/components/workspace/editor";
 import { PropsWithChildren } from "react";
 import './tutorial.scss';
 
-export default function Tutorial({ children }: PropsWithChildren) {
+export function Component({ children }: PropsWithChildren) {
   return (
     <ResizablePanelGroup direction="horizontal">
       <ResizablePanel defaultSize={50}>

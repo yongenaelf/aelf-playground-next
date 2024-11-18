@@ -13,7 +13,7 @@ import { format } from "date-fns";
 import { Link } from "react-router-dom";
 import { useContractList } from "@/data/graphql";
 
-export default function Page() {
+export function Component() {
   const wallet = useWallet();
   const { data, loading } = useContractList(wallet?.wallet.address);
 

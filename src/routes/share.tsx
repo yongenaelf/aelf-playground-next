@@ -10,7 +10,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 
-export default function Share() {
+export function Component() {
   const { id } = useParams();
   const { data, isLoading } = useShare(id);
   const navigate = useNavigate();

@@ -9,7 +9,7 @@ import { env } from "@/data/env";
 
 const TRACKING_ID = env.GOOGLE_ANALYTICS_ID;
 
-export default function Root() {
+export function Component() {
   useEffect(() => {
     if (TRACKING_ID) ReactGA.initialize(TRACKING_ID);
   }, [TRACKING_ID]);

@@ -3,7 +3,7 @@ import { TutorialLevelFilter } from "@/components/tutorial/filter-level";
 import { TutorialList } from "@/components/tutorial/list";
 import { TutorialSearch } from "@/components/tutorial/search";
 
-export default function Tutorials() {
+export function Component() {
   return (
     <div className="container grid grid-cols-1 gap-8 px-4 py-12 md:grid-cols-3 md:gap-12 md:px-6 lg:py-16">
       <div>
