@@ -4,7 +4,6 @@ import useSWR from "swr";
 import { db, FileContent } from "./db";
 import AElf from "aelf-sdk";
 import { useProposalReleaseInfo } from "./graphql";
-import { getBuildServerBaseUrl } from "@/lib/env";
 import { strFromU8, unzipSync } from "fflate";
 const { deserializeLog } = AElf.pbUtils;
 

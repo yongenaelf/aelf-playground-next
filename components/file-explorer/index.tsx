@@ -6,7 +6,6 @@ import useSWR, { mutate } from "swr";
 import { FileExplorerTopMenu } from "./file-explorer-top-menu";
 import TreeView, { flattenTree } from "react-accessible-treeview";
 import "./file-explorer.css";
-import { useSetSearchParams } from "@/lib/set-search-params";
 import Rename from "./rename";
 import Delete from "./delete";
 import {
@@ -15,6 +14,7 @@ import {
 } from "./file-explorer-reducer";
 import { NodeRenderer } from "./file-explorer-node-renderer";
 import { FileExplorerContext } from "./file-explorer-context";
+import { useSearchParams } from "react-router-dom";
 
 interface TreeViewElement {
   name: string;
@@ -51,7 +51,7 @@ function convert(data: string[]) {
 
 const FileExplorer = () => {
   const pathname = usePathname();
-  const setSearchParams = useSetSearchParams();
+  const [, setSearchParams] = useSearchParams();
   const refreshFileExplorer = useRefreshFileExplorer();
 
   const [state, dispatch] = useFileExplorerReducer();
@@ -94,7 +94,10 @@ const FileExplorer = () => {
             });
 
             if (children.length === 0) {
-              setSearchParams({ file: encodeURIComponent(id) });
+              setSearchParams(params => {
+                params.set("file", id);
+                return params;
+              });
             }
           }}
           // @ts-expect-error

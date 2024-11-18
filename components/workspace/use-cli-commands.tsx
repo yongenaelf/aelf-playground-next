@@ -16,10 +16,9 @@ import {
 import clsx from "clsx";
 import { fileContentToZip } from "@/lib/file-content-to-zip";
 import { saveAs } from "file-saver";
-import { useSetSearchParams } from "@/lib/set-search-params";
 import { FormatErrors } from "./format-errors";
 import { ShareLink } from "./share-link";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { FormatBuildErrors } from "./format-build-errors";
 import { playgroundService } from "@/data/playground-service";
 import { solangBuildService } from "@/data/solang-build-service";
@@ -30,7 +29,7 @@ export function useCliCommands() {
   const terminalContext = useContext(TerminalContext);
   const pathname = usePathname();
   const id = useWorkspaceId();
-  const setSearchParams = useSetSearchParams();
+  const [, setSearchParams] = useSearchParams();
 
   const wallet = useWallet();
   const commands = {
@@ -93,7 +92,11 @@ export function useCliCommands() {
 
         if (!wallet) return;
 
-        setSearchParams({ auditId: codeHash, auditType });
+        setSearchParams(prev => {
+          prev.set("auditId", codeHash);
+          prev.set("auditType", auditType);
+          return prev;
+        });
 
         const { TransactionId } = await wallet.auditTransfer(codeHash);
 
@@ -405,12 +408,15 @@ function CheckProposalInfo({ id }: { id: string }) {
 
 function DeployedContractDetails({ id }: { id?: string }) {
   const { data } = useLogs(id);
-  const setSearchParams = useSetSearchParams();
+  const [, setSearchParams] = useSearchParams();
 
   useEffect(() => {
   
     if (data?.address) {
-        setSearchParams({ "contract-viewer-address": data.address });
+        setSearchParams(prev => {
+          prev.set("contract-viewer-address", data.address);
+          return prev;
+        });
     }
   
   }, [data]);
