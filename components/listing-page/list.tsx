@@ -1,4 +1,3 @@
-import Image from "next/image";
 import {
   Card,
   CardDescription,
@@ -6,7 +5,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import Link from "next/link";
+import { Link } from "react-router-dom";
 import clsx from "clsx";
 
 interface Item {
@@ -27,10 +26,10 @@ export function List({ list }: { list: Item[] }) {
   return (
     <div className="grid grid-flow-row-dense grid-cols-2 lg:grid-cols-3 gap-8">
       {list.map((i) => (
-        <Link key={i.id} href={i.link}>
+        <Link key={i.id} to={i.link}>
           <Card className="flex flex-col h-full">
             <div className="overflow-hidden">
-              <Image
+              <img
                 alt="Image"
                 width={300}
                 height={300}

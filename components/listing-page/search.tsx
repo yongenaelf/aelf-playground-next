@@ -1,13 +1,15 @@
 "use client";
 
-import { useSearchParams, useRouter, usePathname } from "next/navigation";
+import { usePathname } from "@/lib/use-pathname";
+import { useSearchParams } from "react-router-dom";
 import { useCallback, useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
+import { useNavigate } from "react-router-dom";
 
 export function Search({placeholder}: {placeholder?: string}) {
-  const searchParams = useSearchParams();
+  const [searchParams] = useSearchParams();
   const pathname = usePathname();
-  const router = useRouter();
+  const navigate = useNavigate();
   const [search, setSearch] = useState(searchParams.get("search") || undefined);
 
   const createQueryString = useCallback(
@@ -27,7 +29,7 @@ export function Search({placeholder}: {placeholder?: string}) {
   );
 
   useEffect(() => {
-    router.push(pathname + createQueryString(search));
+    navigate(pathname + createQueryString(search));
   }, [search]);
 
   return (

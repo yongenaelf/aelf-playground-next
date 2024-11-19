@@ -1,20 +1,20 @@
 "use client";
 
-import { useTheme } from "next-themes";
+import { useTheme } from "@/components/providers/theme-provider";
 import { ReactTerminal } from "react-terminal";
 import { useCliCommands } from "./use-cli-commands";
 
 export default function Cli() {
   const commands = useCliCommands();
 
-  const { theme, systemTheme } = useTheme();
+  const { resolvedTheme } = useTheme();
 
   return (
     <div className="h-full pb-8">
       <ReactTerminal
         commands={commands}
         prompt="#"
-        theme={theme !== "system" ? theme : systemTheme}
+        theme={resolvedTheme}
         showControlBar={false}
         welcomeMessage={
           <div>

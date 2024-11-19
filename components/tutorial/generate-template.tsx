@@ -2,7 +2,8 @@
 
 import { Button } from "@/components/ui/button";
 import { db } from "@/data/db";
-import { usePathname } from "next/navigation";
+import { playgroundService } from "@/data/playground-service";
+import { usePathname } from "@/lib/use-pathname";
 import { mutate } from "swr";
 
 export default function GenerateTemplate({
@@ -28,11 +29,11 @@ export default function GenerateTemplate({
         template,
         dll: "",
       });
-      const res = await fetch(
-        `/api/get-template-data?id=${template}&name=${name}`
+
+      const _templateData = await playgroundService.getTemplateData(
+        template,
+        name
       );
-      const _templateData: { path: string; contents: string }[] =
-        await res.json();
 
       const templateData = _templateData.map((i) => {
         if (i.path.includes("hello_world_contract.proto")) {

@@ -15,10 +15,10 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { useRouter } from "next/navigation";
+import { useNavigate } from "react-router-dom";
 import { db } from "@/data/db";
 import { Loader2 } from "lucide-react";
-import { getRepoBlobsSchema } from "./schema";
+import { octokit } from "./octokit";
 
 const FormSchema = z.object({
   name: z.string().min(2, {
@@ -54,7 +54,7 @@ export function RepoWorkspaceName({
     },
   });
 
-  const router = useRouter();
+  const navigate = useNavigate();
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
     form.clearErrors();
@@ -74,20 +74,45 @@ export function RepoWorkspaceName({
       params.set("branch", branch);
       paths.forEach((path) => params.append("path", path));
 
-      const filesRes = await fetch(`/api/get-repo-blobs?${params.toString()}`);
-      const fileData = await filesRes.json();
+      const {
+        data: { tree },
+      } = await octokit.rest.git.getTree({
+        owner,
+        repo: repoName,
+        tree_sha: branch,
+        recursive: "true",
+      });
+    
+      let response: { path: string; contents: string }[] = [];
+    
+      const files = tree
+        .filter((i) => i.type === "blob")
+        .filter((i) => (i.path ? paths.includes(i.path) : false));
 
-      const parsedData = getRepoBlobsSchema.parse(fileData);
+      await Promise.all(files.map(async (file) => {
+        const {
+          data: { content },
+        } = await octokit.rest.git.getBlob({
+          owner,
+          repo: repoName,
+          file_sha: file.sha!,
+        });
 
-      const rootPath = parsedData.find(i => i.path.endsWith(".csproj"))?.path.split("/").slice(0, -2).join("/")
+        response.push({
+          path: file.path!,
+          contents: Buffer.from(content, "base64").toString("ascii"),
+        });
+      }));
+
+      const rootPath = response.find(i => i.path.endsWith(".csproj"))?.path.split("/").slice(0, -2).join("/")
 
       await db.files.bulkAdd(
-        parsedData.map(({ path, contents }) => ({
+        response.map(({ path, contents }) => ({
           path: `/workspace/${data.name}/${encodeURIComponent(rootPath ? path.replace(rootPath + "/", "") : path)}`,
           contents,
         }))
       );
-      await router.push(`/workspace/${data.name}`);
+      navigate(`/workspace/${data.name}`);
     } catch (err) {
       form.setError("name", { message: formatError(err) });
     }

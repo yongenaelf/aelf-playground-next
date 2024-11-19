@@ -13,7 +13,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { useRouter } from "next/navigation";
+import { useNavigate } from "react-router-dom";
 import { Loader2 } from "lucide-react";
 
 const FormSchema = z.object({
@@ -28,12 +28,12 @@ export function RepoUrlForm() {
     },
   });
 
-  const router = useRouter();
+  const navigate = useNavigate();
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
     form.clearErrors();
     try {
-      await router.push(`/${data.url.replace("https://", "")}`);
+      await navigate(`/${data.url.replace("https://", "")}`);
     } catch (err) {
       form.setError("url", { message: String(err) });
     }

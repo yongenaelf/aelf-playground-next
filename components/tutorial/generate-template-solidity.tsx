@@ -2,14 +2,12 @@
 
 import { Button } from "@/components/ui/button";
 import { db } from "@/data/db";
-import { usePathname } from "next/navigation";
+import { usePathname } from "@/lib/use-pathname";
 import { mutate } from "swr";
 
 export default function GenerateTemplateSolidity({
-  name = "HelloWorld",
   template = "solidity",
 }: {
-  name?: string;
   template?: string;
 }) {
   const pathname = usePathname();

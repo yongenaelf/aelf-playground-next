@@ -27,8 +27,8 @@ import {
   DialogPortal
 } from "@/components/ui/dialog";
 import { useWallet } from "@/data/wallet";
-import { env } from 'next-runtime-env';
 import { DialogOverlay } from "@radix-ui/react-dialog";
+import { env } from "@/data/env";
 
 export function BuildDeployPanel() {
   const commands = useCliCommands();
@@ -45,13 +45,13 @@ export function BuildDeployPanel() {
   const id = useWorkspaceId();
   const recaptchaRef = useRef<ReCAPTCHA>(null);
   const wallet = useWallet();
-  const faucetUrl = env('NEXT_PUBLIC_FAUCET_API_URL');
-  const captchaSitekey = env('NEXT_PUBLIC_GOOGLE_CAPTCHA_SITEKEY');
+  const faucetUrl = env.FAUCET_API_URL;
+  const captchaSitekey = env.GOOGLE_CAPTCHA_SITEKEY;
 
   const { data: isDeployable } = useSWR(
     id ? `deployable-${id}` : undefined,
     async () => {
-      const ws = await db.workspaces.get(id);
+      const ws = await db.workspaces.get(id!);
       return typeof ws?.dll === "string";
     }
   );
@@ -266,7 +266,7 @@ export function BuildDeployPanel() {
 
   return (
     <div className="p-4 border-b-2 flex gap-2">
-      {buttons.map((button, i) => (
+      {buttons.map((button) => (
         <Tooltip text={button.title} key={button.title}>
           <Button
             disabled={button.disabled}

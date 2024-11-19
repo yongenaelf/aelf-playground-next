@@ -4,10 +4,10 @@ import { db, FileContent } from "@/data/db";
 import { useCallback } from "react";
 import { useDropzone, DropzoneOptions } from "react-dropzone";
 import { kebabCase } from "es-toolkit/string";
-import { useRouter } from "next/navigation";
+import { useNavigate } from "react-router-dom";
 
 export function FileUpload() {
-  const router = useRouter();
+  const navigate = useNavigate();
   const onDrop = useCallback<NonNullable<DropzoneOptions["onDrop"]>>(
     async (acceptedFiles) => {
       let all: FileContent[] = [];
@@ -51,13 +51,13 @@ export function FileUpload() {
               contents,
             }))
           );
-          await router.push(`/workspace/${name}`);
+          navigate(`/workspace/${name}`);
         } catch (err) {
           alert(String(err));
         }
       }
     },
-    [router]
+    [navigate]
   );
   const { getRootProps, getInputProps } = useDropzone({ onDrop });
 

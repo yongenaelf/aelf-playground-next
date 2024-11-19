@@ -2,10 +2,9 @@
 
 import useSWR from "swr";
 import { db, FileContent } from "./db";
-import { ProposalInfo } from "./proposal-info-types";
 import AElf from "aelf-sdk";
-import { Transactions } from "./transactions-types";
 import { useProposalReleaseInfo } from "./graphql";
+import { strFromU8, unzipSync } from "fflate";
 const { deserializeLog } = AElf.pbUtils;
 
 const aelf = new AElf(
@@ -105,45 +104,40 @@ export function useLogs(id?: string, refreshInterval?: number) {
   );
 }
 
-export function useTransactions(address: string) {
-  return useSWR(address ? `transactions-${address}` : undefined, async () => {
-    const res = await fetch(`/api/get-transactions?address=${address}`);
-    const { transactions }: { transactions: Transactions } = await res.json();
-
-    return transactions;
-  });
-}
-
-export function useTutorialList() {
-  return useSWR<
-    {
-      id: string;
-      img: string;
-      title: string;
-      description: string;
-      level: string;
-      levelId: string;
-      lang: string;
-      langId: string;
-    }[]
-  >(`tutorial-list`, async () => {
-    const res = await fetch(`/api/get-tutorial-list`);
-
-    const data = await res.json();
-
-    return data;
-  });
-}
-
-export function useShare(id: string) {
+export function useShare(id?: string) {
   return useSWR<{ files?: FileContent[]; message?: string; success: boolean }>(
-    `get-share-${id}`,
+    id ? `get-share-${id}` : undefined,
     async () => {
-      const res = await fetch(`/api/get-share?id=${id}`);
+      try {
+        const res = await fetch(
+          `/playground/share/get/${id}`
+        );
+    
+        const data = await res.arrayBuffer();
+    
+        const unzipped = unzipSync(Buffer.from(data));
+    
+        let files: FileContent[] = [];
+    
+        Object.entries(unzipped).forEach(([k, v]) => {
+          files.push({
+            path: k,
+            contents: strFromU8(v),
+          });
+        });
+  
+        return {files, success: true};
+      } catch (err) {
+        let error = "An error occurred.";
+        if (err instanceof Error) {
+          error = err.message;
+    
+          if (error === "invalid zip data")
+            error = "This share ID is not available.";
+        }
 
-      const data = await res.json();
-
-      return data;
+        return {message: error, success: false};
+      }
     }
   );
 }

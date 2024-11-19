@@ -14,16 +14,14 @@ import {
 import { db, FileContent } from "@/data/db";
 import { useCallback, useState } from "react";
 import { useDropzone, DropzoneOptions } from "react-dropzone";
-import { usePathname } from "next/navigation";
+import { usePathname } from "@/lib/use-pathname";
 import { useRefreshFileExplorer } from "@/components/file-explorer";
-import { useLoadFiles } from "../webcontainer/use-load-files";
 import { Tooltip } from "../tooltip";
 
 export default function UploadModal() {
   const refreshFileExplorer = useRefreshFileExplorer();
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
-  const loadFiles = useLoadFiles();
 
   const onDrop = useCallback<NonNullable<DropzoneOptions["onDrop"]>>(
     async (acceptedFiles) => {
@@ -72,7 +70,6 @@ export default function UploadModal() {
         );
 
         await refreshFileExplorer();
-        await loadFiles();
         setIsOpen(false);
       } catch (err) {
         alert(String(err));

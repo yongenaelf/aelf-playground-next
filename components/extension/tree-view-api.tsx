@@ -10,7 +10,6 @@ import React, {
   useCallback,
   useContext,
   useEffect,
-  useMemo,
   useState,
 } from "react";
 import { Button } from "@/components/ui/button";
@@ -224,8 +223,7 @@ const Folder = forwardRef<
       isSelect,
       children,
       ...props
-    },
-    ref
+    }
   ) => {
     const {
       direction,

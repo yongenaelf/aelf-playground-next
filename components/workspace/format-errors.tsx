@@ -1,5 +1,5 @@
 import { badgeVariants, Badge } from "@/components/ui/badge";
-import Link from "next/link";
+import { Link } from "react-router-dom";
 import { processTestOutput } from "./process-test-output";
 
 export function FormatErrors({ inputString }: { inputString?: string }) {
@@ -8,7 +8,7 @@ export function FormatErrors({ inputString }: { inputString?: string }) {
   const cleanedString = inputString.replace(
     /\/tmp\/playground\/[a-f0-9\-]+\//g,
     ""
-  );
+  ).replace(/\/tmp\/[a-f0-9\-]+/g, "");
 
   // Regular expression to match lines containing errors and warnings
   const errorMessages = cleanedString.match(
@@ -98,7 +98,7 @@ function ErrorTypeLink({ type }: { type: string }) {
         className={badgeVariants({
           variant: "destructive",
         })}
-        href={`https://learn.microsoft.com/en-us/dotnet/csharp/misc/${code.toLowerCase()}`}
+        to={`https://learn.microsoft.com/en-us/dotnet/csharp/misc/${code.toLowerCase()}`}
         target="_blank"
         rel="noopener noreferrer"
       >
