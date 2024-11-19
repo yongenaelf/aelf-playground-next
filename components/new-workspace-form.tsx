@@ -81,7 +81,7 @@ export function WorkspaceForm() {
 
       await db.files.bulkAdd(
         templateData.map(({ path, contents }) => ({
-          path: `/workspace/${data.name}/${path}`,
+          path: `/workspace/${data.name}/${encodeURIComponent(path)}`,
           contents,
         }))
       );
