@@ -47,7 +47,7 @@ export function FileUpload() {
 
           await db.files.bulkAdd(
             templateData.map(({ path, contents }) => ({
-              path: `/workspace/${name}/${encodeURIComponent(path)}`,
+              path: `/workspace/${name}/${path}`,
               contents,
             }))
           );

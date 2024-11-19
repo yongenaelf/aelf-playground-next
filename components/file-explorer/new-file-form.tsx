@@ -43,7 +43,7 @@ export function NewFileForm({
     form.clearErrors();
     try {
       await db.files.add({
-        path: `${pathname}/${encodeURIComponent(data.path)}`,
+        path: `${pathname}/${data.path}`,
         contents: "",
       });
       await refreshFileExplorer();

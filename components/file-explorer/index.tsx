@@ -164,11 +164,11 @@ const FileExplorer = () => {
 
                     if (e.key === "Enter") {
                       await db.files.add({
-                        path: `${pathname}/${encodeURIComponent(
+                        path: `${pathname}/${
                           `${state.path}/${e.currentTarget.value}${
                             state.addType === "folder" ? "/.gitkeep" : ""
                           }`
-                        )}`,
+                        }`,
                         contents: "",
                       });
                       await refreshFileExplorer();

@@ -56,7 +56,7 @@ export default function GenerateTemplate({
       );
       await db.files.bulkAdd(
         templateData.map(({ path, contents }) => ({
-          path: `${pathname}/${encodeURIComponent(path)}`,
+          path: `${pathname}/${path}`,
           contents,
         }))
       );

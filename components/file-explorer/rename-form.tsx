@@ -50,22 +50,22 @@ export function RenameForm({
 
     try {
       if (type === "file") {
-        const currentKey = `${pathname}/${encodeURIComponent(path)}`;
+        const currentKey = `${pathname}/${path}`;
         const currentFile = await db.files.get(currentKey);
 
-        const newKey = `${pathname}/${encodeURIComponent(data.path)}`;
+        const newKey = `${pathname}/${data.path}`;
         await db.files.add({
           path: newKey,
           contents: currentFile?.contents || "",
         });
         await db.files.delete(currentKey);
       } else {
-        const currentKey = `${pathname}/${encodeURIComponent(path)}`;
+        const currentKey = `${pathname}/${path}`;
         const currentFiles = await db.files
           .filter((file) => file.path.startsWith(currentKey))
           .toArray();
 
-        const newKey = `${pathname}/${encodeURIComponent(data.path)}`;
+        const newKey = `${pathname}/${data.path}`;
         const newFiles = currentFiles.map((i) => ({
           ...i,
           path: i.path.replace(currentKey, newKey),

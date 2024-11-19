@@ -108,7 +108,7 @@ export function RepoWorkspaceName({
 
       await db.files.bulkAdd(
         response.map(({ path, contents }) => ({
-          path: `/workspace/${data.name}/${encodeURIComponent(rootPath ? path.replace(rootPath + "/", "") : path)}`,
+          path: `/workspace/${data.name}/${rootPath ? path.replace(rootPath + "/", "") : path}`,
           contents,
         }))
       );

@@ -27,7 +27,7 @@ export function Component() {
 
         await db.files.bulkAdd(
           data.files.map(({ path, contents }) => ({
-            path: `/workspace/${id}/${encodeURIComponent(path)}`,
+            path: `/workspace/${id}/${path}`,
             contents,
           }))
         );

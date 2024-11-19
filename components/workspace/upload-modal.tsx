@@ -64,7 +64,7 @@ export default function UploadModal() {
 
         await db.files.bulkAdd(
           templateData.map(({ path, contents }) => ({
-            path: `${pathname}/${encodeURIComponent(path)}`,
+            path: `${pathname}/${path}`,
             contents,
           }))
         );

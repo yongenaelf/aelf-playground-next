@@ -45,14 +45,14 @@ export default function Delete({
             onClick={async () => {
               if (type === "file") {
                 await db.files.delete(
-                  `${pathname}/${encodeURIComponent(path)}`
+                  `${pathname}/${path}`
                 );
               } else {
                 const all = (
                   await db.files
                     .filter((file) =>
                       file.path.startsWith(
-                        `${pathname}/${encodeURIComponent(path + "/")}`
+                        `${pathname}/${path}/`
                       )
                     )
                     .toArray()
