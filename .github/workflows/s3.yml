@@ -18,9 +18,9 @@ jobs:
     - run: bun install
     - name: create env file
       run: |
-        echo VITE_GOOGLE_ANALYTICS_ID=${{ vars.TYPESENSE_SERVER_HOST }} >> .env
-        echo VITE_FAUCET_API_URL=${{ vars.TYPESENSE_SEARCH_ONLY_APIKEY }} >> .env
-        echo VITE_GOOGLE_CAPTCHA_SITEKEY=${{ vars.TYPESENSE_SEARCH_ONLY_APIKEY }} >> .env
+        echo VITE_GOOGLE_ANALYTICS_ID=${{ vars.VITE_GOOGLE_ANALYTICS_ID }} >> .env
+        echo VITE_FAUCET_API_URL=${{ vars.VITE_FAUCET_API_URL }} >> .env
+        echo VITE_GOOGLE_CAPTCHA_SITEKEY=${{ vars.VITE_GOOGLE_CAPTCHA_SITEKEY }} >> .env
     - run: bun run build
     
     - name: Configure AWS Credentials
