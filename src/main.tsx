@@ -13,6 +13,30 @@ import HelloWorldSolidity from './tutorials/hello-world-solidity.mdx';
 import LotteryGame from './tutorials/lottery-game.mdx';
 import Todo from './tutorials/todo.mdx';
 import VoteContract from './tutorials/vote-contract.mdx';
+import {Component as Tutorial} from './routes/tutorial';
+
+const tutorials = [
+  {
+    path: 'hello-world',
+    component: HelloWorld,
+  },
+  {
+    path: 'hello-world-solidity',
+    component: HelloWorldSolidity,
+  },
+  {
+    path: 'lottery-game',
+    component: LotteryGame,
+  },
+  {
+    path: 'todo',
+    component: Todo,
+  },
+  {
+    path: 'vote-contract',
+    component: VoteContract,
+  },
+]
 
 const router = createBrowserRouter(createRoutesFromElements(<Route path="/" lazy={() => import('./routes/root')}>
   <Route path="" lazy={() => import('./routes/home')} errorElement={<ErrorPage />} />
@@ -21,21 +45,11 @@ const router = createBrowserRouter(createRoutesFromElements(<Route path="/" lazy
     <Route path="" element={<Editor />} />
   </Route>
   <Route path="tutorials" lazy={() => import('./routes/tutorials')} />
-  <Route path="tutorials/hello-world" lazy={() => import('./routes/workspace')}>
-    <Route path="" element={<HelloWorld />} />
-  </Route>
-  <Route path="tutorials/hello-world-solidity" lazy={() => import('./routes/workspace')}>
-    <Route path="" element={<HelloWorldSolidity />} />
-  </Route>
-  <Route path="tutorials/lottery-game" lazy={() => import('./routes/workspace')}>
-    <Route path="" element={<LotteryGame />} />
-  </Route>
-  <Route path="tutorials/todo" lazy={() => import('./routes/workspace')}>
-    <Route path="" element={<Todo />} />
-  </Route>
-  <Route path="tutorials/vote-contract" lazy={() => import('./routes/workspace')}>
-    <Route path="" element={<VoteContract />} />
-  </Route>
+  {tutorials.map(({ path, component: Component }) => (
+    <Route key={path} path={`tutorials/${path}`} lazy={() => import('./routes/workspace')}>
+      <Route path="" element={<Tutorial><Component /></Tutorial>} />
+    </Route>
+  ))}
   <Route path="deployments" lazy={() => import('./routes/deployments')} />
   <Route path="import" lazy={() => import('./routes/import')} />
   <Route path="share/:id" lazy={() => import('./routes/share')} />
