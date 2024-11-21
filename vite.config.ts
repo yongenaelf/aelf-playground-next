@@ -26,8 +26,8 @@ export default defineConfig({
   server: {
     proxy: {
       "/api/solang": "https://test-solang.aelf.io",
-      "/api/playground": "https://playground-next.test.aelf.dev",
-      "/playground": "https://playground-next.test.aelf.dev",
+      "/api/playground": "https://playground-staging.aelf.dev",
+      "/playground": "https://playground-staging.aelf.dev",
     }
   }
 });
