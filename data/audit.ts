@@ -14,14 +14,14 @@ export enum AuditType {
 
 const URL_CONFIG = {
   [AuditType.DEFAULT]: {
-    uploadContractCode: "/api/playground/audit/uploadContractCode",
-    auditContractCode: "/api/playground/audit/auditContractCode",
-    report: "/api/playground/report",
+    uploadContractCode: "/api/audit/uploadContractCode",
+    auditContractCode: "/api/audit/auditContractCode",
+    report: "/api/report",
   },
   [AuditType.SAVE_GAS_FEE]: {
-    uploadContractCode: "/api/playground/adjustGasFee/uploadContractCode",
-    auditContractCode: "/api/playground/adjustGasFee/execute",
-    report: "/api/playground/adjustGasFee/report",
+    uploadContractCode: "/api/adjustGasFee/uploadContractCode",
+    auditContractCode: "/api/adjustGasFee/execute",
+    report: "/api/adjustGasFee/report",
   },
 };
 
