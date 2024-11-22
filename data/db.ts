@@ -41,6 +41,8 @@ async function decodeKeys() {
       if (!existingItem) {
         // Add new item with decoded key
         await db.files.put({ ...file, path: decodedId });
+        // Delete the old item
+        await db.files.delete(file.path);
       }
     }
   });
