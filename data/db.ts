@@ -29,5 +29,31 @@ db.version(3).stores({
   wallet: "privateKey",
 });
 
+async function decodeKeys() {
+  return db.transaction('rw', db.files, async () => {
+    const files = await db.files.toArray();
+
+    for (const file of files) {
+      const decodedId = decodeURIComponent(file.path);
+
+      // Check if the decoded key already exists to avoid overwriting
+      const existingItem = await db.files.get(decodedId);
+      if (!existingItem) {
+        // Add new item with decoded key
+        await db.files.put({ ...file, path: decodedId });
+      }
+    }
+  });
+}
+
+db.open().then(() => {
+  console.log('Database opened successfully');
+  return decodeKeys();
+}).then(() => {
+  console.log('Database initialisation complete');
+}).catch((err) => {
+  console.error('Failed to open db: ' + (err.stack || err));
+});
+
 export type { File as FileContent, Workspace, Wallet };
 export { db };
