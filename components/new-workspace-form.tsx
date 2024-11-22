@@ -31,9 +31,15 @@ import { Loader2 } from "lucide-react";
 import { playgroundService } from "@/data/playground-service";
 
 const FormSchema = z.object({
-  name: z.string().min(2, {
-    message: "Name must be at least 2 characters.",
-  }),
+  name: z
+    .string()
+    .min(2, {
+      message: "Name must be at least 2 characters.",
+    })
+    .regex(/^[a-zA-Z_]+$/, {
+      message:
+        "Oops! Please use only letters and underscores. Numbers and special characters like @, #, or 1 are not allowed.",
+    }),
   template: z.string(),
 });
 
