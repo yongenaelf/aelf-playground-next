@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useWallet } from "@/data/wallet";
 import { ContractView } from "aelf-smartcontract-viewer";
@@ -13,13 +12,6 @@ const ContractViewer = ({ name }: { name: string }) => {
   const wallet = useWallet();
   const { resolvedTheme } = useTheme();
   const contractViewerAddress = searchParams.get("contract-viewer-address");
-  const [key, setKey] = useState("0");
-
-  useEffect(() => {
-    setTimeout(() => {
-      setKey(prev => parseInt(prev) + 1 + "");
-    }, 1000);
-  }, [contractViewerAddress]);
 
   if (!contractViewerAddress || !wallet?.wallet) {
     return;
@@ -27,7 +19,6 @@ const ContractViewer = ({ name }: { name: string }) => {
 
   return (
     <ContractView
-      key={key}
       wallet={wallet.wallet}
       address={contractViewerAddress}
       headerTitle={"Contract View"}
