@@ -24,6 +24,7 @@ const LeftSide = ({ name }: { name: string }) => {
           bottom={<ContractViewer name={name} />}
           topDefaultSize={30}
           bottomDefaultSize={70}
+          bottomClassName="contract-viewer-container"
         />
       ) : (
         <TopSections />

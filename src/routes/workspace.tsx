@@ -7,6 +7,7 @@ import {
 import Cli from "@/components/workspace/cli";
 import LeftSide from "@/components/left-side";
 import { Outlet, useParams } from "react-router-dom";
+import './workspace.scss';
 
 export function Component() {
   let { id } = useParams();
