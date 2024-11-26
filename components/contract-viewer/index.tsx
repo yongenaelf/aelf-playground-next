@@ -2,6 +2,7 @@
 
 import { useSearchParams } from "react-router-dom";
 import { useWallet } from "@/data/wallet";
+// @ts-ignore
 import { ContractView } from "aelf-smartcontract-viewer";
 import { useTheme } from "@/components/providers/theme-provider";
 
