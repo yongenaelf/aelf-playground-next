@@ -12,6 +12,9 @@ import {
 import { format } from "date-fns";
 import { Link } from "react-router-dom";
 import { useContractList } from "@/data/graphql";
+import "./deployment.scss";
+import { EyeIcon, EyeOffIcon } from "lucide-react";
+import { useState } from "react";
 
 export function Component() {
   const wallet = useWallet();
@@ -31,15 +34,16 @@ export function Component() {
         </TableHeader>
         <TableBody>
           {data ? (
-            data.contractList.items
-              .map((i) => (
-                <TableRow key={i.address}>
-                  <TableCell>{format(i.metadata.block.blockTime, "PPPppp")}</TableCell>
-                  <TableCell>
-                    <ViewAddressOnExplorer address={i.address} />
-                  </TableCell>
-                </TableRow>
-              ))
+            data.contractList.items.map((i) => (
+              <TableRow key={i.address}>
+                <TableCell>
+                  {format(i.metadata.block.blockTime, "PPPppp")}
+                </TableCell>
+                <TableCell>
+                  <ViewAddressOnExplorer address={i.address} />
+                </TableCell>
+              </TableRow>
+            ))
           ) : (
             <TableRow>
               <TableCell>Loading...</TableCell>
@@ -48,10 +52,34 @@ export function Component() {
         </TableBody>
       </Table>
       <h1 className="text-2xl mb-2">Wallet information</h1>
-      <p>
+      <p className="mt-3">
         Wallet address:{" "}
         <ViewAddressOnExplorer address={wallet?.wallet.address} />
       </p>
+      <p className="mt-2">Privatekey:</p>
+      <ViewPrivatekey privateKey={wallet?.wallet.privateKey} />
+    </div>
+  );
+}
+
+function ViewPrivatekey({ privateKey }: { privateKey: string }) {
+  if (!privateKey) {
+    return <></>;
+  }
+  const [isVisibleKey, setIsVisibleKey] = useState(false);
+
+  const toggleKey = () => setIsVisibleKey((prev: boolean) => !prev);
+  return (
+    <div className="flex gap-4 private-key py-2 px-4 mt-1 rounded-xl border-solid border-2 border-grey-900">
+      <p className={isVisibleKey ? "key-visible" : ""}>{privateKey}</p>
+      <EyeIcon
+        className={`cursor-pointer ${isVisibleKey ? "hidden" : ""}`}
+        onClick={toggleKey}
+      />
+      <EyeOffIcon
+        className={`cursor-pointer ${!isVisibleKey ? "hidden" : ""}`}
+        onClick={toggleKey}
+      />
     </div>
   );
 }
