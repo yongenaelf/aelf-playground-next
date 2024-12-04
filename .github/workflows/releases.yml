@@ -1,0 +1,39 @@
+name: Build and Release
+
+on:
+  push:
+    branches:
+      - '**'  # This will trigger on any branch push
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install
+      - name: create env file
+        run: |
+          echo VITE_GOOGLE_ANALYTICS_ID=${{ vars.VITE_GOOGLE_ANALYTICS_ID }} >> .env
+          echo VITE_FAUCET_API_URL=${{ vars.VITE_FAUCET_API_URL }} >> .env
+          echo VITE_GOOGLE_CAPTCHA_SITEKEY=${{ vars.VITE_GOOGLE_CAPTCHA_SITEKEY }} >> .env
+      - run: bun run build
+
+      - name: Set up GitHub CLI
+        uses: actions/setup-gh-cli@v2
+
+      - name: Create a GitHub release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          BRANCH_NAME="${GITHUB_REF#refs/heads/}"
+          TAG_NAME="release-${BRANCH_NAME}"
+
+          if gh release view $TAG_NAME > /dev/null 2>&1; then
+            echo "Release $TAG_NAME already exists. Skipping..."
+          else
+            echo "Creating release for branch $BRANCH_NAME with tag $TAG_NAME..."
+
+            # Create the release and upload artifacts
+            gh release create $TAG_NAME ./dist/* --title "Release for $BRANCH_NAME" --notes "Automated release for the $BRANCH_NAME branch."
