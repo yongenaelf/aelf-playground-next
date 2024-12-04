@@ -34,3 +34,4 @@ jobs:
 
             # Create the release and upload artifacts
             gh release create $TAG_NAME ./dist/* --title "Release for $BRANCH_NAME" --notes "Automated release for the $BRANCH_NAME branch."
+          fi
