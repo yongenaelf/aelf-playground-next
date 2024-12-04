@@ -33,5 +33,6 @@ jobs:
             echo "Creating release for branch $BRANCH_NAME with tag $TAG_NAME..."
 
             # Create the release and upload artifacts
-            gh release create $TAG_NAME ./dist/* --title "Release for $BRANCH_NAME" --notes "Automated release for the $BRANCH_NAME branch."
+            zip -r release.zip ./dist/
+            gh release create $TAG_NAME release.zip --title "Release for $BRANCH_NAME" --notes "Automated release for the $BRANCH_NAME branch."
           fi
