@@ -20,6 +20,22 @@ jobs:
           echo VITE_GOOGLE_CAPTCHA_SITEKEY=${{ vars.VITE_GOOGLE_CAPTCHA_SITEKEY }} >> .env
       - run: bun run build
 
+      # New Step: Delete existing release if it exists
+      - name: Check and Delete Existing Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          BRANCH_NAME="${GITHUB_REF#refs/heads/}"
+          TAG_NAME="release-${BRANCH_NAME}"
+          
+          # Check if the release exists
+          if gh release view "$TAG_NAME" > /dev/null 2>&1; then
+            echo "Deleting existing release $TAG_NAME..."
+            gh release delete "$TAG_NAME" -y
+          else
+            echo "No existing release to delete for tag $TAG_NAME."
+          fi
+
       - name: Create a GitHub release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
