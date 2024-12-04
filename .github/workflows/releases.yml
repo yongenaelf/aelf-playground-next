@@ -20,9 +20,6 @@ jobs:
           echo VITE_GOOGLE_CAPTCHA_SITEKEY=${{ vars.VITE_GOOGLE_CAPTCHA_SITEKEY }} >> .env
       - run: bun run build
 
-      - name: Set up GitHub CLI
-        uses: actions/setup-gh-cli@v2
-
       - name: Create a GitHub release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
