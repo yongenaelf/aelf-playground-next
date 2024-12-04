@@ -27,12 +27,8 @@ jobs:
           BRANCH_NAME="${GITHUB_REF#refs/heads/}"
           TAG_NAME="release-${BRANCH_NAME}"
 
-          if gh release view $TAG_NAME > /dev/null 2>&1; then
-            echo "Release $TAG_NAME already exists. Skipping..."
-          else
-            echo "Creating release for branch $BRANCH_NAME with tag $TAG_NAME..."
+          echo "Creating release for branch $BRANCH_NAME with tag $TAG_NAME..."
 
-            # Create the release and upload artifacts
-            zip -r release.zip ./dist/
-            gh release create $TAG_NAME release.zip --title "Release for $BRANCH_NAME" --notes "Automated release for the $BRANCH_NAME branch."
-          fi
+          # Create the release and upload artifacts
+          zip -r release.zip ./dist/
+          gh release create $TAG_NAME release.zip --title "Release for $BRANCH_NAME" --notes "Automated release for the $BRANCH_NAME branch."
